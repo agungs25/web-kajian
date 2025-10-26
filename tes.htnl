@@ -1,0 +1,591 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ebook - Hakikat Dakwah Salafiyah dan Bantahan Syubhat Kontemporer</title>
+<style>
+/* Style berdasarkan file ebook-toc-green.html yang Anda berikan */
+:root{
+  --green-dark:#0f5132;
+  --green-main:#198754;
+  --green-light:#d1e7dd;
+  --bg-light:#e9f7f1;
+  --text-dark:#0b2010;
+  --white:#fff;
+  --border:#bcd0c7;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font:16px/1.7 "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  color:var(--text-dark);
+  background:var(--bg-light);
+  min-height:100vh;
+}
+header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 16px;
+  background:linear-gradient(90deg,var(--green-dark),var(--green-main));
+  color:var(--white);
+  position:sticky;top:0;z-index:50;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+header h1{font-size:18px;margin:0;font-weight:600;}
+#toggleToc{
+  background:none;border:0;color:var(--white);
+  font-size:24px;cursor:pointer;
+  padding: 0 10px;
+}
+.app{display:grid;grid-template-columns:320px 1fr;min-height:100vh;}
+nav.toc{
+  border-right:1px solid var(--border);
+  background:#f5fff9;
+  padding:16px 0;
+  overflow-y:auto;
+  transition:transform .3s ease, width .3s ease;
+  height: calc(100vh - 48px); /* Tinggi TOC disesuaikan dengan header */
+  position: sticky;
+  top: 48px;
+}
+main{padding:24px; overflow-x: hidden;}
+.toc details{border-bottom:1px solid var(--border);margin:0;background:var(--white);}
+.toc summary{cursor:pointer;padding:12px 16px;font-weight:700;color:var(--green-dark);border-top:1px solid var(--border);}
+.toc ul{list-style:none;margin:0;padding:0;}
+.toc li{border-top:1px solid var(--border);}
+.toc a{
+  display:block;padding:10px 16px;
+  color:var(--text-dark);text-decoration:none;
+  font-size: 14px; /* Dikecilkan menjadi 14px */
+  transition: background .15s ease;
+}
+.toc a:hover{background:var(--green-light);}
+.toc a.active{
+  background:var(--green-main);
+  color:var(--white);
+  font-weight: 600;
+}
+.doc-section{
+  background:var(--white);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:30px;
+  margin-bottom: 24px;
+  box-shadow:0 4px 16px rgba(0,0,0,.08);
+}
+/* Style untuk judul utama */
+#title-page h1 {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--green-dark);
+    line-height: 1.2;
+}
+#title-page p {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--green-main);
+    margin-top: 5px;
+}
+/* Style untuk judul bagian (H2) */
+.doc-section h2{
+    color:var(--green-dark);
+    margin-bottom:10px;
+    font-size: 20px; /* Dikecilkan menjadi 20px */
+    padding-bottom: 5px;
+    border-bottom: 2px solid var(--green-light);
+}
+/* Style untuk sub-judul (H3) */
+.doc-section h3{
+    color: var(--green-main);
+    font-size: 18px; /* Dikecilkan menjadi 18px */
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+/* Style untuk isi paragraf/list */
+.doc-section p, .doc-section li {
+    margin-bottom: 15px;
+    text-align: justify;
+    font-size: 15px; /* Dikecilkan menjadi 15px */
+}
+.doc-section ul {
+    list-style: disc;
+    margin-left: 25px;
+}
+.hadith {
+    background: var(--bg-light);
+    border-left: 4px solid var(--green-main);
+    padding: 15px;
+    border-radius: 4px;
+    margin: 15px 0;
+    font-style: italic;
+    font-size: 15px; /* Dikecilkan menjadi 15px */
+}
+.citation {
+    font-size: 0.9em;
+    color: #666;
+    display: block;
+    margin-top: -10px;
+    margin-bottom: 15px;
+}
+@media(max-width:768px){
+  .app{grid-template-columns:1fr;}
+  nav.toc{
+    position:fixed;
+    top:0;left:0;height:100%;width:80%;max-width:320px;
+    transform:translateX(-100%);
+    z-index:100;
+    box-shadow:4px 0 16px rgba(0,0,0,.4);
+    height: 100vh;
+    padding-top: 48px;
+  }
+  nav.toc.open{transform:translateX(0);}
+  .overlay{
+    position:fixed;inset:0;
+    background:rgba(0,0,0,.5);
+    backdrop-filter:blur(2px);
+    display:none;
+    z-index:90;
+  }
+  .overlay.show{display:block;}
+  header{position: fixed; width: 100%;}
+  main{padding: 15px;}
+}
+</style>
+<!-- Menggunakan Tailwind CSS untuk utilitas tambahan (opsional, tapi disarankan untuk modernisasi) -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                fontFamily: {
+                    sans: ['Inter', 'sans-serif'],
+                },
+            }
+        }
+    }
+</script>
+</head>
+<body>
+<header>
+  <button id="toggleToc" aria-label="Toggle Table of Contents">☰</button>
+  <h1>Ebook Salafiyah</h1>
+</header>
+
+<div class="overlay" id="overlay"></div>
+
+<div class="app">
+<nav class="toc" id="toc">
+  <!-- Konten TOC dari PDF -->
+  <details open>
+    <summary>Pendahuluan</summary>
+    <ul>
+      <li><a href="#title-page" data-target="title-page">Halaman Judul</a></li>
+      <li><a href="#muqaddimah" data-target="muqaddimah">Muqaddimah Penulis</a></li>
+    </ul>
+  </details>
+  <details open>
+    <summary>Makna dan Asas Salafiyah</summary>
+    <ul>
+      <li><a href="#makna-salafiyah" data-target="makna-salafiyah">Makna Salafiyah (Bahasa & Istilah)</a></li>
+      <li><a href="#salafiyah-manhaj-hizb" data-target="salafiyah-manhaj-hizb">Salafiyah: Manhaj, Hizb, Thaifah, dan Firqah</a></li>
+      <li><a href="#m1-islam-sahabat" data-target="m1-islam-sahabat">Misi 1: Salafiyah adalah Islam Para Sahabat</a></li>
+      <li><a href="#m2-islam-tanpa-bidah" data-target="m2-islam-tanpa-bidah">Misi 2: Salafiyah adalah Islam Tanpa Bid'ah</a></li>
+      <li><a href="#m3-penamaan" data-target="m3-penamaan">Misi 3: Penamaan dengan Salafiyah</a></li>
+      <li><a href="#m4-mengetahui-madzhab" data-target="m4-mengetahui-madzhab">Misi 4: Cara Mengetahui Madzhab Salaf</a></li>
+      <li><a href="#m5-manhaj-kokoh" data-target="m5-manhaj-kokoh">Misi 5: Salafiyah adalah Manhaj yang Kokoh (Muhkam)</a></li>
+      <li><a href="#m6-bukan-tazkiyah" data-target="m6-bukan-tazkiyah">Misi 6: Penamaan Salafi Bukan Tazkiyah</a></li>
+      <li><a href="#m7-bebas-ghuluw" data-target="m7-bebas-ghuluw">Misi 7: Salafiyah Bebas dari Ghuluw & Ekstremisme</a></li>
+    </ul>
+  </details>
+  <details>
+    <summary>Misi 8: Bantahan Syubhat Kontemporer</summary>
+    <ul>
+      <li><a href="#m8p1-takfir-hukum" data-target="m8p1-takfir-hukum">1. Takfir dengan Hukum Bighairi Ma Anzalallah</a></li>
+      <li><a href="#m8p2-tidak-taat-hakim" data-target="m8p2-tidak-taat-hakim">2. Tidak Mendengar & Taat kepada Hakim Fasiq</a></li>
+      <li><a href="#m8p3-tidak-berlepas-diri" data-target="m8p3-tidak-berlepas-diri">3. Tidak Berlepas Diri dari Bid'ah & Pelakunya</a></li>
+      <li><a href="#m8p4-organisasi-partai" data-target="m8p4-organisasi-partai">4. Organisasi & Partaisasi (Tanzhimat)</a></li>
+      <li><a href="#m8p5-salafiyah-politik" data-target="m8p5-salafiyah-politik">5. Salafiyah dan Politik</a></li>
+    </ul>
+  </details>
+  <details>
+    <summary>Asas Kebersihan Dakwah Salafiyah</summary>
+    <ul>
+      <li><a href="#asas1-tauhid" data-target="asas1-tauhid">Asas 1: Tauhid</a></li>
+      <li><a href="#asas2-tahdzir-bidah" data-target="asas2-tahdzir-bidah">Asas 2: Peringatan dari Bid'ah</a></li>
+      <li><a href="#asas3-permusuhan-kafir" data-target="asas3-permusuhan-kafir">Asas 3: Permusuhan (Adawiyah) Terhadap Kuffar</a></li>
+      <li><a href="#asas4-takfir" data-target="asas4-takfir">Asas 4: Takfir</a></li>
+      <li><a href="#asas5-jihad" data-target="asas5-jihad">Asas 5: Jihad</a></li>
+      <li><a href="#asas6-peledakan" data-target="asas6-peledakan">Asas 6: Peledakan (Tafjirat) di Negeri Kuffar</a></li>
+      <li><a href="#asas7-taat-ulil-amr" data-target="asas7-taat-ulil-amr">Asas 7: Mendengar & Taat kepada Ulil Amri</a></li>
+      <li><a href="#asas8-demonstrasi" data-target="asas8-demonstrasi">Asas 8: Demonstrasi (Muzhaharat)</a></li>
+      <li><a href="#asas9-macam-khilaf" data-target="asas9-macam-khilaf">Asas 9: Jenis Masalah yang Diperselisihkan</a></li>
+      <li><a href="#asas10-akhlak" data-target="asas10-akhlak">Asas 10: Akhlak</a></li>
+      <li><a href="#asas11-membantah-penyelisih" data-target="asas11-membantah-penyelisih">Asas 11: Bantahan (Radd) Terhadap yang Menyelisihi</a></li>
+    </ul>
+  </details>
+  <details>
+    <summary>Penutup</summary>
+    <ul>
+      <li><a href="#khatimah" data-target="khatimah">Khatimah (Penutup)</a></li>
+    </ul>
+  </details>
+</nav>
+
+<main id="content">
+
+<!-- Halaman Judul Besar Sesuai Permintaan -->
+<article id="title-page" class="doc-section">
+    <div class="text-center p-6 my-16">
+        <h1 class="mb-2 leading-tight">
+            Hakikat Dakwah Salafiyah
+        </h1>
+        <p>
+            Syaikh Dr. Abdul Aziz bin Rayyis Ar-Rayyis hafizhahullah
+        </p>
+    </div>
+</article>
+
+<!-- --------------------------------- Halaman 1 --------------------------------- -->
+<article id="muqaddimah" class="doc-section" hidden>
+    <h2>Muqaddimah Penulis</h2>
+    <p>بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ. سلام عليكم ورحمة الله وبركاته .... أما بعد:</p>
+    <p>فإن السلفية هي جماعة الحق وما سواها ضالة، لأنها محدثة، أما السلفية أثرية متصلة الإسناد برسول الله ﷺ وصحابته الكرام، فلما كانوا أهل الحق دخل فيهم ما ليس منهم، فاغتر الناس بهم، فأردت أن أكتب هذا المختصر لأبين ما تيسر من حقيقة الدعوة السلفية وبراءتها من الدخلاء والمنتسبين إليها زورًا، وأكثرت النقل عن العلماء المعاصرين لقطع الطريق على من يريد الطعن في السلفية المعاصرة.</p>
+    <p>ومن العدل والإنصاف وجوب التفريق بين أصول الدعوة السلفية وبين أفعال بعض السلفيين فالدعوة السلفية معصومة لأنها وحي بخلاف أفعال بعض السلفيين فمن أراد نقد السلفية فلينقدها في أصولها بعد التأكد أنه من أصولها - لا أن ينقدها بأفعال بعض أفرادها وهذا تماما مثل الإسلام فإنه لا يصح أن ينقد بالنظر لأفعال بعض المسلمين وإنما بالنظر في أصوله.</p>
+    <div class="hadith">
+        <p>وأخيرا، هذه الرسالة جهد مُقِلٌ ، وجمعُ مُختصر لتقريب الدعوة السلفية وتوضيحها وكشف شبهات المغبرين على الدعوة السلفية بشبهات عصرية وأسميتها: <br><strong>(حقيقة الدعوة السلفية، وكشف الشبهات العصرية)</strong></p>
+        <p>الله أسأل القبول والرضا، وأن ينفع بها عباده</p>
+        <p>د. عبد العزيز بن ريس الريس <br>المشرف على شبكة الإسلام العتيق <br>١١ / ١١ / ١٤٤٢هـ</p>
+    </div>
+</article>
+
+<!-- --------------------------------- Halaman 2 --------------------------------- -->
+<article id="makna-salafiyah" class="doc-section" hidden>
+    <h2>Makna Salafiyah (Bahasa & Istilah)</h2>
+    <h3>السلفية لغة (Salafiyah secara Bahasa):</h3>
+    <ul>
+        <li>Al-Raghib Al-Isfahani: "السلف (Salaf): Yang terdahulu (mautqaddim), Allah ta'ala berfirman (فَجَعَلْنَاهُمْ سَلَفًا وَمَثَلًا لِلْآخِرِينَ)... dan bagi fulan salaf yang mulia: yaitu bapak-bapak yang terdahulu."</li>
+        <li>Al-Fayruz Abadi: "السلف (Salaf): ... dan setiap orang yang mendahuluimu dari bapak-bapakmu dan kerabatmu."</li>
+        <li>Ibn Mandhur: "Dan As-Salaf juga: orang yang mendahuluimu dari bapak-bapakmu dan kerabatmu yang lebih tua darimu dalam usia dan keutamaan... Oleh karena itu, generasi pertama dari Tabi'in dinamakan: As-Salaf Ash-Shalih."</li>
+    </ul>
+    <h3>والسلفية في استعمال العلماء (Salafiyah menurut Istilah Ulama):</h3>
+    <p>Mereka adalah para Sahabat dan Tabi'in yang mengikuti mereka dengan ihsan, dan sebagian dari mereka memasukkan pengikut Tabi'in (Atba' At-Tabi'in) ke dalam golongan Salaf.</p>
+    <p>Al-Bukhari membuat bab dalam Shahih-nya: "Bab menunggangi hewan yang sulit dan kuda jantan (fuhulah) dari kuda. Dan Rasyid bin Sa'd berkata: 'Dahulu As-Salaf menyukai kuda jantan karena lebih lincah dan berani'." Ibn Hajar berkata: "Maksudnya **As-Salaf** adalah dari kalangan **Sahabat dan yang setelah mereka**."</p>
+    <p>Al-Sam'ani: "**As-Salafi**: dengan fathah pada sin dan lam, dan di akhirnya huruf fa', penisbatan ini kepada As-Salaf, dan **menganut madzhab mereka** sebagaimana yang engkau dengar."</article>
+
+<!-- --------------------------------- Halaman 3 --------------------------------- -->
+<article id="salafiyah-manhaj-hizb" class="doc-section" hidden>
+    <h2>Salafiyah: Manhaj, Hizb, Thaifah, dan Firqah</h2>
+    <p>Salafiyah adalah **manhaj, hizb (golongan), thaifah (kelompok), dan firqah (sekte)**, sebagaimana firman Allah ta'ala: ﴿أُولَئِكَ حِزْبُ اللَّهِ أَلَا إِنَّ حِزْبَ اللَّهِ هُمُ الْمُفْلِحُونَ﴾ (Mereka itu adalah Hizbullah. Ketahuilah, sesungguhnya Hizbullah itulah yang beruntung).</p>
+    <p>Nabi ﷺ bersabda: «لايزال طائفة من أمتي ظاهرين حتى يأتيهم أمر الله وهم ظاهرون» (Akan senantiasa ada sekelompok dari umatku yang menang (zhahir) hingga datang urusan Allah, sementara mereka tetap menang).</p>
+    <p>Nabi ﷺ juga bersabda: «وإن هذه الأمة ستفترق على ثلاث وسبعين، ثنتان وسبعون في النار وواحدة في الجنة وهي الجماعة» (Dan sesungguhnya umat ini akan berpecah menjadi tujuh puluh tiga golongan, tujuh puluh dua di neraka dan satu di surga, yaitu Al-Jama'ah).</p>
+    <p>Namun, Salafiyah **bukanlah hizb yang berpihak kepada orang tertentu** betapapun agungnya mereka, bukan atas nama taklid atau lainnya, melainkan berpihak pada **manhaj dan jalan** (thariqah). **Tidak ada kepala bagi mereka selain Rasulullah ﷺ**.</p>
+    <p>Ibnul Qayyim menukil dari Abu Al-Muzhaffar As-Sam'ani yang berkata: "Sesungguhnya mereka (Ahlus Sunnah) tidak bernisbat kepada perkataan tertentu dan tidak pula kepada orang tertentu selain Rasulullah ﷺ, maka **mereka tidak memiliki julukan yang dikenal dengannya, dan tidak pula nisbah yang dinisbatkan kepadanya** ketika selain mereka bernisbat kepada perkataan-perkataan yang diada-adakan dan para pelakunya... Sementara Ahlus Sunnah berlepas diri dari semua nisbah ini, dan **nisbah mereka hanya kepada Hadits dan Sunnah**."</p>
+</article>
+
+<!-- --------------------------------- Halaman 4 --------------------------------- -->
+<article id="m1-islam-sahabat" class="doc-section" hidden>
+    <h2>Misi 1: Salafiyah adalah Islam Para Sahabat dan Tabi'in</h2>
+    <p>Salafiyah berarti mengikuti **Kitab yang Mulia dan Sunnah yang Shahihah dengan pemahaman Salaf Al-Ummah**.</p>
+    <p>Allah ta'ala berfirman: ﴿وَمَن يُشَاقِقِ الرَّسُولَ مِنْ بَعْدِ مَا تَبَيَّنَ لَهُ الهُدَى وَيَتَّبِعْ غَيْرَ سَبِيلِ الْمُؤْمِنِينَ﴾ (Dan barangsiapa menentang Rasul setelah jelas kebenaran baginya, dan mengikuti jalan yang bukan jalan orang-orang mukmin...)</p>
+    <p>Imam Ahmad dalam *Ushul As-Sunnah* berkata: "Asas-asas Sunnah menurut kami adalah **berpegang teguh pada apa yang dahulu ada pada Sahabat Rasulullah ﷺ dan meneladani mereka**."</p>
+    <p>Ibnu Taimiyyah berkata: "Tidak ada celaan bagi orang yang menampakkan madzhab Salaf, bernisbat kepadanya, dan mengaku kepadanya, bahkan **wajib menerima hal itu darinya dengan kesepakatan**, karena madzhab Salaf tidaklah mungkin melainkan **kebenaran**."</p>
+</article>
+
+<article id="m2-islam-tanpa-bidah" class="doc-section" hidden>
+    <h2>Misi 2: Salafiyah adalah Islam yang Bersih dari Bid'ah</h2>
+    <p>Salafiyah berarti **Islam yang Murni** (Al-Islam Ash-Shafi), karena ia adalah Islam yang dahulu ada pada Nabi ﷺ dan para pengikut Tabi'in dengan ihsan. Orang yang meninggalkan Salafiyah dari kalangan Muslimin berarti jatuh ke dalam **Islam yang Ternoda** (Al-Islam Al-Musawwah) yang dimasukkan ke dalamnya apa yang bukan darinya.</p>
+    <p>Semua 72 golongan yang disebutkan dalam hadits perpecahan adalah Muslim, bukan kafir. Adanya ancaman (al-wa'id) tidak menunjukkan kekufuran mereka.</p>
+    <p>Al-Khaththabi berkata: "Di dalamnya terdapat dalil bahwa semua golongan ini tidak keluar dari agama karena Nabi ﷺ menjadikan mereka semua dari umatnya."</p>
+    <p>Ibnu Taimiyyah menghikayatkan Ijma' bahwa mereka semua bukanlah kafir. Keluarnya seseorang ke 72 golongan tidak berarti pengkafiran, tetapi **meninggalkan Islam yang murni menuju Islam yang tercampur Bid'ah**.</p>
+</article>
+
+<article id="m3-penamaan" class="doc-section" hidden>
+    <h2>Misi 3: Penamaan dengan Salafiyah</h2>
+    <p>Banyak yang tidak mengetahui hakikat Salafiyah mengulang-ulang: bahwa penamaan dengan Islam sudah cukup karena Allah menamakan kita dengannya. Ini sama sekali **tidak benar**, karena:</p>
+    <ol>
+        <li>72 golongan juga menamakan diri Muslim, sehingga penamaan dengan Islam tidak membedakan Ahlul Haq dari Ahlul Bathil. Membedakan diri dari ahli bid'ah adalah tuntutan syar'i.</li>
+        <li>Salaf kita yang mulia membedakan diri dari ahli bid'ah dengan nama **Ashab Al-Hadits** dan **Ahlus Sunnah** (berlawanan dengan Ahlul Bid'ah). Mereka tidak merasa cukup dengan nama Islam/Muslimin.</li>
+        <li>Orang yang menyeru untuk merasa cukup dengan nama Islam adalah **kontradiktif**, karena mereka sendiri tidak merasa cukup dengan nama Islam, melainkan menamakan diri dengan **Ahlus Sunnah**!</li>
+    </ol>
+    <p>Kenapa tidak cukup dengan Ahlus Sunnah? Karena banyak ahli bid'ah memasukkan diri mereka ke dalam Ahlus Sunnah, seperti Asya'irah dan lainnya. Maka, harus ada nama yang membedakan Ahlul Haq dari selainnya.</p>
+    <p>Ibnu Taimiyyah: "Tidak ada celaan bagi orang yang menampakkan madzhab Salaf, bernisbat kepadanya, dan mengaku kepadanya, bahkan **wajib menerima hal itu darinya dengan kesepakatan**, karena madzhab Salaf tidaklah mungkin melainkan **kebenaran**."</p>
+</article>
+
+<article id="m4-mengetahui-madzhab" class="doc-section" hidden>
+    <h2>Misi 4: Cara Mengetahui Madzhab Salaf</h2>
+    <p>Jalan (sabil) orang-orang Mukmin, Sabiqin Al-Awwalin dari Muhajirin, Anshar, dan Tabi'in dapat diketahui dengan beberapa cara:</p>
+    <h3>1. Jalan Pertama:</h3>
+    <p>Seorang ulama ahli dan berilmu yang menguasai istiqra' (penelitian mendalam) menyebutkan bahwa suatu hal adalah jalan Sabiqin atau thariqah Salaf, atau sesuatu yang mereka sepakati (ijma'). Ini dapat diketahui dari apa yang ditulis oleh para Imam Sunnah dalam kitab-kitab i'tiqad (akidah), seperti *Ushul I'tiqad As-Sunnah* oleh Imam Ahmad, *Al-Ibanah Al-Kubra* dan *Ash-Shughra* oleh Ibnu Baththah, dan *Asy-Syari'ah* oleh Al-Ajurri, dan lain-lain.</p>
+    <h3>2. Jalan Kedua:</h3>
+    <p>Atsar-atsar yang diriwayatkan di hadapan kita dalam kitab-kitab Sunnah. Mustahil Allah menjadikan jalan Sabiqin sebagai hujjah, lalu menukilkan kepada kita dari mereka perkataan yang *marjuh* (lemah) tanpa yang *rajih* (kuat).</p>
+    <p>Al-Jashshash berkata: "...Ketika telah ditetapkan kesahihan ijma' umat menurut kita dengan dalil-dalil yang telah kami kemukakan, dan tidak mungkin adanya ijma' dengan menetapkan perkataan setiap orang dari Sahabat dan Tabi'in dalam suatu masalah, kita mengetahui bahwa ini bukanlah syarat."</p>
+    <p>Pada intinya: **Cukup ada satu orang yang menyampaikannya dan menjadi masyhur, lalu tidak ada yang mengingkarinya**.</p>
+</article>
+
+<article id="m5-manhaj-kokoh" class="doc-section" hidden>
+    <h2>Misi 5: Salafiyah adalah Manhaj yang Kokoh (Muhkam)</h2>
+    <p>Manhaj Salaf adalah **manhaj yang kokoh**, tidak ada seorang pun yang dapat memasukkan ke dalamnya apa yang bukan darinya, dan tidak dapat mengeluarkan darinya apa yang darinya. Setiap orang yang melakukan itu akan **dibantah dengan thariqah Salaf yang telah tercatat**.</p>
+    <p>Al-Sijzi berkata: "Maka setiap orang yang mengaku bermanhaj Sunnah, harus dituntut dengan **riwayat yang sahih** atas apa yang dikatakannya. Jika dia membawakannya, maka dia diketahui kejujurannya dan diterima perkataannya. Dan jika dia tidak mampu menukilkan apa yang dikatakannya dari Salaf, dia diketahui sebagai **pelaku bid'ah yang menyimpang**."</p>
+    <p>Ibnu Taimiyyah: "Adapun jika pengakuan terhadap Salaf menjadi syiar bagi ahli bid'ah: maka ini adalah **kebatilan secara pasti**. Karena hal itu tidak mungkin kecuali jika kebodohan merajalela dan ilmu berkurang."</p>
+</article>
+
+<article id="m6-bukan-tazkiyah" class="doc-section" hidden>
+    <h2>Misi 6: Penamaan Salafi Bukan Tazkiyah</h2>
+    <p>Penamaan dengan Salafiyah bertujuan untuk **membedakan diri** - sebagaimana telah berlalu - dan **bukan untuk tazkiyah** (memuji diri), sama seperti penamaan dengan Islam dan Sunnah.</p>
+    <p>Syaikh Abdul Aziz bin Baz ditanya: "Apakah benar Hanafiah adalah Salafiyun saja? Dan apa hakikat Salafiyah, apakah ia identik dengan kekerasan dan keterlaluan sebagaimana yang digembar-gemborkan sebagian orang?"</p>
+    <p>Jawab: "Perkataan ini **tidak benar**. Salafus Shalih adalah para Sahabat radhiyallahu 'anhum dan orang yang menempuh jalan mereka dari Tabi'in dan Atba' At-Tabi'in dari kalangan Hanafiyah, Malikiyah, Syafi'iyah, dan Hanabilah, dan selain mereka, dari kalangan yang berjalan di atas kebenaran dan berpegang pada Kitab yang Mulia dan Sunnah yang Suci, dalam bab Tauhid, bab Asma' wa Shifat, dan dalam semua urusan agama."</p>
+    <p>Syaikh Shalih Al-Fawzan ditanya: "Sebagian orang mengklaim bahwa Jamaah Salafiyah dianggap sebagai salah satu kelompok (jamaah) yang bekerja di lapangan, dan hukumnya sama dengan kelompok-kelompok lainnya. Apa bantahan Anda terhadap klaim ini?"</p>
+    <p>Jawab: "Kami telah sebutkan bahwa Jamaah Salafiyah adalah **Jamaah Ashil (Asli)**, yang berada di atas kebenaran, dan **wajib** berintima' (berafiliasi) kepadanya, beramal bersamanya, dan bernisbat kepadanya. Selainnya dari kelompok-kelompok, tidak boleh dianggap sebagai kelompok dakwah; karena mereka menyimpang..."</p>
+</article>
+
+<article id="m7-bebas-ghuluw" class="doc-section" hidden>
+    <h2>Misi 7: Salafiyah Bebas dari Ghuluw (Ekstremisme) dan Terorisme</h2>
+    <p>Salafiyah **berlepas diri** dari *ghuluw* dalam Jihad dan Takfir, dari *Tafjir* (peledakan), dan dari *naqdh al-aman* (pembatalan jaminan keamanan) dan *al-ahd* (perjanjian) dengan orang kafir, apalagi dengan kaum Muslimin. Dan dari menumpahkan darah orang kafir yang bukan *harbi* (memerangi), apalagi memerangi kaum Muslimin.</p>
+    <p>Penulis merujuk kepada pernyataan para ulama besar kontemporer seperti Syaikh Abdul Aziz bin Baz, Syaikh Muhammad Nashiruddin Al-Albani, dan Syaikh Muhammad bin Shalih Al-Utsaimin, yang semuanya membebaskan Salafiyun dari tuduhan-tuduhan ini.</p>
+</article>
+
+<!-- --------------------------------- Misi 8 --------------------------------- -->
+<article id="m8p1-takfir-hukum" class="doc-section" hidden>
+    <h2>Misi 8 - 1: Takfir dengan Hukum Bighairi Ma Anzalallah</h2>
+    <p>Di antara masalah yang dinisbatkan kepada manhaj Salafi, padahal manhaj Salafi berlepas diri darinya, adalah: **Pengkafiran dengan Hukum Bighairi Ma Anzalallah secara mutlak**, atau dalam apa yang disebut *Tasyri' 'Amm* (Legislasi Umum).</p>
+    <p>Al-Ajurri dan Ibnu Abdil Barr menyebutkan bahwa manhaj Salaf adalah **tidak mengkafirkan** dengan Hukum Bighairi Ma Anzalallah dan bahwa itu adalah **kufur kecil (asghar)**. Bahkan sebagian ulama menyebutkan bahwa **Khawarij** lah yang mengkafirkan dengan Hukum Bighairi Ma Anzalallah.</p>
+    <p>Ibnu Katsir menukil dari Ibn Abbas, Ibnu Mas'ud, Al-Hasan Al-Bashri, dan lainnya: *Kufur bighairi ma anzalallah* adalah **Kufur Duna Kufur** (Kufur Kecil).</p>
+    <p>Syaikh Al-Albani berpendapat bahwa meninggalkan Hukum Bighairi Ma Anzalallah adalah **kufur kecil** dan tidak membedakan antara *Tasyri' Amm* dan lainnya. Syaikh Ibnu Baz sependapat, bahkan menyatakan ini adalah **jalan orang-orang Mukmin**.</p>
+    <p class="hadith">Syaikh Abdul Aziz bin Baz: "Adapun yang dia lakukan tanpa menghalalkannya, maka kekufurannya adalah **kufur kecil**, dan kezalimannya adalah kezaliman kecil, demikian pula kefasikannya adalah kefasikan kecil."</p>
+</article>
+
+<article id="m8p2-tidak-taat-hakim" class="doc-section" hidden>
+    <h2>Misi 8 - 2: Tidak Mendengar dan Taat kepada Hakim Muslim yang Fasiq</h2>
+    <p>Nash-nash Nabawi bersifat **mutawatir** dalam memerintahkan untuk **mendengar dan taat** kepada Hakim Muslim, meskipun ia fasiq.</p>
+    <p>Nabi ﷺ bersabda: «إنكم سترون بعدي أثرة وأمورًا تنكرونها». قالوا: فما تأمرنا يا رسول الله؟ قال: «أدوا إليهم حقهم وسلوا الله حقكم» (Sesungguhnya kalian akan melihat setelahku atsarah (keegoisan) dan urusan-urusan yang kalian ingkari. Mereka berkata: Apa yang engkau perintahkan kepada kami wahai Rasulullah? Beliau bersabda: Tunaikan hak mereka, dan mintalah hak kalian kepada Allah).</p>
+    <p>Imam Ahmad dalam *Ushul As-Sunnah*: "**Mendengar dan Taat kepada para Imam dan Amirul Mukminin**, yang baik (barr) maupun yang fajir (fasiq), dan kepada orang yang memegang khilafah, yang telah disepakati orang-orang dan mereka ridha kepadanya, dan orang yang mengalahkan mereka dengan pedang sehingga menjadi khalifah."</p>
+</article>
+
+<article id="m8p3-tidak-berlepas-diri" class="doc-section" hidden>
+    <h2>Misi 8 - 3: Tidak Berlepas Diri dari Bid'ah dan Pelakunya</h2>
+    <p>Kitab-kitab akidah menetapkan **berlepas diri (Bara'ah) dari Ahlul Bid'ah**.</p>
+    <p>Fudhail bin Iyadh (dinukil oleh Al-Lalika'i): "Aku mendapati orang-orang yang terbaik, mereka semua adalah **Ashab As-Sunnah dan melarang dari Ashab Al-Bid'ah**."</p>
+    <p>Abu Utsman Ash-Shabuni: "Mereka membenci Ahlul Bid'ah yang mengada-adakan dalam agama apa yang bukan darinya, mereka **tidak mencintai mereka, tidak berteman dengan mereka, tidak mendengarkan ucapan mereka, dan tidak duduk bersama mereka**..."</p>
+    <p>Asas tahdzir (peringatan) dan permusuhan terhadap ahli bid'ah ini diambil dari sabda Nabi ﷺ kepada Aisyah: «إذا رأيتم الذين يتبعون ما تشابه منه فأولئك الذين سمى الله فاحذروهم» (Jika kalian melihat orang-orang yang mengikuti apa yang mutasyabih (samar) darinya, maka mereka itulah yang Allah sebutkan, maka **waspadailah mereka**).</p>
+</article>
+
+<article id="m8p4-organisasi-partai" class="doc-section" hidden>
+    <h2>Misi 8 - 4: Organisasi dan Partaisasi (Tanzhimat dan Tahazzubat)</h2>
+    <p>Ada perbedaan antara: **1) Pengorganisasian (Tanzhim) untuk menyelesaikan pekerjaan dakwah yang syar'i** (misalnya, mengatur pelajaran di lingkungan tertentu), yang ini terpuji dan masuk dalam keumuman firman Allah: ﴿وَتَعَاوَنُوا عَلَى الْبِرِّ وَالتَّقْوَى﴾.</p>
+    <p>... dengan **2) Pengorganisasian untuk Berpartai (Tahazzub)**, di mana mereka berwala' dan berbara' atas dasar partaisasi ini, dan pemimpinnya tidak boleh diselisihi. Sebagian bahkan terang-terangan mengambil bai'at.</p>
+    <h3>Ringkasan Perbedaan:</h3>
+    <ol>
+        <li>Tanzhim Bid'i menjadikan **wala' dan bara'** (loyalitas dan permusuhan) di atas dasar partai, sementara Tanzhim Dakwi tidak.</li>
+        <li>Anggota Tanzhim Dakwi dapat **meninggalkan** apa yang tidak mereka yakini secara syar'i, sementara Tanzhim Hizbi diperintahkan untuk mendengar dan taat kepada pimpinan, baik yakin atau tidak.</li>
+        <li>Tanzhim Hizbi menjadikan **ketua partai** sebagai waliyul amri praktis.</li>
+        <li>Tanzhim Hizbi banyak bersifat **rahasia** karena menentang waliyul amri, sementara Tanzhim Dakwi tidak.</li>
+        <li>Mendengar dan taat kepada ketua Hizb Bid'i **wajib**, sementara kepada pimpinan Tanzhim Dakwi **tidak wajib** dan mereka tetap saling mencintai.</li>
+    </ol>
+    <p>Tanzhim Hizbi adalah **haram** karena: Bid'ah dan kesesatan; Menjadikan wala' dan bara' di luar syariat; Menyelisihi perintah untuk *mulazamat jama'ah al-muslimin wa imamahum* (berpegang teguh pada jamaah Muslimin dan Imam mereka).</p>
+</article>
+
+<article id="m8p5-salafiyah-politik" class="doc-section" hidden>
+    <h2>Misi 8 - 5: Salafiyah dan Politik (Siyasah)</h2>
+    <p>Politik yang berarti mengikuti berita negara dengan tujuan *ishlah* (perbaikan), atau berusaha mencapai kursi kekuasaan (melalui pemilu, dsb), dilihat dari beberapa sisi:</p>
+    <ol>
+        <li>Sumber politik **tidak terverifikasi** untuk masyarakat umum.</li>
+        <li>Urusan politik negara **diserahkan kepada Ulil Amri** yang memiliki wewenang untuk mengambil keputusan.</li>
+        <li>**Masuk ke kancah perpolitikan dengan partai-partai untuk mencapai kursi kekuasaan melalui pemilu** adalah hal yang **tidak diakui** oleh Dakwah Salafiyah karena beberapa alasan:</li>
+        <ul>
+            <li>Jalan ishlah dalam Salafiyah dimulai dari **rakyat/masyarakat** (As-Shu'ub) dan bukan dari kepala/puncak (Al-Ru'us wal Qimam). Penguasa adalah gambaran masyarakat (﴿وَكَذَلِكَ نُوَلِّي بَعْضَ الظَّالِمِينَ بَعْضًا بِمَا كَانُوا يَكْسِبُونَ﴾).</li>
+            <li>Jalan diskusi dengan politisi untuk mencapai kekuasaan membutuhkan banyak **kompromi syar'i** demi hasil yang *zhanni* (dugaan). Tidak boleh melakukan hal-hal yang haram untuk kemaslahatan yang diragukan.</li>
+            <li>Cara ini menuntut **persaudaraan** dengan partai-partai sesat lainnya, seperti Rafidhah atau Liberal, demi kepentingan partai politik.</li>
+            <li>Cara ini menuntut **tidak mengingkari kemungkaran** yang biasa dilakukan masyarakat, bahkan syirik akbar, demi mendapatkan suara mayoritas.</li>
+        </ul>
+    </ol>
+    <p>Ibnu Taimiyyah berkata: "Siapa yang mengira bahwa perbaikan dapat dicapai dengan cara ini (politik), maka dia telah merusak agamanya dan menimbulkan fitnah bagi masyarakat umum."</p>
+    <p>Kesimpulan: Salafiyah **berlepas diri** dari partaisasi politik ini. Syaikh Al-Albani berkata: **"Termasuk siyasah (politik) adalah meninggalkan siyasah."**</p>
+</article>
+
+<!-- --------------------------------- Asas Kebersihan Dakwah Salafiyah --------------------------------- -->
+<article id="asas1-tauhid" class="doc-section" hidden>
+    <h2>Asas 1: Tauhid</h2>
+    <p>Keutamaan terpenting dari Dakwah Salafiyah adalah **Dakwah kepada Tauhid**, yaitu **mengesakan Allah dalam ibadah** (seperti menyembelih, nadzar, doa). Inilah hal terpenting yang diutus para Rasul karenanya: ﴿وَلَقَدْ بَعَثْنَا فِي كُلِّ أُمَّةٍ رَسُولًا أَنِ اعْبُدُوا اللَّهَ وَاجْتَنِبُوا الطَّاغُوتَ﴾.</p>
+    <p>Syaikh Abdul Aziz bin Baz: "Tauhid maknanya adalah Tauhidullah (mengesakan Allah), yaitu meyakini bahwa Dia adalah Esa, tidak ada sekutu bagi-Nya... Di antara dalilnya adalah sabda Nabi ﷺ kepada Muadz ketika mengutusnya ke Yaman: **"Serulah mereka agar mereka mentauhidkan Allah."**</p>
+</article>
+
+<article id="asas2-tahdzir-bidah" class="doc-section" hidden>
+    <h2>Asas 2: Peringatan dari Bid'ah</h2>
+    <p>Di antara keutamaan terpenting dari Dakwah Salafiyah adalah **memurnikan agama dari semua yang masuk ke dalamnya yang bukan darinya**, yaitu Bid'ah.</p>
+    <p>Imam Ahmad dalam *Ushul As-Sunnah*: "Asas-asas Sunnah menurut kami adalah **berpegang teguh pada apa yang dahulu ada pada Sahabat Rasulullah ﷺ dan meneladani mereka serta meninggalkan Bid'ah**, dan **setiap bid'ah adalah sesat**."</p>
+    <p>Fatwa Lajnah Daimah (dipimpin Syaikh Ibnu Baz): Bid'ah dalam ibadah **tidak terbagi menjadi lima hukum** (wajib, sunnah, mubah, makruh, haram) sebagaimana yang diklaim sebagian orang; karena keumuman hadits: «كل بدعة ضلالة» (**Setiap bid'ah adalah sesat**).</p>
+</article>
+
+<article id="asas3-permusuhan-kafir" class="doc-section" hidden>
+    <h2>Asas 3: Permusuhan (Adawiyah) Terhadap Kuffar</h2>
+    <p>Di antara hal yang dipuji oleh Allah kepada Ibrahim - 'alaihis salam - dan kita diperintahkan untuk meneladaninya adalah **memusuhi orang kafir karena kekufuran mereka**:</p>
+    <p>﴿قَدْ كَانَتْ لَكُمْ أُسْوَةٌ حَسَنَةٌ فِي إِبْرَاهِيمَ وَالَّذِينَ مَعَهُ إِذْ قَالُوا لِقَوْمِهِمْ إِنَّا بُرَاءُ مِنْكُمْ وَمِمَّا تَعْبُدُونَ مِنْ دُونِ اللَّهِ كَفَرْنَا بِكُمْ وَبَدَا بَيْنَنَا وَبَيْنَكُمُ الْعَدَاوَةُ وَالْبَغْضَاءُ أَبَدًا حَتَّى تُؤْمِنُوا بِاللَّهِ وَحْدَهُ ﴾</p>
+    <p>Syaikh Abdul Aziz bin Baz: "Wala' dan Bara' maknanya adalah **mencintai orang Mukmin dan berwala' kepada mereka, serta membenci orang kafir dan memusuhi mereka**... Namun, makna membenci dan memusuhi mereka **bukanlah** bahwa engkau menzalimi mereka atau melampaui batas terhadap mereka jika mereka bukan kaum *harbiyyin* (yang memerangi), tetapi maknanya adalah engkau membenci mereka dalam hatimu dan memusuhi mereka dengan hatimu, dan mereka tidak menjadi sahabat bagimu."</p>
+    <p>Syaikh Muhammad bin Shalih Al-Utsaimin membedakan antara *Harbiyyin*, *Ahludz Dhimmah*, *Mu'ahidin* (orang-orang perjanjian), dan *Musta'manun* (orang-orang jaminan keamanan). **Tidak boleh** melanggar jaminan keamanan (*Aman*).</p>
+</article>
+
+<article id="asas4-takfir" class="doc-section" hidden>
+    <h2>Asas 4: Takfir</h2>
+    <p>Dakwah Salafiyah adalah **dakwah pertengahan** (*i'tidal*) dalam masalah takfir (pengkafiran) sesuai kehendak Allah, tanpa *ifrath* (berlebihan) dan *tafrith* (meremehkan). **Takfir adalah hak Allah**, maka tidak boleh mengkafirkan kecuali orang yang dikafirkan oleh Allah.</p>
+    <p>Ibnu Taimiyyah: "Kekafiran adalah hukum syar'i, maka seseorang **tidak boleh menghukum dengan hal yang serupa**... Demikian pula takfir adalah hak Allah Ta'ala, maka **tidak boleh mengkafirkan kecuali orang yang dikafirkan oleh Allah dan Rasul-Nya**."</p>
+    <p>Tidak setiap orang yang jatuh dalam kekafiran menjadi kafir, melainkan tidak dikafirkan kecuali setelah **terpenuhi syarat-syarat dan tidak adanya penghalang** (*intifa'ul mawani'*).</p>
+    <p>Syaikh Muhammad bin Shalih Al-Utsaimin: "Asal pada seorang Muslim yang secara lahir adil adalah **tetapnya keislaman dan keadilannya**, hingga benar-benar hilang darinya berdasarkan dalil syar'i... Dan di antara syarat terpenting: seseorang **mengetahui** bahwa penyelisihan yang dilakukannya menyebabkan dia menjadi kafir atau fasiq."</p>
+</article>
+
+<article id="asas5-jihad" class="doc-section" hidden>
+    <h2>Asas 5: Jihad</h2>
+    <p>Dakwah Salafiyah meyakini Jihad sebagai sarana yang agung untuk meninggikan kalimat Allah, dan itu adalah **disyariatkan sebagai sarana bukan tujuan**. Jika melakukannya tidak bermanfaat, seperti dalam kondisi lemah, maka ia **tidak disyariatkan**, seperti keadaan Rasulullah ﷺ di Mekah.</p>
+    <p>Syaikh Muhammad bin Shalih Al-Utsaimin: "Maka tidak ada keraguan padanya dari syarat, yaitu: harus ada pada kaum Muslimin **kemampuan dan kekuatan** yang mereka mampu untuk berperang dengannya. Jika mereka tidak memiliki kemampuan, maka menjerumuskan diri dalam peperangan adalah **menjatuhkan diri ke dalam kebinasaan**."</p>
+</article>
+
+<article id="asas6-peledakan" class="doc-section" hidden>
+    <h2>Asas 6: Peledakan (Tafjirat) di Negeri Kuffar</h2>
+    <p>Para ulama Dakwah Salafiyah secara tegas **mengingkari** peledakan-peledakan ini yang dilakukan oleh orang-orang yang bodoh dan bersemangat, yang didukung oleh para penyeru fitnah.</p>
+    <p>Syaikh Muhammad bin Shalih Al-Utsaimin: "Orang-orang yang melemparkan peledak di tengah-tengah manusia, dengan sangkaan bahwa ini adalah bagian dari jihad di jalan Allah, hakikatnya mereka **telah berbuat buruk terhadap Islam**... Ini adalah terorisme (irhab), **demi Allah, ia adalah kekurangan bagi kaum Muslimin**."</p>
+    <p>Pernyataan Haiah Kibar Ulama (Dewan Ulama Senior) Arab Saudi (1417 H) mengenai insiden peledakan di Khobar: "Tafjir (peledakan) ini adalah **tindakan kriminal dengan ijma' kaum Muslimin**... Islam berlepas diri dari perbuatan ini, dan setiap Muslim yang beriman kepada Allah dan Hari Akhir berlepas diri darinya."</p>
+</article>
+
+<article id="asas7-taat-ulil-amr" class="doc-section" hidden>
+    <h2>Asas 7: Mendengar dan Taat kepada Ulil Amri Muslimin</h2>
+    <p>Termasuk asas agama adalah penetapan akidah **mendengar dan taat kepada penguasa Muslim**, meskipun mereka fasiq, sebagaimana ditetapkan oleh kitab-kitab akidah Ahlus Sunnah.</p>
+    <p>Syaikh Abdul Aziz bin Baz: "Tidak boleh keluar (melakukan pemberontakan) terhadap para Imam (penguasa) meskipun mereka berbuat maksiat, bahkan wajib mendengar dan taat dalam hal yang ma'ruf disertai *munashahah* (nasihat)... **Kecuali jika didapati dari mereka kufur yang nyata** (kufrun bawwah) yang ada bukti dari Allah, **dan** mereka (yang keluar) mampu memberikan manfaat kepada kaum Muslimin dan menghilangkan kezaliman serta mendirikan negara yang shalih. Adapun jika mereka tidak mampu, maka **tidak boleh bagi mereka keluar** meskipun mereka melihat kufur yang nyata."</p>
+</article>
+
+<article id="asas8-demonstrasi" class="doc-section" hidden>
+    <h2>Asas 8: Demonstrasi (Muzhaharat)</h2>
+    <p>Para ulama kontemporer **mengingkari** demonstrasi ini dan menjelaskan beberapa alasan syar'i yang meyakinkan untuk **pengharamannya**.</p>
+    <p>Syaikh Al-Albani: "Keluarnya untuk *tazhahurat* atau *muzhaharat*... ini adalah sistem yang sejalan dengan hukum yang mengatakan: 'Hukum milik rakyat, dari rakyat, dan untuk rakyat'. Sedangkan ketika masyarakat sudah Islam, mereka tidak membutuhkan demonstrasi... **Kami tidak memandang sarana ini termasuk dalam kaidah bahwa hukum asal segala sesuatu adalah mubah**; karena ia adalah tradisi orang-orang Barat."</p>
+    <p>Syaikh Muhammad bin Shalih Al-Utsaimin: "Sesungguhnya demonstrasi adalah **perkara yang baru** (*hadits*), tidak dikenal di masa Nabi ﷺ, Khulafa' Rasyidin, maupun Sahabat... Kemudian, di dalamnya terdapat **kekacauan dan keributan** yang menjadikannya perkara terlarang; karena terjadi kerusakan, percampuran antara laki-laki dan wanita, dsb... Oleh karena itu, kami berpendapat bahwa demonstrasi adalah **perkara yang munkar**."</p>
+</article>
+
+<article id="asas9-macam-khilaf" class="doc-section" hidden>
+    <h2>Asas 9: Jenis Masalah yang Diperselisihkan</h2>
+    <p>Masalah perselisihan (*khilaf*) **tidak berada pada satu tingkatan**. Ada masalah yang boleh diperselisihkan (*yusagh al-khilaf*), dan ada yang **tidak boleh** (*la yusagh*). Tidak benar memperlakukan keduanya sama.</p>
+    <p>Syaikh Ibnu Taimiyyah: "Perkataan mereka: 'Masalah perselisihan tidak ada pengingkaran di dalamnya' adalah **tidak benar**... Adapun jika tidak ada Sunnah dan Ijma' dalam masalah itu dan masih ada ruang untuk ijtihad, maka **tidak boleh mengingkari** orang yang mengamalkannya baik dia mujtahid maupun muqallid."</p>
+    <p>Syaikh Muhammad bin Shalih Al-Utsaimin: "Di antara asas Ahlus Sunnah wal Jama'ah dalam masalah *khilafiyah* adalah bahwa apa yang diperselisihkan berasal dari **ijtihad** dan termasuk yang **dibolehkan ijtihad di dalamnya**, maka sebagian mereka memaafkan sebagian yang lain dalam perselisihan itu, dan tidak ada kedengkian, permusuhan, atau kebencian. Bahkan mereka meyakini bahwa mereka bersaudara meskipun terjadi perselisihan ini."</p>
+    <p>Adapun **yang tidak boleh diperselisihkan** adalah yang menyelisihi apa yang ada pada Sahabat dan Tabi'in, seperti masalah akidah yang disesatkan orang-orang di dalamnya, dan perselisihan itu tidak terjadi kecuali setelah kurun-kurun yang utama. Siapa yang menyelisihi apa yang ada pada Sahabat dan Tabi'in, maka dia harus dibantah dan perselisihannya tidak diterima.</p>
+</article>
+
+<article id="asas10-akhlak" class="doc-section" hidden>
+    <h2>Asas 10: Akhlak</h2>
+    <p>Dakwah Salafiyah sangat memperhatikan **perilaku hamba terhadap sesamanya**, sebagaimana mereka memperhatikan perilaku hamba terhadap Rabb mereka. Mereka sangat memperhatikan **akhlak yang baik**.</p>
+    <p>Imam Abu Bakar Al-Isma'ili: "Mereka berpendapat untuk **menjauhi Bid'ah dan dosa, kesombongan, kebanggaan, ujub, pengkhianatan, penipuan, adu domba, dan mereka berpendapat menahan diri dari menyakiti dan meninggalkan ghibah**, kecuali terhadap orang yang menampakkan bid'ah dan menyeru kepadanya, maka berbicara tentangnya bukanlah ghibah menurut mereka."</p>
+    <p>Ibnu Taimiyyah dalam *Al-Aqidah Al-Wasithiyah*: "Mereka juga meyakini nasihat untuk umat... dan meyakini makna sabda Nabi ﷺ: **'Orang mukmin bagi orang mukmin seperti bangunan, yang satu menguatkan yang lain.'** ... Mereka menyeru kepada **akhlak yang mulia** dan perbuatan yang baik. Mereka meyakini makna sabda Nabi ﷺ: **'Orang mukmin yang paling sempurna imannya adalah yang paling baik akhlaknya.'**"</p>
+    <p>Ibnu Al-Qayyim: **"Agama seluruhnya adalah akhlak, maka siapa yang lebih unggul darimu dalam akhlak, dia lebih unggul darimu dalam agama."**</p>
+</article>
+
+<article id="asas11-membantah-penyelisih" class="doc-section" hidden>
+    <h2>Asas 11: Bantahan (Radd) Terhadap yang Menyelisihi</h2>
+    <p>Oleh karena kemaslahatan agama didahulukan di atas kemaslahatan siapa pun, maka **membantah kesalahan orang yang salah dalam agama adalah wajib**, agar kesalahannya tidak dianggap sebagai bagian dari agama. Ini adalah bagian dari Amar Ma'ruf Nahi Munkar.</p>
+    <p>Asim Al-Ahwal berkata: "Aku duduk di majelis Qatadah, lalu beliau menyebut Amru bin Ubaid dan mencelanya. Aku berkata: Wahai Abul Khaththab, tidakkah aku lihat ulama saling mencela sebagian dengan sebagian yang lain?! Beliau berkata: **Wahai Ahwal, tidakkah engkau tahu bahwa jika seseorang membuat bid'ah, maka wajib disebutkan agar diwaspadai?**"</p>
+    <p>Syaikh Abdul Aziz bin Baz: "Jika Ahlul Haq diam dari menjelaskan kebenaran, niscaya orang-orang yang salah akan terus dalam kesalahan mereka, dan yang lain akan mengikuti mereka dalam hal itu, dan orang-orang yang diam akan menanggung dosa menyembunyikan kebenaran..."</p>
+</article>
+
+<article id="khatimah" class="doc-section" hidden>
+    <h2>Khatimah (Penutup)</h2>
+    <p>Pada akhirnya, sesungguhnya musuh-musuh dakwah kebenaran memberikan **gelar-gelar buruk** kepada Ahlul Haq untuk menjauhkan manusia dari mereka. Dahulu mereka menjuluki Ahlus Sunnah sebagai *Musyabbihah* (penyerupa Allah) dan *Mujassimah* (penganut jisim/tubuh).</p>
+    <p>Imam Abu Hatim: "**Ciri-ciri Zindiq** adalah penamaan mereka terhadap Ahlus Sunnah sebagai *Hasysyawiyah*, mereka ingin membatalkan atsar. Dan **ciri-ciri Jahmiyyah** adalah penamaan mereka terhadap Ahlus Sunnah sebagai *Musyabbihah*."</p>
+    <p>Cara membantah Ahlul Bid'ah dalam julukan mereka adalah dengan **meminta rincian (istifshal)** dan membuka keumuman yang mereka gunakan untuk mencampuradukkan kebenaran dengan kebatilan. Ketika kebenaran terungkap, celaan mereka akan berubah menjadi pujian.</p>
+    <p>Di antara julukan buruk yang digunakan oleh Ahlul Bid'ah terhadap Ahlus Sunnah adalah: **"Al-Wahhabiyyah"**, yang bertujuan untuk mencela Dakwah Tauhid yang didirikan oleh Imam Muhammad bin Abdul Wahhab. Dan dalam tahun-tahun ini, sejarah mengulang dirinya, musuh-musuh Dakwah Salafiyah mengarahkan panah dan celaan mereka dengan julukan lain seperti **"Al-Jamiyyah"**. **Maka jadilah orang yang cerdas (fathin).**</p>
+    <p>أسأل الله أن يحيينا على السلفية حتى نلقاه راضيا عنا.<br>والسلام عليكم ورحمة الله وبركاته</p>
+</article>
+
+<!-- Script untuk mengaktifkan navigasi TOC -->
+<script>
+// Fungsi untuk membersihkan hash dan menampilkan konten
+const toc = document.getElementById('toc');
+const overlay = document.getElementById('overlay');
+const toggleBtn = document.getElementById('toggleToc');
+// Mengambil semua section, termasuk title-page
+const docSections = document.querySelectorAll('.doc-section'); 
+const tocLinks = document.querySelectorAll('.toc a');
+
+function toggleToc(open) {
+  toc.classList.toggle('open', open);
+  overlay.classList.toggle('show', open);
+  document.body.style.overflow = window.innerWidth <= 768 && open ? 'hidden' : '';
+}
+
+toggleBtn.addEventListener('click', () => toggleToc(!toc.classList.contains('open')));
+overlay.addEventListener('click', () => toggleToc(false));
+
+// Fungsi untuk menampilkan bagian konten dan menandai TOC aktif
+function showSection(id) {
+    // Default ID adalah 'title-page'
+    let targetId = id || 'title-page'; 
+    let targetSection = document.getElementById(targetId);
+
+    docSections.forEach(sec => sec.hidden = true);
+    if (targetSection) {
+        targetSection.hidden = false;
+    }
+
+    tocLinks.forEach(x => x.classList.remove('active'));
+    
+    // Temukan dan aktifkan link TOC (hanya jika bukan title-page)
+    if(targetId !== 'title-page') {
+        const activeLink = document.querySelector(`.toc a[data-target="${targetId}"]`);
+        if (activeLink) {
+            activeLink.classList.add('active');
+            // Pastikan detail (summary) induk terbuka
+            let details = activeLink.closest('details');
+            if (details) {
+                details.open = true;
+            }
+        }
+    }
+}
+
+// Event listener untuk klik link TOC
+tocLinks.forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const id = a.dataset.target;
+    showSection(id);
+    toggleToc(false);
+    
+    // Perbarui URL hash tanpa memicu scroll default browser
+    try { 
+        if (id && id !== 'title-page') {
+            history.replaceState(null, '', '#' + id);
+        } else {
+            // Hapus hash jika kembali ke halaman judul
+            history.replaceState(null, '', window.location.pathname + window.location.search);
+        }
+    } catch (e) {
+        console.warn("Gagal memperbarui URL hash karena pembatasan lingkungan. Navigasi konten tetap berfungsi.");
+    }
+    
+    // Gulir ke atas main content
+    window.scrollTo({top: 0, behavior:'smooth'});
+  });
+});
+
+// Inisialisasi pada saat DOMContentLoaded
+window.addEventListener('DOMContentLoaded', () => {
+    // Ambil ID dari hash URL
+    const id = location.hash.slice(1);
+    showSection(id);
+
+    // Jika tidak ada hash atau hash tidak valid, default ke title-page.
+    // Jika ada hash yang valid, showSection sudah mengurus penandaan aktif.
+    if (id && document.getElementById(id) && id !== 'title-page') {
+         // Pastikan link Muqaddimah aktif jika Muqaddimah yang ditampilkan
+         const activeLink = document.querySelector(`.toc a[data-target="${id}"]`);
+         if(activeLink) activeLink.classList.add('active');
+    }
+});
+
+// Tangani perubahan hash dari navigasi browser
+window.addEventListener('hashchange', () => {
+    const id = location.hash.slice(1);
+    showSection(id);
+});
+
+// Pastikan TOC tertutup di desktop
+if (window.innerWidth > 768) {
+    toggleToc(false);
+}
+</script>
+</body>
+</html>
