@@ -97,7 +97,7 @@
     <header>
         <h1>Kalkulator Zakat Penghasilan</h1>
         <p class="mt-2 text-sm opacity-90">
-            Nisab dihitung berdasarkan 85 gram emas. Hitung kewajiban Anda.
+            Nishab dihitung berdasarkan 85 gram emas. Hitung kewajiban Anda jika telah mencapai nishab dan haul.
         </p>
     </header>
 
@@ -144,7 +144,7 @@
                 <!-- Tambahkan kolom untuk Penghasilan Lain-lain (Opsional) -->
                 <div>
                     <label for="penghasilanLain" class="block text-lg font-semibold text-gray-700 mb-2">
-                        Penghasilan Lain-lain (Bonus, Komisi, dll)
+                        Penghasilan Lain-lain Bulanan (Bonus, Komisi, dll)
                     </label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500 font-medium">Rp</span>
@@ -152,6 +152,22 @@
                             class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-gray-800"
                             placeholder="Cth: 2.000.000" min="0" oninput="calculateZakat()">
                     </div>
+                </div>
+
+                <!-- NEW: Tambahkan kolom untuk Penghasilan Tahunan Lain-lain (Opsional) -->
+                <div>
+                    <label for="penghasilanTahunanLain" class="block text-lg font-semibold text-gray-700 mb-2">
+                        Penghasilan Tahunan Lain-lain (THR, Bonus Tahunan, dll.)
+                    </label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500 font-medium">Rp</span>
+                        <input type="number" id="penghasilanTahunanLain" value="0"
+                            class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-gray-800"
+                            placeholder="Cth: 15.000.000" min="0" oninput="calculateZakat()">
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">
+                        (Misalnya: THR, bonus tahunan, insentif yang hanya didapat sekali setahun)
+                    </p>
                 </div>
 
             </div>
@@ -165,7 +181,7 @@
                 <div class="bg-white p-6 sm:p-8 rounded-xl card space-y-4">
                     
                     <div class="flex justify-between items-center border-b pb-3">
-                        <span class="text-gray-600 font-medium">Batas Nisab Tahunan (85g emas)</span>
+                        <span class="text-gray-600 font-medium">Batas Nishab Tahunan (85g emas)</span>
                         <span id="nisabTahunan" class="text-lg font-semibold text-gray-800">Rp 0</span>
                     </div>
                     
@@ -196,7 +212,7 @@
                             
                             <!-- Text telah diubah sesuai permintaan -->
                             <p id="zakatBulananInfo" class="mt-2">
-                                (Jika telah mencapai haul setahun)
+                                (Jika telah mencapai haul setahun: <span id="zakatBulanan" class="font-bold">Rp 0</span>/bulan)
                             </p>
                         </div>
                     </div>
@@ -266,6 +282,8 @@
             const hargaEmas = parseFloat(document.getElementById('hargaEmas').value) || 0;
             const penghasilanBulanan = parseFloat(document.getElementById('penghasilanBulanan').value) || 0;
             const penghasilanLain = parseFloat(document.getElementById('penghasilanLain').value) || 0;
+            // NEW: Ambil nilai penghasilan tahunan lain-lain
+            const penghasilanTahunanLain = parseFloat(document.getElementById('penghasilanTahunanLain').value) || 0;
             
             // Elemen output
             const nisabTahunanEl = document.getElementById('nisabTahunan');
@@ -281,11 +299,11 @@
             
             // 1. Hitung Nisab
             const nisabTahunanValue = hargaEmas * NISAB_GRAM;
-            // const nisabBulananValue = nisabTahunanValue / 12; // Nisab Bulanan tidak digunakan dalam penentuan kewajiban, hanya Nisab Tahunan
 
             // 2. Hitung Total Penghasilan
             const totalPenghasilanBulananValue = penghasilanBulanan + penghasilanLain;
-            const totalPenghasilanTahunanValue = totalPenghasilanBulananValue * 12;
+            // UPDATE: Total Tahunan = (Total Bulanan * 12) + Penghasilan Tahunan Lain-lain (sekali setahun)
+            const totalPenghasilanTahunanValue = (totalPenghasilanBulananValue * 12) + penghasilanTahunanLain;
 
             // 3. Tentukan Status Kewajiban Zakat
             let isWajibZakat = false;
@@ -295,9 +313,11 @@
             if (totalPenghasilanTahunanValue >= nisabTahunanValue && totalPenghasilanBulananValue > 0) {
                 // Wajib Zakat (jika total tahunan melebihi nisab tahunan DAN ada penghasilan > 0)
                 isWajibZakat = true;
-                // Zakat dikeluarkan dari total penghasilan kotor bulanan (pendapat ulama kontemporer)
+                // Zakat Tahunan: 2.5% dari TOTAL Penghasilan Tahunan (termasuk bonus tahunan)
+                zakatTahunanValue = totalPenghasilanTahunanValue * ZAKAT_PERCENTAGE; 
+                
+                // Zakat Bulanan: 2.5% dari total bulanan rutin (untuk memudahkan cicilan/pembayaran rutin)
                 zakatBulananValue = totalPenghasilanBulananValue * ZAKAT_PERCENTAGE; 
-                zakatTahunanValue = totalPenghasilanTahunanValue * ZAKAT_PERCENTAGE;
             }
 
             // --- Update Tampilan (DOM) ---
@@ -318,7 +338,7 @@
                 zakatWajibBox.style.display = 'block';
 
             } else {
-                statusTextEl.textContent = "Penghasilan Anda BELUM mencapai Nisab. Tetap semangat!";
+                statusTextEl.textContent = "Penghasilan Anda BELUM mencapai Nishab. Tetap semangat!";
                 statusTextEl.className = 'text-xl font-bold text-center text-red-500';
                 
                 zakatWajibBox.style.display = 'none';
