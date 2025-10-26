@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Zakat Penghasilan</title>
+    <!-- Memuat Tailwind CSS untuk styling modern dan responsif -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Variabel warna dari file jadwal_kajian_filter_fix.html */
+        :root{
+            --green-1:#0f5132; /* Hijau Tua */
+            --green-2:#198754; /* Hijau Sedang */
+            --green-3:#d1e7dd; /* Hijau Muda */
+            --green-4:#e9f7f1; /* Hijau Sangat Muda (Background) */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--green-4); /* Menggunakan warna background dari file yang diunggah */
+            color: #123;
+            margin: 0; /* Pastikan margin 0 */
+        }
+        /* Header style disesuaikan dari file yang diunggah */
+        header{
+            background:linear-gradient(135deg,var(--green-2),var(--green-1));
+            color:#fff;
+            padding:28px 16px;
+            text-align:center
+        }
+        header h1{
+            margin:0 0 6px;
+            font-size:clamp(24px,5vw,32px); /* Dibuat lebih besar */
+            font-weight: 700;
+        }
+
+        .card {
+            box-shadow: 0 4px 8px rgba(16,94,60,.1); /* Shadow lebih lembut, sesuai tema */
+            border: 1px solid var(--green-3); /* Border hijau muda */
+        }
+        .result-box {
+            transition: all 0.3s ease-in-out;
+            transform-origin: top;
+        }
+        .nisab-info {
+            background-color: var(--green-3); 
+            border-left: 4px solid var(--green-2); /* Border hijau sedang */
+        }
+        /* Style untuk pesan kustom (pengganti alert) */
+        #messageBox {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 8px;
+            padding: 16px;
+            position: fixed;
+            z-index: 999;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.5s, visibility 0.5s;
+        }
+        #messageBox.show {
+            visibility: visible;
+            opacity: 1;
+        }
+        main {
+             max-width: 1100px;
+             margin: 20px auto;
+             padding: 16px;
+             display: flex;
+             justify-content: center;
+        }
+        .donation-box {
+            background-color: #ffffff;
+            border: 2px solid var(--green-2);
+        }
+        /* Styling untuk menampilkan Zakat Bulanan (sebagai info tambahan) di bawah Tahunan */
+        #zakatBulananInfo {
+            font-size: 0.85rem; /* Lebih kecil dari utama */
+            color: #047857; /* Hijau gelap */
+            font-weight: 500;
+            margin-top: 5px;
+            text-align: right;
+            border-top: 1px dashed rgba(4, 120, 87, 0.3); /* Garis putus-putus */
+            padding-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- HEADER BARU (Diambil dari style file yang diunggah) -->
+    <header>
+        <h1>Kalkulator Zakat Penghasilan</h1>
+        <p class="mt-2 text-sm opacity-90">
+            Nisab dihitung berdasarkan 85 gram emas. Hitung kewajiban Anda.
+        </p>
+    </header>
+
+    <main>
+        <div class="w-full max-w-lg">
+            
+            <!-- Kartu Utama Input -->
+            <div class="card bg-white p-6 sm:p-8 rounded-xl space-y-6">
+
+                <!-- NISAB Harga Emas -->
+                <div class="nisab-info p-4 rounded-xl">
+                    <p class="font-semibold text-lg text-gray-800 mb-2">Harga Emas (per Gram)</p>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500 font-medium">Rp</span>
+                        <!-- Nilai harga emas diisi otomatis sesuai permintaan terbaru -->
+                        <input type="number" id="hargaEmas" value="2350000"
+                            class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 text-gray-800"
+                            placeholder="Masukkan harga emas per gram" min="100000" oninput="calculateZakat()">
+                    </div>
+                    <p class="text-xs text-gray-700 mt-2 opacity-80">
+                        Nisab (batas wajib zakat) adalah senilai 85 gram emas.
+                    </p>
+                    <p class="text-xs text-gray-700 mt-1 italic font-medium">
+                        (Harga di atas diambil dari Antam per 26 Oktober 2025. Harap cek kembali untuk validitas.)
+                    </p>
+                </div>
+                
+                <!-- Penghasilan Bulanan -->
+                <div>
+                    <label for="penghasilanBulanan" class="block text-lg font-semibold text-gray-700 mb-2">
+                        Penghasilan Bersih Bulanan
+                    </label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500 font-medium">Rp</span>
+                        <input type="number" id="penghasilanBulanan" value="0"
+                            class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-gray-800"
+                            placeholder="Cth: 10.000.000" min="0" oninput="calculateZakat()">
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">
+                        (Setelah dipotong hutang/cicilan pokok yang jatuh tempo bulan ini)
+                    </p>
+                </div>
+
+                <!-- Tambahkan kolom untuk Penghasilan Lain-lain (Opsional) -->
+                <div>
+                    <label for="penghasilanLain" class="block text-lg font-semibold text-gray-700 mb-2">
+                        Penghasilan Lain-lain (Bonus, Komisi, dll)
+                    </label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500 font-medium">Rp</span>
+                        <input type="number" id="penghasilanLain" value="0"
+                            class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-gray-800"
+                            placeholder="Cth: 2.000.000" min="0" oninput="calculateZakat()">
+                    </div>
+                </div>
+
+            </div>
+            
+            <!-- Area Hasil Zakat -->
+            <div id="resultContainer" class="mt-8 result-box">
+                <h2 class="text-2xl font-bold text-center mb-4 text-gray-700">
+                    Hasil Perhitungan
+                </h2>
+
+                <div class="bg-white p-6 sm:p-8 rounded-xl card space-y-4">
+                    
+                    <div class="flex justify-between items-center border-b pb-3">
+                        <span class="text-gray-600 font-medium">Batas Nisab Tahunan (85g emas)</span>
+                        <span id="nisabTahunan" class="text-lg font-semibold text-gray-800">Rp 0</span>
+                    </div>
+                    
+                    <div class="flex justify-between items-center border-b pb-3">
+                        <span class="text-gray-600 font-medium">Total Penghasilan Bulanan</span>
+                        <span id="totalPenghasilanBulanan" class="text-lg font-semibold text-gray-800">Rp 0</span>
+                    </div>
+
+                    <div class="flex justify-between items-center border-b pb-3">
+                        <span class="text-gray-600 font-medium">Total Penghasilan Tahunan</span>
+                        <span id="totalPenghasilanTahunan" class="text-lg font-semibold text-gray-800">Rp 0</span>
+                    </div>
+
+                    <div class="pt-4 space-y-3" id="zakatStatus">
+                        <!-- Status dan kewajiban zakat akan diisi oleh JavaScript -->
+                        <p class="text-xl font-bold text-center text-red-500" id="statusText">
+                            Status Zakat Anda akan tampil di sini.
+                        </p>
+                        
+                        <div class="bg-emerald-50 p-4 rounded-lg" id="zakatWajibBox" style="display: none;">
+                            <p class="text-base text-emerald-800 font-medium mb-2">Kewajiban Zakat (2.5%):</p>
+                            
+                            <!-- HANYA TAMPILKAN ZAKAT TAHUNAN -->
+                            <div class="flex justify-between items-center mt-2">
+                                <span class="text-emerald-800 font-bold text-xl">Zakat Tahunan:</span>
+                                <span id="zakatTahunan" class="text-emerald-800 font-bold text-2xl">Rp 0</span>
+                            </div>
+                            
+                            <!-- Text telah diubah sesuai permintaan -->
+                            <p id="zakatBulananInfo" class="mt-2">
+                                (Jika telah mencapai haul setahun)
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            
+            <!-- Area Saluran Zakat -->
+            <div class="mt-8 p-6 rounded-xl donation-box">
+                <h3 class="text-xl font-bold text-center text-gray-800 mb-4">
+                    Salurkan Zakat Mal Anda melalui ZIS MU'ADZ BIN JABAL:
+                </h3>
+                <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <p class="text-sm font-semibold text-center text-gray-800 mb-1">
+                        Virtual Account Bank Syariah Indonesia a.n. LAZ SIP-MBJ ZAKAT
+                    </p>
+                    <p class="text-lg font-mono text-gray-900 mb-3 p-1 bg-white rounded-md border border-dashed border-gray-300 flex justify-center items-center overflow-x-auto">
+                        💳 8345-7502-0824-1006
+                    </p>
+                    <a href="https://wa.me/6285283222006" target="_blank" 
+                       class="w-full flex items-center justify-center bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-lg transition duration-200 shadow-md">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.5 3.42 1.46 4.9.09.15.11.33.05.48l-.94 3.43c-.13.46.33.88.79.75l3.35-.92c.15-.04.31-.02.46.06 1.47.88 3.16 1.34 4.98 1.34 5.46 0 9.91-4.45 9.91-9.91s-4.45-9.91-9.91-9.91zm4.72 13.79c-.2-.09-.99-.49-1.15-.55-.16-.07-.28-.1-.41.16-.13.25-.5.55-.61.66-.11.11-.23.12-.42.03-.99-.48-1.95-1.2-2.73-2.31-.76-1.07-1.01-2.29-.24-3.56.07-.12.35-.38.56-.6.21-.21.28-.38.41-.63.13-.25.07-.47-.02-.66-.09-.17-.41-.4-.56-.55-.15-.15-.33-.3-.49-.36-.16-.06-.3-.02-.45-.02h-.39c-.15 0-.41.06-.61.31-.2.25-.76.75-.76 1.83 0 1.08.78 2.11.89 2.27.11.16 1.55 2.5 3.76 3.45 2.15.93 2.58.74 3.06.69.51-.05 1.15-.47 1.31-.91.16-.44.16-.81.11-.91-.05-.1-.17-.16-.35-.25z"/>
+                        </svg>
+                        Konfirmasi Zakat (WA: 0852-8322-2006)
+                    </a>
+                </div>
+            </div>
+
+            <p class="text-xs text-center text-gray-500 mt-6">
+                Disclaimer: Perhitungan ini didasarkan pada metode standar Zakat Mal (2.5%) setelah melewati Nisab (senilai 85g emas). Konsultasikan dengan Amil Zakat terpercaya untuk kepastian.
+            </p>
+        </div>
+    </main>
+    
+    <!-- Kotak Pesan Kustom (Pengganti alert) -->
+    <div id="messageBox"></div>
+
+    <script>
+        // Variabel Nisab tetap 85 gram emas
+        const NISAB_GRAM = 85;
+        const ZAKAT_PERCENTAGE = 0.025;
+
+        // Fungsi untuk format angka ke Rupiah
+        const formatRupiah = (number) => {
+            if (isNaN(number) || number === null) return 'Rp 0';
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0
+            }).format(number);
+        };
+
+        // Fungsi untuk menampilkan pesan kustom
+        const showMessage = (message, duration = 2000) => {
+            const messageBox = document.getElementById('messageBox');
+            messageBox.textContent = message;
+            messageBox.classList.add('show');
+            setTimeout(() => {
+                messageBox.classList.remove('show');
+            }, duration);
+        };
+
+        // Fungsi utama untuk menghitung zakat
+        function calculateZakat() {
+            // Ambil nilai dari input, pastikan bernilai 0 jika kosong
+            const hargaEmas = parseFloat(document.getElementById('hargaEmas').value) || 0;
+            const penghasilanBulanan = parseFloat(document.getElementById('penghasilanBulanan').value) || 0;
+            const penghasilanLain = parseFloat(document.getElementById('penghasilanLain').value) || 0;
+            
+            // Elemen output
+            const nisabTahunanEl = document.getElementById('nisabTahunan');
+            const totalPenghasilanBulananEl = document.getElementById('totalPenghasilanBulanan');
+            const totalPenghasilanTahunanEl = document.getElementById('totalPenghasilanTahunan');
+            const statusTextEl = document.getElementById('statusText');
+            const zakatBulananEl = document.getElementById('zakatBulanan');
+            const zakatTahunanEl = document.getElementById('zakatTahunan');
+            const zakatWajibBox = document.getElementById('zakatWajibBox');
+            const zakatBulananInfoEl = document.getElementById('zakatBulananInfo');
+            
+            // --- Perhitungan ---
+            
+            // 1. Hitung Nisab
+            const nisabTahunanValue = hargaEmas * NISAB_GRAM;
+            // const nisabBulananValue = nisabTahunanValue / 12; // Nisab Bulanan tidak digunakan dalam penentuan kewajiban, hanya Nisab Tahunan
+
+            // 2. Hitung Total Penghasilan
+            const totalPenghasilanBulananValue = penghasilanBulanan + penghasilanLain;
+            const totalPenghasilanTahunanValue = totalPenghasilanBulananValue * 12;
+
+            // 3. Tentukan Status Kewajiban Zakat
+            let isWajibZakat = false;
+            let zakatBulananValue = 0;
+            let zakatTahunanValue = 0;
+
+            if (totalPenghasilanTahunanValue >= nisabTahunanValue && totalPenghasilanBulananValue > 0) {
+                // Wajib Zakat (jika total tahunan melebihi nisab tahunan DAN ada penghasilan > 0)
+                isWajibZakat = true;
+                // Zakat dikeluarkan dari total penghasilan kotor bulanan (pendapat ulama kontemporer)
+                zakatBulananValue = totalPenghasilanBulananValue * ZAKAT_PERCENTAGE; 
+                zakatTahunanValue = totalPenghasilanTahunanValue * ZAKAT_PERCENTAGE;
+            }
+
+            // --- Update Tampilan (DOM) ---
+
+            // Update Nilai Nisab & Total Penghasilan
+            nisabTahunanEl.textContent = formatRupiah(nisabTahunanValue);
+            totalPenghasilanBulananEl.textContent = formatRupiah(totalPenghasilanBulananValue);
+            totalPenghasilanTahunanEl.textContent = formatRupiah(totalPenghasilanTahunanValue);
+
+            // Update Status Zakat
+            if (isWajibZakat) {
+                statusTextEl.textContent = "ALHAMDULILLAH! Anda WAJIB ZAKAT.";
+                statusTextEl.className = 'text-xl font-bold text-center text-green-600';
+                
+                zakatTahunanEl.textContent = formatRupiah(zakatTahunanValue);
+                zakatBulananEl.textContent = formatRupiah(zakatBulananValue); // Nilai diisi untuk ditampilkan di info kecil
+                zakatBulananInfoEl.style.display = 'block'; // Pastikan info bulanan ditampilkan
+                zakatWajibBox.style.display = 'block';
+
+            } else {
+                statusTextEl.textContent = "Penghasilan Anda BELUM mencapai Nisab. Tetap semangat!";
+                statusTextEl.className = 'text-xl font-bold text-center text-red-500';
+                
+                zakatWajibBox.style.display = 'none';
+                zakatBulananEl.textContent = formatRupiah(0);
+                zakatTahunanEl.textContent = formatRupiah(0);
+            }
+            
+            // Tampilkan pesan jika input harga emas tidak valid
+            if (hargaEmas <= 0) {
+                 showMessage("Harap masukkan harga emas yang valid (di atas Rp 0).", 3000);
+            }
+        }
+
+        // Jalankan perhitungan saat aplikasi dimuat untuk menampilkan nilai awal
+        window.onload = function() {
+            calculateZakat();
+        };
+
+    </script>
+</body>
+</html>
