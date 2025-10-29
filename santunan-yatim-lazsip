@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LAZ-SIP | Data Santunan Anak Yatim Piatu</title>
+    <!-- Memuat Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Konfigurasi Font Inter -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f8f8; /* Latar belakang lembut */
+        }
+        .table-container {
+            max-height: 60vh; /* Batasi tinggi tabel untuk scroll */
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-6xl mx-auto">
+
+        <!-- Header Aplikasi -->
+        <header class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">Data Santunan Anak Yatim Piatu</h1>
+            <p class="text-xl text-indigo-600 font-semibold">LAZ-SIP Management System</p>
+            <p id="auth-status" class="text-xs text-gray-500 mt-2">Status Autentikasi: Memuat...</p>
+        </header>
+
+        <!-- Bagian Tabel Data -->
+        <div class="bg-white shadow-xl rounded-xl p-4 md:p-6 mb-10">
+            <h2 class="text-2xl font-semibold text-gray-700 mb-4 border-b pb-2">Daftar Penerima Santunan</h2>
+            <div class="table-container shadow-inner rounded-lg border">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-indigo-50 sticky top-0">
+                        <tr>
+                            <th class="px-3 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider w-12">No</th>
+                            <th class="px-3 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Nama Ayah (rahimahullah)</th>
+                            <th class="px-3 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Nama Ibu</th>
+                            <th class="px-3 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Nama Anak</th>
+                            <th class="px-3 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider w-16">Umur</th>
+                            <th class="px-3 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Sekolah</th>
+                            <th class="px-3 py-3 text-center text-xs font-medium text-gray-600 uppercase tracking-wider w-16">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="data-tabel" class="bg-white divide-y divide-gray-100">
+                        <!-- Data akan diisi oleh JavaScript -->
+                        <tr>
+                            <td colspan="7" class="text-center py-4 text-gray-500">Memuat data...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p id="error-message" class="text-red-500 mt-2 hidden"></p>
+        </div>
+
+        <!-- Bagian Form Isian Data Baru -->
+        <div class="bg-white shadow-xl rounded-xl p-4 md:p-6">
+            <h2 class="text-2xl font-semibold text-gray-700 mb-6 border-b pb-2">Tambah Data Baru</h2>
+            <form id="form-tambah-data">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                    <!-- Nama Ayah -->
+                    <div>
+                        <label for="namaAyah" class="block text-sm font-medium text-gray-700">Nama Ayah (rahimahullah)</label>
+                        <input type="text" id="namaAyah" name="namaAyah" required
+                               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:border-indigo-500 focus:ring-indigo-500">
+                    </div>
+
+                    <!-- Nama Ibu -->
+                    <div>
+                        <label for="namaIbu" class="block text-sm font-medium text-gray-700">Nama Ibu</label>
+                        <input type="text" id="namaIbu" name="namaIbu" required
+                               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:border-indigo-500 focus:ring-indigo-500">
+                    </div>
+
+                    <!-- Nama Anak -->
+                    <div>
+                        <label for="namaAnak" class="block text-sm font-medium text-gray-700">Nama Anak</label>
+                        <input type="text" id="namaAnak" name="namaAnak" required
+                               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:border-indigo-500 focus:ring-indigo-500">
+                    </div>
+
+                    <!-- Umur -->
+                    <div>
+                        <label for="umur" class="block text-sm font-medium text-gray-700">Umur (Tahun)</label>
+                        <input type="number" id="umur" name="umur" required min="1" max="18"
+                               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:border-indigo-500 focus:ring-indigo-500">
+                    </div>
+
+                    <!-- Sekolah -->
+                    <div class="md:col-span-2">
+                        <label for="sekolah" class="block text-sm font-medium text-gray-700">Sekolah/Pendidikan</label>
+                        <input type="text" id="sekolah" name="sekolah" required
+                               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:border-indigo-500 focus:ring-indigo-500">
+                    </div>
+
+                </div>
+
+                <!-- Tombol Submit -->
+                <div class="mt-8">
+                    <button type="submit" id="submit-btn"
+                            class="w-full inline-flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-lg font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out disabled:opacity-50">
+                        Tambah Data ke Tabel
+                    </button>
+                    <p id="form-message" class="text-green-600 mt-2 text-center hidden">Data berhasil ditambahkan!</p>
+                </div>
+            </form>
+        </div>
+
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, deleteDoc, doc, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Setel level log Firebase (untuk debugging)
+        setLogLevel('Debug');
+
+        // --- 1. SETUP FIREBASE & GLOBAL VARIABLES ---
+        let db, auth;
+        let userId = 'default-user-id';
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const collectionPath = `artifacts/${appId}/public/data/lazsip_orphans`;
+        const authStatusElement = document.getElementById('auth-status');
+
+        // Data awal yang dilampirkan pengguna
+        const initialData = [
+            {
+                namaAyah: "Ariep Afrianto",
+                namaIbu: "Siti Salamah",
+                namaAnak: "Sayyidah Azzahrah",
+                umur: 12,
+                sekolah: "SMP Tahfidz Mushab Umair (MBU)"
+            },
+            {
+                namaAyah: "Deni Gunawan",
+                namaIbu: "Siti Komariah",
+                namaAnak: "Gheffira Nur Fatimah",
+                umur: 10,
+                sekolah: "Generasi Rabbani (GenR)"
+            },
+            {
+                namaAyah: "Isnomo",
+                namaIbu: "Mardiana",
+                namaAnak: "Aji",
+                umur: 13,
+                sekolah: "GenR"
+            },
+            {
+                namaAyah: "Pranyoto",
+                namaIbu: "Sunami",
+                namaAnak: "Fatimah",
+                umur: 9,
+                sekolah: "STQ Imam Bukhori, Bekasi"
+            }
+        ];
+
+        try {
+            const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+            authStatusElement.textContent = 'Status Autentikasi: Menunggu otentikasi...';
+
+            // Otentikasi
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    userId = user.uid;
+                    authStatusElement.textContent = `Status Autentikasi: Terhubung (${userId.substring(0, 8)}...)`;
+                    // Lakukan inisialisasi data sebelum memuat data
+                    await initializeDataIfEmpty();
+                    // Mulai memuat data setelah autentikasi dan inisialisasi
+                    loadData();
+                } else {
+                    const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+                    try {
+                        if (initialAuthToken) {
+                            await signInWithCustomToken(auth, initialAuthToken);
+                        } else {
+                            await signInAnonymously(auth);
+                        }
+                    } catch (error) {
+                        console.error("Gagal melakukan otentikasi Firebase:", error);
+                        authStatusElement.textContent = 'Status Autentikasi: Gagal. Memuat secara anonim...';
+                        await signInAnonymously(auth);
+                    }
+                }
+            });
+
+        } catch (error) {
+            console.error("Kesalahan inisialisasi Firebase:", error);
+            document.getElementById('error-message').textContent = 'Kesalahan saat inisialisasi aplikasi. Periksa konsol.';
+            document.getElementById('error-message').classList.remove('hidden');
+        }
+
+        /**
+         * Memeriksa apakah koleksi kosong, jika ya, masukkan data awal.
+         */
+        async function initializeDataIfEmpty() {
+            try {
+                const collectionRef = collection(db, collectionPath);
+                // Ambil 1 dokumen saja untuk memeriksa apakah koleksi kosong
+                const q = query(collectionRef, orderBy('timestamp', 'asc')); 
+                const snapshot = await getDocs(q);
+
+                if (snapshot.empty) {
+                    console.log("Koleksi kosong. Memasukkan data awal yang dilampirkan.");
+                    for (const data of initialData) {
+                        await addDoc(collectionRef, {
+                            ...data,
+                            timestamp: serverTimestamp()
+                        });
+                    }
+                    console.log("Data awal berhasil dimasukkan.");
+                } else {
+                    console.log("Koleksi sudah berisi data. Tidak perlu inisialisasi.");
+                }
+            } catch (e) {
+                console.error("Gagal inisialisasi data awal:", e);
+                // Ini hanya pesan konsol, tidak mengganggu fungsi utama loadData
+            }
+        }
+
+        // --- 2. FUNGSI UTAMA (CRUD) ---
+
+        /**
+         * Memuat dan mendengarkan perubahan data dari Firestore secara real-time.
+         */
+        function loadData() {
+            if (!db) return; // Pastikan db sudah terinisialisasi
+
+            const q = query(
+                collection(db, collectionPath),
+                // Gunakan timestamp untuk urutan. 
+                orderBy('timestamp', 'asc')
+            );
+
+            // onSnapshot mendengarkan perubahan secara real-time
+            onSnapshot(q, (snapshot) => {
+                const dataList = [];
+                snapshot.forEach((doc) => {
+                    dataList.push({ id: doc.id, ...doc.data() });
+                });
+                renderTable(dataList);
+            }, (error) => {
+                console.error("Kesalahan saat mendengarkan data Firestore:", error);
+                document.getElementById('error-message').textContent = 'Gagal memuat data: ' + error.message;
+                document.getElementById('error-message').classList.remove('hidden');
+            });
+        }
+
+        /**
+         * Merender data ke dalam tabel HTML.
+         * @param {Array<Object>} dataList - Daftar objek data anak yatim.
+         */
+        function renderTable(dataList) {
+            const tableBody = document.getElementById('data-tabel');
+            tableBody.innerHTML = ''; // Kosongkan tabel
+            
+            if (dataList.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-gray-500">Belum ada data yang tercatat.</td></tr>`;
+                return;
+            }
+
+            // Membangun baris tabel
+            dataList.forEach((data, index) => {
+                const noUrut = index + 1;
+                const row = tableBody.insertRow();
+                row.className = noUrut % 2 === 0 ? 'bg-gray-50 hover:bg-gray-100' : 'bg-white hover:bg-gray-100';
+
+                // Kolom No.
+                row.insertCell().textContent = noUrut;
+                // Kolom Nama Ayah
+                row.insertCell().textContent = data.namaAyah || '-';
+                // Kolom Nama Ibu
+                row.insertCell().textContent = data.namaIbu || '-';
+                // Kolom Nama Anak
+                row.insertCell().textContent = data.namaAnak || '-';
+                // Kolom Umur
+                row.insertCell().textContent = data.umur || '-';
+                // Kolom Sekolah
+                row.insertCell().textContent = data.sekolah || '-';
+                
+                // Kolom Aksi (Tombol Hapus)
+                const actionCell = row.insertCell();
+                actionCell.className = "text-center";
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Hapus';
+                deleteButton.className = 'text-red-600 hover:text-red-900 text-xs font-medium bg-red-100 rounded-full px-2 py-1 transition duration-150 ease-in-out';
+                deleteButton.onclick = (e) => {
+                    e.preventDefault();
+                    showConfirmModal(data.id, data.namaAnak);
+                };
+                actionCell.appendChild(deleteButton);
+            });
+        }
+
+        /**
+         * Menampilkan modal konfirmasi sebelum menghapus data.
+         */
+        function showConfirmModal(docId, namaAnak) {
+            // Kita akan menggunakan DOM manipulation sederhana sebagai pengganti modal
+            // karena tidak boleh menggunakan alert/confirm
+            const tableContainer = document.querySelector('.table-container');
+
+            const modal = document.createElement('div');
+            modal.id = 'confirm-modal';
+            modal.className = 'fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 transition-opacity duration-300';
+            modal.innerHTML = `
+                <div class="bg-white p-6 rounded-lg shadow-2xl max-w-sm w-full transform transition-all duration-300 scale-100">
+                    <h3 class="text-xl font-bold text-red-600 mb-4">Konfirmasi Hapus Data</h3>
+                    <p class="text-gray-700 mb-6">Apakah Anda yakin ingin menghapus data **${namaAnak}** dari daftar?</p>
+                    <div class="flex justify-end space-x-3">
+                        <button id="cancel-btn" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition">Batal</button>
+                        <button id="delete-confirm-btn" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition">Hapus</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+
+            document.getElementById('cancel-btn').onclick = () => {
+                document.body.removeChild(modal);
+            };
+
+            document.getElementById('delete-confirm-btn').onclick = async () => {
+                await deleteData(docId);
+                document.body.removeChild(modal);
+            };
+        }
+        
+        /**
+         * Menghapus dokumen dari Firestore.
+         * @param {string} docId - ID dokumen yang akan dihapus.
+         */
+        async function deleteData(docId) {
+            try {
+                const docRef = doc(db, collectionPath, docId);
+                await deleteDoc(docRef);
+                console.log("Dokumen berhasil dihapus:", docId);
+                // onSnapshot akan otomatis memperbarui tabel
+            } catch (e) {
+                console.error("Gagal menghapus dokumen: ", e);
+                document.getElementById('error-message').textContent = 'Gagal menghapus data: ' + e.message;
+                document.getElementById('error-message').classList.remove('hidden');
+            }
+        }
+
+
+        // --- 3. EVENT LISTENER FORM ---
+
+        const form = document.getElementById('form-tambah-data');
+        const submitBtn = document.getElementById('submit-btn');
+        const formMessage = document.getElementById('form-message');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Menambahkan...';
+            formMessage.classList.add('hidden');
+            document.getElementById('error-message').classList.add('hidden');
+
+            const formData = new FormData(form);
+            const data = {
+                namaAyah: formData.get('namaAyah'),
+                namaIbu: formData.get('namaIbu'),
+                namaAnak: formData.get('namaAnak'),
+                // Pastikan umur adalah number
+                umur: parseInt(formData.get('umur'), 10),
+                sekolah: formData.get('sekolah'),
+                timestamp: serverTimestamp()
+            };
+
+            try {
+                // Tambahkan dokumen baru ke Firestore
+                const docRef = await addDoc(collection(db, collectionPath), data);
+                console.log("Dokumen ditulis dengan ID:", docRef.id);
+
+                // Reset formulir setelah sukses
+                form.reset();
+
+                // Tampilkan pesan sukses sebentar
+                formMessage.classList.remove('hidden');
+                setTimeout(() => {
+                    formMessage.classList.add('hidden');
+                }, 3000);
+
+            } catch (e) {
+                console.error("Kesalahan saat menambahkan dokumen: ", e);
+                document.getElementById('error-message').textContent = 'Gagal menambahkan data: ' + e.message;
+                document.getElementById('error-message').classList.remove('hidden');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Tambah Data ke Tabel';
+            }
+        });
+
+    </script>
+</body>
+</html>
