@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live TV Sunnah M3U8 Player</title>
+    <!-- Memuat Tailwind CSS --><script src="https://cdn.tailwindcss.com"></script>
+    <!-- Memuat hls.js untuk streaming M3U8/HLS --><script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
+    <style>
+        /* Mengatur font dasar dan memastikan body mengisi viewport */
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            background-color: #f7fafc; /* light gray background */
+        }
+        /* Memastikan container player mengisi lebar dan tinggi yang sesuai */
+        .player-container {
+            position: relative;
+            width: 100%;
+            /* Aspek rasio 16:9 untuk player */
+            padding-top: 56.25%; 
+        }
+        .player-container video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+        }
+        /* Custom scrollbar untuk channel list */
+        .channel-list-scroller::-webkit-scrollbar {
+            width: 8px;
+        }
+        .channel-list-scroller::-webkit-scrollbar-thumb {
+            background-color: #a0aec0;
+            border-radius: 4px;
+        }
+        .channel-list-scroller::-webkit-scrollbar-track {
+            background-color: #edf2f7;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 antialiased">
+
+    <div id="app" class="flex flex-col lg:flex-row min-h-screen">
+
+        <!-- Sidebar / Daftar Channel (Hanya M3U8) --><aside id="channelSidebar" class="w-full lg:w-80 bg-white shadow-xl lg:flex-shrink-0">
+            <div class="p-4 border-b border-gray-200 bg-teal-600 text-white sticky top-0 z-10">
+                <h1 class="text-xl font-bold">📺 Live M3U8 Sunnah TV</h1>
+            </div>
+            <div class="channel-list-scroller overflow-y-auto" style="max-height: calc(100vh - 60px);">
+                <!-- Daftar Channel akan diisi oleh JavaScript di sini --><!-- GRID 2 Kolom untuk channel M3U8 --><div id="channelList" class="p-2 grid grid-cols-2 gap-2">
+                    <div class="p-3 text-gray-500 col-span-2">Memuat daftar saluran...</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Konten Utama (Player dan List YouTube) --><main class="flex-grow p-4 lg:p-6 bg-gray-50">
+            <div id="playerWrapper" class="bg-gray-900 shadow-2xl rounded-xl overflow-hidden">
+                
+                <!-- Judul Saluran Aktif --><header class="p-3 bg-gray-800 text-white">
+                    <h2 id="currentChannelTitle" class="text-lg sm:text-2xl font-semibold truncate">Pilih Saluran untuk Memulai</h2>
+                </header>
+
+                <!-- Container Player (Aspek Rasio 16:9) --><div class="player-container">
+                    
+                    <!-- Player untuk M3U8/HLS --><video id="m3u8Player" controls autoplay muted class="hidden">
+                        Browser Anda tidak mendukung tag video.
+                    </video>
+                    
+                    <!-- Teks Pemberitahuan Saat Player Belum Dimuat --><div id="initialMessage" class="absolute top-0 left-0 w-full h-full flex items-center justify-center text-white text-xl bg-gray-900/90 transition-opacity">
+                        <p class="animate-pulse">Memuat... Silakan pilih saluran di samping.</p>
+                    </div>
+                </div>
+
+                <!-- Info Loading/Error --><footer id="statusMessage" class="p-2 text-sm text-center text-gray-400 bg-gray-700">
+                    Siap.
+                </footer>
+
+            </div>
+            
+            <!-- Link Live Youtube 24 Jam Section --><section class="mt-8 p-4 bg-white rounded-xl shadow-lg">
+                <h3 class="text-xl font-semibold text-gray-800 mb-3 border-b pb-2">Link Live Youtube 24 Jam (dibuka di browser/aplikasi youtube)</h3>
+                <!-- Diubah menjadi GRID 2 Kolom untuk link YouTube --><div id="youtubeLinksList" class="grid grid-cols-2 gap-2">
+                    <!-- Link YouTube akan diisi oleh JavaScript di sini --></div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Data Saluran M3U8 (Fokus untuk Player Utama)
+        const m3u8Channels = [
+            { name: "Madinah TV", url: "https://op-group1-swiftservesd-1.dens.tv/s/s27/index.m3u8" },
+            { name: "Mekkah TV", url: "https://op-group1-swiftservesd-1.dens.tv/s/s28/index.m3u8" },
+            { name: "Ashiil TV", url: "https://wahyu1ptv.pages.dev/AshiilTV-HD.m3u8" },
+            { name: "Rodja TV", url: "https://rodjatv.com/rodjatv/live.m3u8" },
+            { name: "Surau TV", url: "https://wahyu1ptv.pages.dev/SurauTV-HD.m3u8" },
+            { name: "Wesal TV", url: "https://wahyu1ptv.pages.dev/WesalTV-HD.m3u8" }
+        ];
+
+        // Data Link YouTube (Untuk List Eksternal)
+        const youtubeLinks = [
+            { name: "Fatwa TV", url: "https://www.youtube.com/live/fPtCKvpFO4E" },
+            { name: "Ghazwah TV", url: "https://www.youtube.com/live/dPRdBbsBy98" },
+            { name: "Media Dakwah Sunnah Aceh", url: "https://www.youtube.com/live/0IeqmL-fYnA" },
+            { name: "SRB (Syafiq Riza Basalamah) Live", url: "https://www.youtube.com/live/bEJFMrKmBb4" },
+            { name: "UFA (Ustadz Firanda Andirja) Live", url: "https://www.youtube.com/live/y0kKBXy18bM" }
+        ];
+
+        // Variabel Global
+        let hls;
+        let currentChannelIndex = -1;
+
+        // Mendapatkan elemen-elemen DOM
+        const m3u8PlayerElement = document.getElementById('m3u8Player');
+        const channelListElement = document.getElementById('channelList');
+        const currentChannelTitleElement = document.getElementById('currentChannelTitle');
+        const statusMessageElement = document.getElementById('statusMessage');
+        const initialMessageElement = document.getElementById('initialMessage');
+        const youtubeLinksListElement = document.getElementById('youtubeLinksList');
+
+        /**
+         * Mengubah status loading/pesan
+         * @param {string} message - Pesan yang akan ditampilkan
+         * @param {string} colorClass - Kelas warna Tailwind
+         */
+        function setStatus(message, colorClass = 'text-gray-400') {
+            statusMessageElement.textContent = message;
+            statusMessageElement.className = `p-2 text-sm text-center bg-gray-700 ${colorClass}`;
+        }
+        
+        /**
+         * Menyembunyikan player
+         */
+        function hidePlayer() {
+            m3u8PlayerElement.classList.add('hidden');
+            initialMessageElement.classList.remove('hidden');
+            if (hls) {
+                hls.destroy();
+                hls = null;
+            }
+        }
+
+        /**
+         * Menginisialisasi atau memuat channel baru (Hanya M3U8)
+         * @param {number} index - Indeks channel dalam array m3u8Channels
+         */
+        function switchChannel(index) {
+            // Cek agar tidak memutar ulang channel yang sama
+            if (index === currentChannelIndex) {
+                 m3u8PlayerElement.play();
+                return;
+            }
+
+            hidePlayer();
+            currentChannelIndex = index;
+            const channel = m3u8Channels[index];
+            currentChannelTitleElement.textContent = channel.name;
+            initialMessageElement.classList.add('hidden'); // Sembunyikan pesan awal
+
+            // --- Styling Channel M3U8 ---
+            // Hapus kelas aktif (GREEN) dan kembalikan ke default (LIGHT BLUE)
+            document.querySelectorAll('#channelList button').forEach(btn => {
+                // Remove ACTIVE GREEN classes
+                btn.classList.remove('bg-green-600', 'text-white', 'shadow-lg'); 
+                // Add INACTIVE LIGHT BLUE classes
+                btn.classList.add('bg-blue-100', 'text-blue-800', 'shadow-sm', 'hover:bg-blue-200');
+                
+                // Update icon color back to blue
+                const icon = btn.querySelector('svg');
+                if (icon) {
+                    icon.classList.remove('text-white');
+                    icon.classList.add('text-blue-500');
+                }
+            });
+            
+            // Tambahkan kelas aktif (GREEN) ke tombol yang dipilih
+            const activeBtn = document.getElementById(`channel-btn-${index}`);
+            // Remove INACTIVE LIGHT BLUE classes
+            activeBtn.classList.remove('bg-blue-100', 'text-blue-800', 'shadow-sm', 'hover:bg-blue-200'); 
+            // Add ACTIVE GREEN classes
+            activeBtn.classList.add('bg-green-600', 'text-white', 'shadow-lg', 'font-bold');
+
+            // Update icon color to white for active channel
+            const activeIcon = activeBtn.querySelector('svg');
+            if (activeIcon) {
+                activeIcon.classList.remove('text-blue-500');
+                activeIcon.classList.add('text-white');
+            }
+            // --- Akhir Perubahan Styling ---
+
+            setStatus(`Memuat saluran: ${channel.name}...`);
+
+            // M3U8/HLS Player Logic
+            m3u8PlayerElement.classList.remove('hidden');
+            
+            if (Hls.isSupported()) {
+                hls = new Hls();
+                hls.loadSource(channel.url);
+                hls.attachMedia(m3u8PlayerElement);
+                hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                    m3u8PlayerElement.play();
+                    setStatus(`Berhasil memuat M3U8: ${channel.name}.`);
+                });
+                hls.on(Hls.Events.ERROR, function (event, data) {
+                    if (data.fatal) {
+                        setStatus(`Kesalahan fatal M3U8! Coba lagi atau ganti saluran. (${data.details})`, 'text-red-400');
+                        console.error("HLS Fatal Error:", data);
+                    }
+                });
+            } else if (m3u8PlayerElement.canPlayType('application/vnd.apple.mpegurl')) {
+                // Native HLS support (Safari/iOS)
+                m3u8PlayerElement.src = channel.url;
+                m3u8PlayerElement.addEventListener('loadedmetadata', function() {
+                    m3u8PlayerElement.play();
+                    setStatus(`Berhasil memuat M3U8 (Native HLS): ${channel.name}.`);
+                });
+            } else {
+                setStatus("Browser tidak mendukung HLS/M3U8. Coba browser modern lainnya.", 'text-red-400');
+            }
+        }
+
+        /**
+         * Mengisi daftar channel di sidebar (Hanya M3U8)
+         */
+        function renderM3U8ChannelList() {
+            channelListElement.innerHTML = ''; // Bersihkan list
+            m3u8Channels.forEach((channel, index) => {
+                const div = document.createElement('div'); // Menggunakan div sebagai wrapper
+                const button = document.createElement('button');
+                
+                // Icon M3U8 (diubah agar lebih cocok dengan layout vertikal)
+                const m3u8Icon = `
+                    <svg class="w-6 h-6 mx-auto mb-1 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M2 5a2 2 0 012-2h12a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm12 1a1 1 0 100 2h-4a1 1 0 100 2h4a1 1 0 100 2H8a1 1 0 100 2h6a1 1 0 100-2h-4a1 1 0 100-2h4a1 1 0 100-2h-4a1 1 0 100-2h4z"/>
+                    </svg>
+                `;
+
+                button.id = `channel-btn-${index}`;
+                // Button content now centered and block-style
+                button.innerHTML = `${m3u8Icon} <span class="text-xs font-medium truncate">${channel.name}</span>`;
+                
+                // Styling Default: Light Blue
+                button.className = 'w-full flex flex-col items-center justify-center p-3 h-full text-center rounded-lg text-blue-800 bg-blue-100 transition duration-150 ease-in-out shadow-sm hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500';
+                button.onclick = () => switchChannel(index);
+                
+                div.appendChild(button);
+                channelListElement.appendChild(div);
+            });
+        }
+
+        /**
+         * Mengisi daftar link YouTube di bagian bawah (diubah menjadi grid 2 kolom biru muda, icon merah)
+         */
+        function renderYouTubeLinks() {
+            youtubeLinksListElement.innerHTML = ''; // Bersihkan list
+            youtubeLinks.forEach((link, index) => {
+                const div = document.createElement('div');
+                const linkElement = document.createElement('a');
+                
+                // Icon YouTube (WARNA MERAH STANDAR YouTube)
+                const youtubeIcon = `
+                    <svg class="w-6 h-6 mx-auto mb-1 flex-shrink-0 text-red-600" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M21.543 7.104c-.114-.407-.406-.749-.785-.882C19.01 5.86 12 5.86 12 5.86s-7.01 0-8.758.358c-.379.133-.671.475-.785.882C1.724 8.758 1.724 12 1.724 12s0 3.242.276 4.896c.114.407.406.749.785.882C4.99 18.14 12 18.14 12 18.14s7.01 0 8.758-.358c.379-.133.671-.475.785-.882.276-1.654.276-4.896.276-4.896s0-3.242-.276-4.896zM10.378 14.881V9.119l4.73 2.881-4.73 2.881z"/>
+                    </svg>
+                `;
+
+                linkElement.href = link.url;
+                linkElement.target = '_blank'; // Buka di tab/aplikasi baru
+                linkElement.rel = 'noopener noreferrer';
+                
+                // Styling Light Blue (Sama seperti M3U8 non-aktif)
+                linkElement.className = 'w-full flex flex-col items-center justify-center p-3 h-full text-center rounded-lg text-blue-800 bg-blue-100 transition duration-150 ease-in-out shadow-sm hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500';
+                
+                linkElement.innerHTML = `${youtubeIcon} <span class="text-xs font-medium truncate">${link.name}</span>`;
+
+                div.appendChild(linkElement);
+                youtubeLinksListElement.appendChild(div);
+            });
+        }
+
+        // --- Main Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            renderM3U8ChannelList();
+            renderYouTubeLinks();
+            
+            // Muat saluran M3U8 pertama secara default
+            if (m3u8Channels.length > 0) {
+                switchChannel(0);
+            } else {
+                currentChannelTitleElement.textContent = "Tidak Ada Saluran M3U8 Ditemukan";
+                setStatus("Silakan tambahkan link M3U8 ke daftar saluran.", 'text-yellow-400');
+            }
+        });
+
+    </script>
+
+</body>
+</html>
