@@ -12,19 +12,79 @@
 <title>Jadwal Kajian Sunnah Sejabodetabek</title>
 <style>
 :root{
-  --green-1:#0f5132; /* dark */
-  --green-2:#198754; /* primary */
-  --green-3:#d1e7dd; /* pale */
-  --green-4:#e9f7f1; /* bg */
+  --green-1:#0f5132; /* dark green */
+  --green-2:#198754; /* primary green */
+  --green-3:#d1e7dd; /* pale green */
+  --green-4:#e9f7f1; /* light background */
+  
+  /* Color Variables */
+  --bg-main: var(--green-4);
+  --bg-card: #fff;
+  --text-primary: #123;
+  --text-secondary: #456;
+  --border-color: #cfe3d8;
+  --shadow-color: rgba(16,94,60,.06);
 }
+
+/* Dark Mode Variables */
+body.dark-mode {
+  --bg-main: #1f2937; /* Dark Slate */
+  --bg-card: #374151; /* Medium Slate */
+  --text-primary: #f9fafb; /* Light text */
+  --text-secondary: #d1d5db; /* Lighter text */
+  --border-color: #4b5563;
+  --shadow-color: rgba(0,0,0,0.5);
+  background: var(--bg-main);
+  color: var(--text-primary);
+}
+
 *{box-sizing:border-box}
 body{
   font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-  margin:0;background:var(--green-4);color:#123;
+  margin:0;
+  background:var(--bg-main);
+  color:var(--text-primary);
 }
-header{background:linear-gradient(135deg,var(--green-2),var(--green-1));color:#fff;padding:28px 16px;text-align:center}
+header{
+  background:linear-gradient(135deg,var(--green-2),var(--green-1));
+  color:#fff;
+  padding:28px 16px 16px; /* Padding bawah disesuaikan untuk nav bar */
+  text-align:center;
+}
 header h1{margin:0 0 6px;font-size:clamp(20px,3vw,28px)}
 header p{margin:0;opacity:.95}
+
+/* Navigation Bar Style */
+.nav-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  padding: 10px 0;
+  margin-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+.nav-bar a, .nav-bar button {
+  color: #fff;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  transition: background 0.2s;
+  background: none;
+  cursor: pointer;
+}
+.nav-bar a:hover, .nav-bar button:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+.nav-bar button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
 main{max-width:1100px;margin:20px auto;padding:16px}
 /* Layout untuk filter dan search */
 .filter-group {
@@ -44,42 +104,66 @@ main{max-width:1100px;margin:20px auto;padding:16px}
 select, .search-input input[type="text"]{
     padding:10px 12px;
     border-radius:10px;
-    border:1px solid #cfe3d8;
-    background:#fff;
-    box-shadow:0 1px 0 #fff inset;
-    width: 100%; /* Pastikan input text juga 100% lebarnya */
+    border:1px solid var(--border-color);
+    background:var(--bg-card);
+    color: var(--text-primary);
+    box-shadow:0 1px 0 var(--bg-card) inset;
+    width: 100%; 
 }
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
 @media (max-width:1024px){.grid{grid-template-columns:repeat(2,1fr)}}
 @media (max-width:680px){.grid{grid-template-columns:1fr}}
-.card{background:#fff;border-radius:14px;padding:14px;border:1px solid #e6f0ea;box-shadow:0 2px 8px rgba(16,94,60,.06)}
+.card{
+  background:var(--bg-card);
+  border-radius:14px;
+  padding:14px;
+  border:1px solid var(--border-color);
+  box-shadow:0 2px 8px var(--shadow-color);
+}
 .card h3{margin:0 0 8px;font-size:18px;color:var(--green-1)}
-.meta{font-size:14px;line-height:1.5;margin:6px 0}
+/* Warna teks untuk mode gelap */
+.dark-mode .card h3 { color: var(--green-2); } 
+.dark-mode .card { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); }
+
+.meta{font-size:14px;line-height:1.5;margin:6px 0; color: var(--text-secondary);}
 .badge{display:inline-block;background:var(--green-3);color:var(--green-1);padding:2px 8px;border-radius:999px;font-size:12px;margin-right:6px}
 .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 .btn{text-decoration:none;display:inline-block;padding:8px 10px;border-radius:10px;border:1px solid transparent;font-weight:600;font-size:13px}
-.btn-map{background:#fff;border-color:#cfe3d8;color:var(--green-1)}
+.btn-map{background:var(--bg-card);border-color:var(--border-color);color:var(--green-1)}
 .btn-wa{background:var(--green-2);color:#fff}
-.count{margin:18px 0 12px;color:#456} /* Margin top diatur agar ada jarak dari teks info */
+
+/* Dark Mode button colors */
+.dark-mode .btn-map { background: var(--bg-card); border-color: var(--border-color); color: var(--green-2); }
+
+.count{margin:18px 0 12px;color:var(--text-secondary);} 
 
 /* Style untuk pesan informasi filter */
 .filter-info {
     font-size: 13px; /* Ukuran font sama dengan footer */
-    color: #456;
+    color: var(--text-secondary);
     text-align: center;
     margin-top: 10px;
     margin-bottom: 20px;
 }
 
-footer{text-align:center;margin:24px 0 36px;color:#345;font-size:13px}
-hr.sep{border:none;border-top:1px dashed #cfe3d8;margin:18px 0}
+footer{text-align:center;margin:24px 0 36px;color:var(--text-secondary);font-size:13px}
+hr.sep{border:none;border-top:1px dashed var(--border-color);margin:18px 0}
 </style>
 </head>
-<body>
+<body id="body">
 <header>
   <h1>Jadwal Kajian Sunnah Sejabodetabek</h1>
   <!-- TANGGAL DIPERBARUI: RABU, 29 OKTOBER 2025 -->
   <p>📆 Rabu, 29 Oktober 2025 / 7 Jumadal Ula 1447 H</p>
+  
+  <!-- MENU BARU -->
+  <div class="nav-bar">
+    <a href="https://abuaisyah.my.id" target="_blank">🏠 Home</a>
+    <button id="themeToggle" onclick="toggleTheme()">
+      <span id="themeIcon">☀️</span> Tema <span id="themeName">Terang</span>
+    </button>
+  </div>
+  <!-- AKHIR MENU BARU -->
 </header>
 <main>
   <div class="filter-group">
@@ -474,6 +558,46 @@ function normalizePhone(num) {
   return 'https://wa.me/' + fixed;
 }
 
+// FUNGSI UNTUK MENGGANTI TEMA
+function toggleTheme() {
+  const body = document.getElementById('body');
+  const icon = document.getElementById('themeIcon');
+  const name = document.getElementById('themeName');
+  const isDarkMode = body.classList.toggle('dark-mode');
+  
+  if (isDarkMode) {
+    icon.textContent = '🌙';
+    name.textContent = 'Gelap';
+    localStorage.setItem('theme', 'dark');
+  } else {
+    icon.textContent = '☀️';
+    name.textContent = 'Terang';
+    localStorage.setItem('theme', 'light');
+  }
+}
+
+// FUNGSI UNTUK MEMUAT TEMA SAAT PERTAMA KALI HALAMAN DIBUKA
+(function loadTheme() {
+  const savedTheme = localStorage.getItem('theme');
+  const body = document.getElementById('body');
+  const icon = document.getElementById('themeIcon');
+  const name = document.getElementById('themeName');
+
+  if (savedTheme === 'dark') {
+    body.classList.add('dark-mode');
+    if (icon && name) {
+      icon.textContent = '🌙';
+      name.textContent = 'Gelap';
+    }
+  } else {
+    // Default to light mode if nothing saved or saved as light
+    if (icon && name) {
+      icon.textContent = '☀️';
+      name.textContent = 'Terang';
+    }
+  }
+})();
+
 // Fungsi untuk merender ulang opsi Ustadz berdasarkan kota yang dipilih
 function renderUstadzOptions(filteredData = dataKajian) {
   // Mengambil semua ustadz unik dari data yang difilter
@@ -606,4 +730,3 @@ applyFilter();
 </script>
 </body>
 </html>
-
