@@ -47,7 +47,7 @@
 
         <!-- Sidebar / Daftar Channel (Hanya M3U8) --><aside id="channelSidebar" class="w-full lg:w-80 bg-white shadow-xl lg:flex-shrink-0">
             <div class="p-4 border-b border-gray-200 bg-teal-600 text-white sticky top-0 z-10">
-                <h1 class="text-xl font-bold">📺 Live M3U8 Sunnah TV</h1>
+                <h1 class="text-xl font-bold">📺 Live TV Sunnah</h1>
             </div>
             <div class="channel-list-scroller overflow-y-auto" style="max-height: calc(100vh - 60px);">
                 <!-- Daftar Channel akan diisi oleh JavaScript di sini --><!-- GRID 2 Kolom untuk channel M3U8 --><div id="channelList" class="p-2 grid grid-cols-2 gap-2">
@@ -81,7 +81,8 @@
             </div>
             
             <!-- Link Live Youtube 24 Jam Section --><section class="mt-8 p-4 bg-white rounded-xl shadow-lg">
-                <h3 class="text-xl font-semibold text-gray-800 mb-3 border-b pb-2">Link Live Youtube 24 Jam (dibuka di browser/aplikasi youtube)</h3>
+                <!-- Judul bagian YouTube yang diubah menjadi dua baris --><h3 class="text-xl font-semibold text-gray-800 border-b pb-1">Live Youtube 24 Jam</h3>
+                <p class="text-sm text-gray-500 mb-3">(dibuka di browser/aplikasi youtube)</p>
                 <!-- Diubah menjadi GRID 2 Kolom untuk link YouTube --><div id="youtubeLinksList" class="grid grid-cols-2 gap-2">
                     <!-- Link YouTube akan diisi oleh JavaScript di sini --></div>
             </section>
@@ -96,7 +97,13 @@
             { name: "Ashiil TV", url: "https://wahyu1ptv.pages.dev/AshiilTV-HD.m3u8" },
             { name: "Rodja TV", url: "https://rodjatv.com/rodjatv/live.m3u8" },
             { name: "Surau TV", url: "https://wahyu1ptv.pages.dev/SurauTV-HD.m3u8" },
-            { name: "Wesal TV", url: "https://wahyu1ptv.pages.dev/WesalTV-HD.m3u8" }
+            { name: "Wesal TV", url: "https://wahyu1ptv.pages.dev/WesalTV-HD.m3u8" },
+            // Saluran M3U8 Tambahan
+            { name: "Radio Kita", url: "https://streaming.yufid.com/hls/radiokitatv.m3u8" }, 
+            { name: "Al-Iman TV", url: "https://tv.aliman.id/aliman/live.m3u8" },
+            { name: "Dei Kids", url: "https://e.siar.us/live/deikidstv.m3u8" },
+            { name: "Salam TV", url: "https://salamtv.siar.us/live/salamtv.m3u8" },
+            { name: "Izzah TV", url: "https://streaming.izzah.tv/izzahtv.m3u8" } 
         ];
 
         // Data Link YouTube (Untuk List Eksternal)
@@ -105,7 +112,15 @@
             { name: "Ghazwah TV", url: "https://www.youtube.com/live/dPRdBbsBy98" },
             { name: "Media Dakwah Sunnah Aceh", url: "https://www.youtube.com/live/0IeqmL-fYnA" },
             { name: "SRB (Syafiq Riza Basalamah) Live", url: "https://www.youtube.com/live/bEJFMrKmBb4" },
-            { name: "UFA (Ustadz Firanda Andirja) Live", url: "https://www.youtube.com/live/y0kKBXy18bM" }
+            { name: "UFA (Ustadz Firanda Andirja) Live", url: "https://www.youtube.com/live/y0kKBXy18bM" },
+            // Tambahan link YouTube baru
+            { name: "Al-Furqon TV", url: "https://www.youtube.com/live/Xt6-clfBIR4" },
+            { name: "Rasyaad TV", url: "https://www.youtube.com/live/_80llQ2LnKQ" },
+            { name: "Sunnah Jalan Pasti", url: "https://www.youtube.com/live/neqe3qgOs1E" },
+            { name: "Khalid Basalamah Official", url: "https://www.youtube.com/watch?v=63ftY04qXVk" },
+            { name: "MGI TV", url: "https://www.youtube.com/watch?v=13P0wFbEyFg" }, 
+            // Tambahan link YouTube baru dari user
+            { name: "Tarbiyah Sunnah", url: "https://www.youtube.com/watch?v=9ue0fuQc5sQ" }
         ];
 
         // Variabel Global
@@ -222,7 +237,7 @@
         }
 
         /**
-         * Mengisi daftar channel di sidebar (Hanya M3U8)
+         * Mengisi daftar channel di sidebar (Hanya M3U8 - Inline Minimalis)
          */
         function renderM3U8ChannelList() {
             channelListElement.innerHTML = ''; // Bersihkan list
@@ -230,19 +245,19 @@
                 const div = document.createElement('div'); // Menggunakan div sebagai wrapper
                 const button = document.createElement('button');
                 
-                // Icon M3U8 (diubah agar lebih cocok dengan layout vertikal)
+                // Icon M3U8 (Inline dan lebih kecil)
                 const m3u8Icon = `
-                    <svg class="w-6 h-6 mx-auto mb-1 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                    <svg class="w-4 h-4 mr-2 flex-shrink-0 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M2 5a2 2 0 012-2h12a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm12 1a1 1 0 100 2h-4a1 1 0 100 2h4a1 1 0 100 2H8a1 1 0 100 2h6a1 1 0 100-2h-4a1 1 0 100-2h4a1 1 0 100-2h-4a1 1 0 100-2h4z"/>
                     </svg>
                 `;
 
                 button.id = `channel-btn-${index}`;
-                // Button content now centered and block-style
-                button.innerHTML = `${m3u8Icon} <span class="text-xs font-medium truncate">${channel.name}</span>`;
+                // Konten tombol: Icon dan Nama Sebaris
+                button.innerHTML = `${m3u8Icon} <span class="text-sm font-medium truncate">${channel.name}</span>`;
                 
-                // Styling Default: Light Blue
-                button.className = 'w-full flex flex-col items-center justify-center p-3 h-full text-center rounded-lg text-blue-800 bg-blue-100 transition duration-150 ease-in-out shadow-sm hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500';
+                // Styling Default: Light Blue, diubah untuk layout inline (flex items-center justify-start)
+                button.className = 'w-full flex items-center justify-start p-2 h-full rounded-lg text-blue-800 bg-blue-100 transition duration-150 ease-in-out shadow-sm hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500';
                 button.onclick = () => switchChannel(index);
                 
                 div.appendChild(button);
@@ -251,7 +266,7 @@
         }
 
         /**
-         * Mengisi daftar link YouTube di bagian bawah (diubah menjadi grid 2 kolom biru muda, icon merah)
+         * Mengisi daftar link YouTube di bagian bawah (diubah menjadi grid 2 kolom biru muda, icon merah, inline)
          */
         function renderYouTubeLinks() {
             youtubeLinksListElement.innerHTML = ''; // Bersihkan list
@@ -259,9 +274,9 @@
                 const div = document.createElement('div');
                 const linkElement = document.createElement('a');
                 
-                // Icon YouTube (WARNA MERAH STANDAR YouTube)
+                // Icon YouTube (WARNA MERAH STANDAR YouTube, Inline dan lebih kecil)
                 const youtubeIcon = `
-                    <svg class="w-6 h-6 mx-auto mb-1 flex-shrink-0 text-red-600" fill="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 mr-2 flex-shrink-0 text-red-600" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M21.543 7.104c-.114-.407-.406-.749-.785-.882C19.01 5.86 12 5.86 12 5.86s-7.01 0-8.758.358c-.379.133-.671.475-.785.882C1.724 8.758 1.724 12 1.724 12s0 3.242.276 4.896c.114.407.406.749.785.882C4.99 18.14 12 18.14 12 18.14s7.01 0 8.758-.358c.379-.133.671-.475.785-.882.276-1.654.276-4.896.276-4.896s0-3.242-.276-4.896zM10.378 14.881V9.119l4.73 2.881-4.73 2.881z"/>
                     </svg>
                 `;
@@ -270,10 +285,10 @@
                 linkElement.target = '_blank'; // Buka di tab/aplikasi baru
                 linkElement.rel = 'noopener noreferrer';
                 
-                // Styling Light Blue (Sama seperti M3U8 non-aktif)
-                linkElement.className = 'w-full flex flex-col items-center justify-center p-3 h-full text-center rounded-lg text-blue-800 bg-blue-100 transition duration-150 ease-in-out shadow-sm hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500';
+                // Styling Light Blue, diubah untuk layout inline (flex items-center justify-start)
+                linkElement.className = 'w-full flex items-center justify-start p-2 h-full rounded-lg text-blue-800 bg-blue-100 transition duration-150 ease-in-out shadow-sm hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500';
                 
-                linkElement.innerHTML = `${youtubeIcon} <span class="text-xs font-medium truncate">${link.name}</span>`;
+                linkElement.innerHTML = `${youtubeIcon} <span class="text-sm font-medium truncate">${link.name}</span>`;
 
                 div.appendChild(linkElement);
                 youtubeLinksListElement.appendChild(div);
