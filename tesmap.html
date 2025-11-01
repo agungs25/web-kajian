@@ -215,5 +215,186 @@
             // Tambahkan data lain di sini dengan format yang sama
         ];
 
-// ... existing code ... -->
+        // --- Variabel Elemen DOM ---
+        const findButton = document.getElementById('find-nearest');
+        const statusMessage = document.getElementById('status-message');
+        const hasilKajian = document.getElementById('hasil-kajian');
+        const placeholder = document.getElementById('placeholder');
+
+        // --- Event Listener ---
+        findButton.addEventListener('click', getLocation);
+
+        // --- Fungsi Utama ---
+
+        function getLocation() {
+            // Sembunyikan placeholder, tampilkan status
+            if (placeholder) {
+                placeholder.style.display = 'none';
+            }
+            hasilKajian.innerHTML = ''; // Kosongkan hasil sebelumnya
+            
+            statusMessage.style.display = 'block';
+            statusMessage.innerHTML = `
+                <div class="flex items-center justify-center">
+                    <div class="spinner w-5 h-5 border-4 border-blue-500 mr-3"></div>
+                    Mendapatkan lokasi Anda... Mohon tunggu.
+                </div>`;
+            statusMessage.className = 'bg-gray-800 p-4 rounded-lg text-center text-gray-400 mb-6';
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition, showError, {
+                    enableHighAccuracy: true,
+                    timeout: 10000, // 10 detik
+                    maximumAge: 0
+                });
+            } else {
+                statusMessage.innerHTML = "Geolocation tidak didukung oleh browser ini.";
+                statusMessage.className = 'bg-red-800 text-white p-4 rounded-lg text-center mb-6';
+            }
+        }
+
+        function showPosition(position) {
+            const userLat = position.coords.latitude;
+            const userLon = position.coords.longitude;
+
+            statusMessage.innerHTML = `Lokasi Anda: ${userLat.toFixed(4)}, ${userLon.toFixed(4)}. Mencari kajian...`;
+            statusMessage.className = 'bg-green-800 text-white p-4 rounded-lg text-center mb-6';
+
+            findNearestKajian(userLat, userLon);
+        }
+
+        function showError(error) {
+            statusMessage.style.display = 'block';
+            statusMessage.className = 'bg-red-800 text-white p-4 rounded-lg text-center mb-6';
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    statusMessage.innerHTML = "Anda menolak permintaan izin lokasi. Fitur ini tidak dapat berjalan.";
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    statusMessage.innerHTML = "Informasi lokasi tidak tersedia.";
+                    break;
+                case error.TIMEOUT:
+                    statusMessage.innerHTML = "Permintaan lokasi timeout. Coba lagi.";
+                    break;
+                case error.UNKNOWN_ERROR:
+                    statusMessage.innerHTML = "Terjadi kesalahan yang tidak diketahui.";
+                    break;
+            }
+        }
+
+        function findNearestKajian(userLat, userLon) {
+            const radiusKM = 10;
+            let nearestMasjid = [];
+
+            kajianData.forEach(masjid => {
+                const distance = haversineDistance(userLat, userLon, masjid.lat, masjid.lon);
+                
+                if (distance <= radiusKM) {
+                    // Tambahkan data jarak ke objek masjid
+                    masjid.distance = distance;
+                    nearestMasjid.push(masjid);
+                }
+            });
+
+            // Urutkan berdasarkan jarak terdekat
+            nearestMasjid.sort((a, b) => a.distance - b.distance);
+
+            displayKajian(nearestMasjid);
+        }
+
+        // --- PERUBAHAN BESAR PADA FUNGSI INI ---
+        function displayKajian(masjidList) {
+            hasilKajian.innerHTML = ''; // Bersihkan hasil
+
+            if (masjidList.length === 0) {
+                hasilKajian.innerHTML = `
+                    <div class="bg-gray-800 p-6 rounded-lg text-center text-gray-400">
+                        <p class="text-lg font-semibold">Tidak Ditemukan Kajian</p>
+                        <p class="mt-1">Tidak ada jadwal kajian dalam radius 10 km dari lokasi Anda berdasarkan data kami.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Tampilkan jumlah hasil
+            statusMessage.innerHTML = `Ditemukan ${masjidList.length} lokasi masjid dalam radius 10 km.`;
+            statusMessage.className = 'bg-green-800 text-white p-4 rounded-lg text-center mb-6';
+
+            // Loop untuk setiap LOKASI/MASJID
+            masjidList.forEach(masjid => {
+                const card = document.createElement('div');
+                card.className = 'bg-gray-800 rounded-lg shadow-lg p-5 transition duration-300 ease-in-out hover:bg-gray-700';
+                
+                // Buat HTML untuk daftar kajian di dalam masjid ini
+                let kajianHtml = '';
+                
+                // Loop untuk setiap KAJIAN di dalam masjid
+                masjid.kajian.forEach((kajian, index) => {
+                    kajianHtml += `
+                        <div class="mt-4 pt-4 ${index > 0 ? 'border-t border-gray-700' : ''}">
+                            <div class="space-y-2 text-gray-300">
+                                <p><span class="font-semibold text-gray-100">👤 Ustadz:</span> ${kajian.ustadz}</p>
+                                <p><span class="font-semibold text-gray-100">📚 Tema:</span> ${kajian.tema}</p>
+                                <p><span class="font-semibold text-gray-100">⏰ Waktu:</span> ${kajian.waktu}</p>
+                            </div>
+                        </div>
+                    `;
+                });
+
+
+                // Gabungkan semua menjadi satu kartu (card)
+                card.innerHTML = `
+                    <!-- Info Masjid -->
+                    <div class="flex justify-between items-start">
+                        <h2 class="text-xl font-bold text-blue-400">${masjid.masjid}</h2>
+                        <span class="bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap ml-2">${masjid.distance.toFixed(1)} KM</span>
+                    </div>
+                    <p class="text-sm text-gray-400 mt-1 mb-3">${masjid.alamat}</p>
+
+                    <!-- Daftar Kajian di Masjid Ini -->
+                    <div class="bg-gray-800 rounded-lg">
+                        ${kajianHtml}
+                    </div>
+                    
+                    <!-- Link Google Maps -->
+                    <div class="mt-4 pt-3 border-t border-gray-700 text-right">
+                        <a href="${masjid.gmaps}" target="_blank" class="text-blue-400 hover:text-blue-300 hover:underline">
+                            Lihat di Google Maps
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                        </a>
+                    </div>
+                `;
+                hasilKajian.appendChild(card);
+            });
+        }
+
+
+        // --- Fungsi Utility ---
+
+        /**
+         * Menghitung jarak antara dua koordinat GPS menggunakan formula Haversine.
+         * @returns {number} Jarak dalam kilometer (KM).
+         */
+        function haversineDistance(lat1, lon1, lat2, lon2) {
+            function toRad(x) {
+                return x * Math.PI / 180;
+            }
+
+            const R = 6371; // Radius Bumi dalam KM
+            const dLat = toRad(lat2 - lat1);
+            const dLon = toRad(lon2 - lon1);
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            const d = R * c;
+            return d;
+        }
+
+    </script>
+
+</body>
+</html>
 
