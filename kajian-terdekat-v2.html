@@ -30,11 +30,10 @@
         <!-- Header -->
         <header class="text-center my-8">
             <h1 class="text-3xl font-bold text-blue-400">Info Kajian Terdekat</h1>
-            <!-- PERUBAHAN 1: Subtitle diganti sesuai permintaan -->
             <p class="text-gray-400 mt-2">Sabtu, 1 November 2025 / 10 Jumadal Ula 1447</p>
         </header>
 
-        <!-- PERUBAHAN 2: Tombol Aksi (ditambah tombol 20km) -->
+        <!-- Tombol Aksi -->
         <div class="text-center mb-6 space-y-4">
             <!-- Tombol 10 KM -->
             <button id="find-10km" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:-translate-y-1">
@@ -45,7 +44,7 @@
                 Cari Kajian Terdekat (10 KM)
             </button>
             
-            <!-- Tombol 20 KM (Baru) -->
+            <!-- Tombol 20 KM -->
             <button id="find-20km" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:-translate-y-1">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -79,7 +78,6 @@
 
     <script>
         // --- DATABASE KAJIAN ---
-        // (Database tetap sama)
         const kajianData = [
             {
                 masjid: "Masjid Salman Al Farisi",
@@ -154,7 +152,6 @@
         ];
 
         // --- Variabel Elemen DOM ---
-        // PERUBAHAN: Mendapatkan kedua tombol
         const findButton10km = document.getElementById('find-10km');
         const findButton20km = document.getElementById('find-20km');
         const statusMessage = document.getElementById('status-message');
@@ -162,20 +159,16 @@
         const placeholder = document.getElementById('placeholder');
 
         // --- Event Listener ---
-        // PERUBAHAN: Menambahkan event listener untuk kedua tombol,
-        // mengirimkan radius yang sesuai ke fungsi getLocation
         findButton10km.addEventListener('click', () => getLocation(10));
         findButton20km.addEventListener('click', () => getLocation(20));
 
         // --- Fungsi Utama ---
 
-        // PERUBAHAN: Fungsi getLocation sekarang menerima 'radius'
         function getLocation(radius) {
-            // Sembunyikan placeholder, tampilkan status
             if (placeholder) {
                 placeholder.style.display = 'none';
             }
-            hasilKajian.innerHTML = ''; // Kosongkan hasil sebelumnya
+            hasilKajian.innerHTML = ''; 
             
             statusMessage.style.display = 'block';
             statusMessage.innerHTML = `
@@ -186,13 +179,12 @@
             statusMessage.className = 'bg-gray-800 p-4 rounded-lg text-center text-gray-400 mb-6';
 
             if (navigator.geolocation) {
-                // PERUBAHAN: Mengirim 'radius' ke fungsi showPosition
                 navigator.geolocation.getCurrentPosition(
                     (position) => showPosition(position, radius), 
                     showError, 
                     {
                         enableHighAccuracy: true,
-                        timeout: 10000, // 10 detik
+                        timeout: 10000, 
                         maximumAge: 0
                     }
                 );
@@ -202,16 +194,13 @@
             }
         }
 
-        // PERUBAHAN: Fungsi showPosition sekarang menerima 'position' dan 'radius'
         function showPosition(position, radius) {
             const userLat = position.coords.latitude;
             const userLon = position.coords.longitude;
 
-            // PERUBAHAN: Menampilkan radius yang sedang dicari di status
             statusMessage.innerHTML = `Lokasi Anda: ${userLat.toFixed(4)}, ${userLon.toFixed(4)}. Mencari kajian (radius ${radius} km)...`;
             statusMessage.className = 'bg-green-800 text-white p-4 rounded-lg text-center mb-6';
 
-            // PERUBAHAN: Mengirim 'radius' ke fungsi findNearestKajian
             findNearestKajian(userLat, userLon, radius);
         }
 
@@ -234,46 +223,37 @@
             }
         }
 
-        // PERUBAHAN: Fungsi findNearestKajian sekarang menerima 'radiusKM'
         function findNearestKajian(userLat, userLon, radiusKM) {
             let nearestKajian = [];
 
             kajianData.forEach(kajian => {
                 const distance = haversineDistance(userLat, userLon, kajian.lat, kajian.lon);
                 
-                // PERUBAHAN: Menggunakan 'radiusKM' yang dinamis
                 if (distance <= radiusKM) {
                     kajian.distance = distance;
                     nearestKajian.push(kajian);
                 }
             });
 
-            // Urutkan berdasarkan jarak terdekat
             nearestKajian.sort((a, b) => a.distance - b.distance);
-
-            // PERUBAHAN: Mengirim 'radiusKM' ke displayKajian untuk pesan status
             displayKajian(nearestKajian, radiusKM);
         }
 
-        // PERUBAHAN: Fungsi displayKajian sekarang menerima 'radiusKM'
         function displayKajian(kajianList, radiusKM) {
-            hasilKajian.innerHTML = ''; // Bersihkan hasil
+            hasilKajian.innerHTML = ''; 
 
             if (kajianList.length === 0) {
-                // PERUBAHAN: Menampilkan radius yang dinamis di pesan "tidak ditemukan"
                 hasilKajian.innerHTML = `
                     <div class="bg-gray-800 p-6 rounded-lg text-center text-gray-400">
                         <p class="text-lg font-semibold">Tidak Ditemukan Kajian</p>
                         <p class="mt-1">Tidak ada jadwal kajian dalam radius ${radiusKM} km dari lokasi Anda berdasarkan data kami.</p>
                     </div>
                 `;
-                // PERUBAHAN: Update status message
                 statusMessage.innerHTML = `Tidak ditemukan kajian dalam radius ${radiusKM} km.`;
                 statusMessage.className = 'bg-yellow-800 text-white p-4 rounded-lg text-center mb-6';
                 return;
             }
 
-            // PERUBAHAN: Menampilkan radius yang dinamis di pesan "ditemukan"
             statusMessage.innerHTML = `Ditemukan ${kajianList.length} kajian dalam radius ${radiusKM} km.`;
             statusMessage.className = 'bg-green-800 text-white p-4 rounded-lg text-center mb-6';
 
@@ -322,9 +302,14 @@
             const R = 6371; // Radius Bumi dalam KM
             const dLat = toRad(lat2 - lat1);
             const dLon = toRad(lon2 - lon1);
+            
+            // --- PERBAIKAN TYPO ---
+            // Mengganti 'ToRad' (salah) menjadi 'toRad' (benar)
             const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                Math.cos(toRad(lat1)) * Math.cos(ToRad(lat2)) *
+                Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * // <-- SUDAH DIPERBAIKI
                 Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            // --- END PERBAIKAN ---
+                
             const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
             const d = R * c;
             return d;
