@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kajian Terdekat v2</title>
+    <!-- Memuat Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Memuat Google Font (Inter) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Menggunakan font Inter sebagai default */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Style untuk loading spinner */
+        .spinner {
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen">
+
+    <div class="container mx-auto max-w-lg p-5">
+        <!-- Header -->
+        <header class="text-center my-8">
+            <h1 class="text-3xl font-bold text-blue-400">Info Kajian Terdekat v2</h1>
+            <p class="text-gray-400 mt-2">Temukan kajian sunnah dalam radius 10 km dari lokasi Anda.</p>
+        </header>
+
+        <!-- Tombol Aksi -->
+        <div class="text-center mb-6">
+            <button id="find-nearest" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:-translate-y-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                Cari Kajian Terdekat (10 KM)
+            </button>
+        </div>
+
+        <!-- Status Box -->
+        <div id="status-message" class="bg-gray-800 p-4 rounded-lg text-center text-gray-400 mb-6" style="display: none;">
+            <!-- Pesan status akan muncul di sini -->
+        </div>
+
+        <!-- Hasil Pencarian -->
+        <main id="hasil-kajian" class="space-y-4">
+            <!-- Kartu kajian akan dimasukkan di sini oleh JavaScript -->
+            
+            <!-- Contoh Tampilan Awal (Akan dihapus saat pencarian) -->
+            <div id="placeholder" class="text-center text-gray-500 p-10 border-2 border-dashed border-gray-700 rounded-lg">
+                <p>Klik tombol di atas untuk memulai pencarian lokasi kajian.</p>
+                <p class="text-sm mt-2">Aplikasi akan meminta izin untuk mengakses lokasi Anda.</p>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="text-center text-gray-600 text-sm mt-10 pb-5">
+            <p>Data kajian oleh: Tim Jadwal Kajian Kaskus</p>
+            <p>Prototype Web App by Gemini</p>
+        </footer>
+    </div>
+
+    <script>
+        // --- DATABASE KAJIAN ---
+        // PERUBAHAN BESAR: Struktur data diubah.
+        // Sekarang 1 Lokasi (Masjid) bisa punya BANYAK Kajian (array 'kajian')
+        const kajianData = [
+            {
+                masjid: "Masjid Salman Al Farisi",
+                alamat: "Komplek Bulog, Jl. H. Ten Raya, Kayu Putih, Jakarta Timur",
+                lat: -6.1818,
+                lon: 106.8858,
+                gmaps: "https://maps.app.goo.gl/BtXYdFVrzqyHUivJ8",
+                kajian: [
+                    {
+                        ustadz: "Ustadz Nizar Saad Jabal, Lc., M.Pd",
+                        tema: "Syarah Ushul as-Sunnah",
+                        waktu: "Ba’da Subuh – selesai"
+                    }
+                    // Jika ada sesi 2 di masjid ini, tambahkan di sini
+                ]
+            },
+            {
+                masjid: "Masjid Al Hikmah (Contoh Multi-Kajian)",
+                alamat: "Komplek DDN II, Jl. Pangkalan Jati, Pd. Labu, Cilandak, Jakarta Selatan",
+                lat: -6.3025, // Koordinat asli dari Gmaps
+                lon: 106.7946, // Koordinat asli dari Gmaps
+                gmaps: "https://maps.app.goo.gl/XNyRfo5p7uTFJVs79",
+                kajian: [ // <-- Perhatikan ini adalah array (daftar)
+                    {
+                        ustadz: "Ustadz Saddam Said Muchasin",
+                        tema: "Meraih Kebahagiaan Hakiki Dengan Tuntunan Ilahi",
+                        waktu: "Ba'da Subuh – selesai (Sesi 1)"
+                    },
+                    {
+                        ustadz: "Kak Yogi Triandi, B.A",
+                        tema: "Anak Baik Berkata Yang Baik",
+                        waktu: "16.00 WIB – selesai (kajian anak 6-12 tahun) (Sesi 2)"
+                    },
+                    {
+                        ustadz: "Ustadz Abdulbarr Kaisinda",
+                        tema: "Fikih Dzikir dan Doa",
+                        waktu: "Ba'da Maghrib – selesai (Sesi 3)"
+                    }
+                ]
+            },
+            {
+                masjid: "Masjid Baitul Muttaqin (MBM)",
+                alamat: "Jl. Kemenyan No.70X, Ciganjur, Jagakarsa, Jakarta Selatan",
+                lat: -6.3387,
+                lon: 106.8049,
+                gmaps: "https://maps.app.goo.gl/brcrtnHLuqnACHap8",
+                kajian: [
+                    {
+                        ustadz: "Ustadz Fatahillah Aly, S.Ag",
+                        tema: "Kiat-Kiat Agar Bisa Istiqamah",
+                        waktu: "Ba'da Subuh – selesai"
+                    }
+                ]
+            },
+            {
+                masjid: "Masjid Muadz Bin Jabal",
+                alamat: "Jl. H. Iping, Kav. Bulog, Bojong Kulur, Gunung Putri, Bogor",
+                lat: -6.3444,
+                lon: 106.9442,
+                gmaps: "https://maps.app.goo.gl/jfkCUdDDNfSFZbzG6",
+                kajian: [
+                    {
+                        ustadz: "Ustadz Abu Ihsan al-Maidani, Lc., M.A",
+                        tema: "Syarah Bulughul Maram",
+                        waktu: "Ba'da Subuh – selesai"
+                    },
+                    {
+                        ustadz: "Ustadz Abu Haidar as-Sundawy",
+                        tema: "Mengingat Kematian",
+                        waktu: "09.00 – 11.00 WIB"
+                    }
+                    // Data sesi 3 bisa ditambahkan di sini
+                ]
+            },
+            {
+                masjid: "Masjid Al Ikhlas",
+                alamat: "Perumahan Puri Nirwana 2, Harapan Jaya, Cibinong, Bogor",
+                lat: -6.4719,
+                lon: 106.8242,
+                gmaps: "https://goo.gl/maps/K2qY5e2HQ6t",
+                kajian: [
+                    {
+                        ustadz: "Ustadz Hamdi Solah al-Bakry, Lc",
+                        tema: "Kitab Akidah Washitiyyah",
+                        waktu: "Ba'da Subuh – selesai"
+                    }
+                ]
+            },
+            // --- DATA BARU DITAMBAHKAN UNTUK SIMULASI BEKASI ---
+            {
+                masjid: "Masjid Baiturrahman (BAISR)",
+                alamat: "Perumahan Sakura Regency Bumi Asih Indah, Jl. Bunga Sakura Utama No.4, Jatirasa, Kec. Jatiasih, Kota Bekasi",
+                lat: -6.2934,
+                lon: 106.9450,
+                gmaps: "https://maps.app.goo.gl/Tr87cJHRYv9PpxoC9",
+                kajian: [
+                    {
+                        ustadz: "Ustadz Dr. Erwandi Tarmizi, M.A",
+                        tema: "Gharar Harta Haram",
+                        waktu: "Ba'da Subuh – selesai"
+                    }
+                ]
+            },
+            {
+                masjid: "Masjid Al Ahdhar",
+                alamat: "Green Park Residence, Jatimelati, Kec. Pondok Melati, Bekasi",
+                lat: -6.2917,
+                lon: 106.9238,
+                gmaps: "https://maps.app.goo.gl/zTPspXLH7ipKHeKf9",
+                kajian: [
+                    {
+                        ustadz: "Ustadz Zen Yusuf Choury",
+                        tema: "Tafsir Tauhid dan Syahadat Laa Ilaaha Ilallah",
+                        waktu: "Ba'da Subuh – selesai"
+                    },
+                    {
+                        ustadz: "Ustadz Erfandoni Tarmizi, Lc., M.HI",
+                        tema: "Bulughul Maram, bab: Jual Beli",
+                        waktu: "Ba'da Maghrib – selesai"
+                    }
+                ]
+            },
+            {
+                masjid: "Masjid Ali Bin Abi Thalib",
+                alamat: "Gg. H. Goban, Jatikramat, Kec. Jatiasih, Kota Bekasi",
+                lat: -6.2829,
+                lon: 106.9329,
+                gmaps: "https://maps.app.goo.gl/5xEAct7ZQ4ntSPHf8",
+                kajian: [
+                    {
+                        ustadz: "Ustadz Ali Hasan Bawazier",
+                        tema: "al-Qoulul Farid Fawaaidun ala Kitabit Tauhid",
+                        waktu: "Ba’da Subuh – selesai"
+                    },
+                    {
+                        ustadz: "Ustadz Ahmad Bazher",
+                        tema: "Kitab Zuhud dan Kelembutan Hati",
+                        waktu: "Ba’da Maghrib – selesai"
+                    }
+                ]
+            }
+            // Tambahkan data lain di sini dengan format yang sama
+        ];
+
+// ... existing code ... -->
+
