@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laptop Second Berkualitas - Update 30 Oktober 2025</title>
+    <title>Laptop Second Berkualitas - Update 1 November 2025</title>
     <!-- Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -39,7 +39,7 @@
         <!-- Header -->
         <header class="bg-blue-600 text-white p-6 rounded-t-xl">
             <h1 class="text-3xl font-extrabold text-shadow mb-1">💻 Laptop Second Berkualitas</h1>
-            <p id="update-info" class="text-sm font-light opacity-90">📋 Update 30 Oktober 2025</p> <!-- Perubahan tanggal -->
+            <p id="update-info" class="text-sm font-light opacity-90">📋 Update 1 November 2025</p> <!-- Perubahan tanggal -->
         </header>
 
         <!-- Laptop List Section -->
@@ -88,7 +88,7 @@
                 <button onclick="prevImage(event)" class="text-white text-4xl p-4 bg-black bg-opacity-40 hover:bg-opacity-60 rounded-r-xl transition ml-[-1rem] md:ml-0">
                     &#10094; <!-- Left Arrow -->
                 </button>
-                <button onclick="nextImage(event)" class="text-white text-4xl p-4 bg-black bg-opacity-40 hover:bg-opacity-60 rounded-l-xl transition mr-[-1rem] md:mr-0">
+                <button onclick="nextImage(event)" class="text-white text-4xl p-4 bg-black bg-opacity-40 hover:bg-opacity-60 rounded-l-xl transition mr-[-1rem] md:ml-0">
                     &#10095; <!-- Right Arrow -->
                 </button>
             </div>
@@ -103,24 +103,36 @@
     <script type="text/javascript">
         // Data laptop dari file TXT
         const LAPTOP_DATA = [
-            // Item 1: Acer Travelmate P214 (UPDATE FOTO)
+            // Item 1: Lenovo ThinkPad X280 (BARU)
             {
                 id: 1,
-                name: "Acer Travelmate P214",
-                specs: "Intel Core i5-1135G7 Gen 11 | RAM 8 GB | SSD 256 GB | Layar 14\" | Intel Iris Xe | Slim & Ringan | Seri Bisnis",
-                price: "Rp 4.500.000",
+                name: "Lenovo ThinkPad X280",
+                specs: "Intel Core i5-8350U Gen 8 | RAM 8 GB | SSD 256 GB | Layar 12.5\" | Slim, Ringan & Elegant",
+                price: "Rp 3.400.000",
                 photos: [
-                    // Tautan baru dari i.postimg.cc
-                    "https://i.postimg.cc/vBpcVvRL/Whats-App-Image-2025-10-29-at-16-39-23-ee4fdd66.jpg",
-                    "https://i.postimg.cc/50HXyRrF/Whats-App-Image-2025-10-29-at-16-39-25-7e106732.jpg",
-                    "https://i.postimg.cc/mDcPk5nH/Whats-App-Image-2025-10-29-at-16-39-26-93e333b8.jpg",
-                    "https://i.postimg.cc/0QLbwCg5/Whats-App-Image-2025-10-29-at-16-39-27-36cab849.jpg",
-                    "https://i.postimg.cc/C1Wzq4yL/Whats-App-Image-2025-10-29-at-16-39-27-4a129609.jpg"
+                    "https://i.postimg.cc/5NGbKYDg/Lenovo-Think-Pad-x280-i5gen8-1.jpg",
+                    "https://i.postimg.cc/7YcwtGjm/Lenovo-Think-Pad-x280-i5gen8-3.jpg",
+                    "https://i.postimg.cc/ZKg4sBXj/Lenovo-Think-Pad-x280-i5gen8-5.jpg",
+                    "https://i.postimg.cc/MK4q3Mg0/Lenovo-Think-Pad-x280-i5gen8-6.jpg"
                 ] 
             },
-            // Item 2: Asus TUF Gaming F15 FX506LH
+            // Item 2: Toshiba Dynabook Portege X40J (BARU)
             {
                 id: 2,
+                name: "Toshiba Dynabook Portege X40J",
+                specs: "Intel Core i5-1135G7 Gen 11 | RAM 8 GB | SSD 256 GB | Layar 14\" Full HD Touchscreen | Keyboard Backlit | Intel Iris Xe | Seri Bisnis",
+                price: "Rp 4.650.000",
+                photos: [
+                    "https://i.postimg.cc/dQxhFXGF/Whats-App-Image-2025-11-01-at-4-02-27-PM-5.jpg",
+                    "https://i.postimg.cc/1Rj8STD5/Whats-App-Image-2025-11-01-at-4-02-27-PM.jpg",
+                    "https://i.postimg.cc/WpHdVK0c/Whats-App-Image-2025-11-01-at-4-02-27-PM-2.jpg",
+                    "https://i.postimg.cc/tRMsbfFy/Whats-App-Image-2025-11-01-at-4-02-27-PM-3.jpg",
+                    "https://i.postimg.cc/1Rj8STDy/Whats-App-Image-2025-11-01-at-4-02-27-PM-4.jpg"
+                ] 
+            },
+            // Item 3: Asus TUF Gaming F15 FX506LH (Penomoran Diperbarui)
+            {
+                id: 3,
                 name: "Asus TUF Gaming F15 FX506LH",
                 specs: "Intel Core i5-10300H Gen 10 | RAM 8 GB | SSD 512 GB | Layar 15.6\" Full HD | Dual VGA (Intel + Nvidia GTX 1650 4GB) | RGB Keyboard | Seri Design",
                 price: "Rp 7.050.000",
