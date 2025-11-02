@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Meta Property untuk Social Media Preview (Open Graph & Twitter) -->
+<meta property="og:title" content="Materi Kajian Shahih Muslim – Ahad, 2 November 2025" />
+<meta property="og:description" content="Materi kajian Shahih Muslim: Bab Fana'nya Dunia dan Hari Kebangkitan." />
+<meta property="og:image" content="https://placehold.co/1200x630/198754/ffffff?text=MATERI+SHAHIH+MUSLIM" />
+<meta property="og:url" content="#" /> <!-- Ganti dengan URL halaman sebenarnya jika sudah di-deploy -->
+<meta name="twitter:card" content="summary_large_image" />
+<title>Materi Kajian Shahih Muslim</title>
+<style>
+/* CSS Asli dari file jadwal-2-nov-2025.html */
+:root{
+  --green-1:#0f5132; /* dark */
+  --green-2:#198754; /* primary */
+  --green-3:#d1e7dd; /* pale */
+  --green-4:#e9f7f1; /* bg */
+}
+*{box-sizing:border-box}
+body{
+  font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  margin:0;background:var(--green-4);color:#123;
+}
+header{background:linear-gradient(135deg,var(--green-2),var(--green-1));color:#fff;padding:28px 16px;text-align:center}
+header h1{margin:0 0 6px;font-size:clamp(20px,3vw,28px)}
+header p{margin:0;opacity:.95}
+main{max-width:1100px;margin:20px auto;padding:16px}
+/* Layout untuk filter dan search (tidak digunakan di halaman ini) */
+.filter-group {
+    margin: 12px 0 20px;
+}
+.search-input {
+    width: 100%;
+    margin-bottom: 12px;
+}
+.controls{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+}
+@media (max-width:720px){.controls{grid-template-columns:1fr}}
+select, .search-input input[type="text"]{
+    padding:10px 12px;
+    border-radius:10px;
+    border:1px solid #cfe3d8;
+    background:#fff;
+    box-shadow:0 1px 0 #fff inset;
+    width: 100%;
+}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media (max-width:1024px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:680px){.grid{grid-template-columns:1fr}}
+.card{background:#fff;border-radius:14px;padding:20px 24px;border:1px solid #e6f0ea;box-shadow:0 2px 8px rgba(16,94,60,.06)}
+.card h3{margin:0 0 8px;font-size:18px;color:var(--green-1)}
+.meta{font-size:14px;line-height:1.5;margin:6px 0}
+.badge{display:inline-block;background:var(--green-3);color:var(--green-1);padding:2px 8px;border-radius:999px;font-size:12px;margin-right:6px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.btn{text-decoration:none;display:inline-block;padding:8px 10px;border-radius:10px;border:1px solid transparent;font-weight:600;font-size:13px}
+.btn-map{background:#fff;border-color:#cfe3d8;color:var(--green-1)}
+.btn-wa{background:var(--green-2);color:#fff}
+.count{margin:18px 0 12px;color:#456}
+.filter-info {
+    font-size: 13px;
+    color: #456;
+    text-align: center;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+footer{text-align:center;margin:24px 0 36px;color:#345;font-size:13px}
+hr.sep{border:none;border-top:1px dashed #cfe3d8;margin:18px 0}
+
+/* Tambahan CSS untuk halaman materi ini agar rapi */
+.card .bab {
+  font-size: 1.6em; /* Ukuran font Bab */
+  font-weight: bold;
+  color: var(--green-1);
+  direction: rtl; /* Teks Arab dari kanan ke kiri */
+  text-align: center;
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+.card .hadits-title {
+  font-size: 1.2em;
+  color: var(--green-2); /* Menggunakan warna hijau primer */
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-weight: 600;
+  border-bottom: 1px solid var(--green-3); /* Garis bawah tipis */
+  padding-bottom: 6px;
+}
+.card .arab {
+  font-size: 1.3em; /* Font Arab lebih besar agar mudah dibaca */
+  line-height: 1.9;
+  direction: rtl;
+  text-align: right;
+  margin: 12px 0 8px;
+  color: #000;
+}
+.card .terjemah {
+  font-size: 0.95em;
+  font-style: italic;
+  line-height: 1.6;
+  color: #333; /* Warna teks terjemahan */
+  margin: 0 0 16px 20px; /* Indentasi terjemahan */
+  border-left: 3px solid var(--green-3); /* Penanda di kiri */
+  padding-left: 12px;
+}
+
+/* CSS untuk terjemahan Bab */
+.card .bab-terjemah {
+  font-size: 1.1em;
+  font-weight: 500;
+  font-style: italic;
+  color: var(--green-1);
+  text-align: center;
+  margin-top: -16px; /* Tarik ke atas sedikit */
+  margin-bottom: 24px;
+}
+
+/* CSS untuk Video Embed Responsif */
+.video-container {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  padding-top: 56.25%; /* 16:9 Aspect Ratio */
+  border-radius: 12px; /* Samakan dengan card */
+  margin-top: 16px;
+}
+.video-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Materi Kajian Shahih Muslim</h1>
+  <!-- TANGGAL SAMA DENGAN FILE ASLI -->
+  <p>📆 Ahad, 2 November 2025 / 11 Jumadal Ula 1447 H</p>
+</header>
+
+<main>
+  <!-- Menggunakan class .card untuk membungkus seluruh materi -->
+  <div class="card">
+    
+    <h2 class="bab">
+      بَاب فَنَاء الدُّنْيَا وَبَيَان الْحَشْر يَوْم الْقِيَامَة
+    </h2>
+    <p class="bab-terjemah">
+      Bab: Fana'nya Dunia dan Penjelasan Mengenai Pengumpulan (Manusia) pada Hari Kiamat
+    </p>
+
+    <!-- Hadits 1 -->
+    <h3 class="hadits-title">Hadits 1</h3>
+    <p class="arab">
+      ١ - ​حَدَّثَنَا قَيْسٌ، قَالَ: قَالَ: سَمِعْتُ مُسْتَوْرِدًا، أَخَا بَنِي فِهْرٍ، يَقُولُ: قَالَ رَسُولُ اللَّهِ صَلَّى الله عَلَيْهِ وَسَلَّمَ: «وَاللَّهِ مَا الدُّنْيَا فِي الْآخِرَةِ إِلَّا مِثْلُ مَا يَجْعَلُ أَحَدُكُمْ إِصْبَعَهُ هَذِهِ - وَأَشَارَ يَحْيَى بِالسَّبَّابَةِ – فِي الْيَمِّ، فَلْيَنْظُرْ بِمَ تَرْجِعُ؟»
+    </p>
+    <p class="terjemah">
+      1. Telah menceritakan kepada kami Qais, dia berkata: Saya mendengar Mustaurid, saudara Bani Fihr, berkata: Rasulullah ﷺ bersabda: "Demi Allah, perumpamaan dunia dibandingkan akhirat hanyalah seperti seseorang dari kalian mencelupkan jarinya ini - Yahya (perawi) menunjuk dengan jari telunjuknya - ke dalam lautan, maka lihatlah apa yang dibawanya kembali?"
+    </p>
+
+    <hr class="sep">
+
+    <!-- Hadits 2 -->
+    <h3 class="hadits-title">Hadits 2</h3>
+    <p class="arab">
+      ٢ - ​عَنْ عَائِشَةَ، قَالَتْ: سَمِعْتُ رَسُولَ اللَّهِ صَلَّى الله عَلَيْهِ وَسَلَّمَ، يَقُولُ: «يُحْشَرُ النَّاسُ يَوْمَ الْقِيَامَةِ حُفَاةً عُرَاةً غُرْلًا»
+      <br>
+      قُلْتُ: يَا رَسُولَ اللَّهِ النِّسَاءُ وَالرِّجَالُ جَمِيعًا يَنْظُرُ بَعْضُهُمْ إِلَى بَعْضٍ، قَالَ صَلَّى الله عَلَيْهِ وَسَلَّمَ: «يَا عَائِشَةُ الْأَمْرُ أَشَدُّ مِنْ أَنْ يَنْظُرَ بَعْضُهُمْ إِلَى بَعْضٍ»
+    </p>
+    <p class="terjemah">
+      2. Dari 'Aisyah, dia berkata: Saya mendengar Rasulullah ﷺ bersabda: "Manusia akan dikumpulkan pada hari kiamat dalam keadaan tidak beralas kaki, telanjang, dan tidak berkhitan."
+      <br>
+      Aku bertanya: "Wahai Rasulullah, wanita dan laki-laki semuanya (berkumpul), sebagian mereka melihat sebagian yang lain?" Beliau ﷺ bersabda: "Wahai 'Aisyah, perkaranya lebih dahsyat daripada sebagian mereka melihat sebagian yang lain."
+    </p>
+    
+    <p class="arab">
+      ​وَفِي حَدِيثِ ابْنِ عَبَّاسٍ، سَمِعَ النَّبِيَّ صَلَّى الله عَلَيْهِ وَسَلَّمَ، يَخْطُبُ وَهُوَ يَقُولُ: «إِنَّكُمْ مُلَاقُو اللَّهِ مُشَاةً حُفَاةً، عُرَاةً غُرْلًا»
+    </p>
+    <p class="terjemah">
+      Dan dalam hadits Ibnu 'Abbas, dia mendengar Nabi ﷺ berkhutbah seraya bersabda: "Sesungguhnya kalian akan bertemu Allah dalam keadaan berjalan kaki, tidak beralas kaki, telanjang, dan tidak berkhitan."
+    </p>
+    
+    <p class="arab">
+      ​وَفِي لَفْظٍ: قَامَ فِينَا رَسُولُ اللَّهِ صَلَّى الله عَلَيْهِ وَسَلَّمَ خَطِيبًا بِمَوْعِظَةٍ، فَقَالَ: "يَا أَيُّهَا النَّاسُ إِنَّكُمْ تُحْشَرُونَ إِلَى اللَّهِ حُفَاةً عُرَاةً غُرْلًا، {كَمَا بَدَأْنَا أَوَّلَ خَلْقٍ نُعِيدُهُ وَعْدًا عَلَيْنَا إِنَّا كُنَّا فَاعِلِينَ} [الأنبياء: ١٠٤] أَلَا وَإِنَّ أَوَّلَ الْخَلَائِقِ يُكْسَى، يَوْمَ الْقِيَامَةِ إِبْرَاهِيمُ عَلَيْهِ السَّلَامُ، أَلَا وَإِنَّهُ سَيُجَاءُ بِرِجَالٍ مِنْ أُمَّتِي، فَيُؤْخَذُ بِهِمْ ذَاتَ الشِّمَالِ، فَأَقُولُ: يَا رَبِّ أَصْحَابِي، فَيُقَالُ: إِنَّكَ لَا تَدْرِي مَا أَحْدَثُوا بَعْدَكَ، فَأَقُولُ، كَمَا قَالَ الْعَبْدُ الصَّالِحُ: {وَكُنْتُ عَلَيْهِمْ شَهِيدًا مَا دُمْتُ فِيهِمْ، فَلَمَّا تَوَفَّيْتَنِي كُنْتَ أَنْتَ الرَّقِيبَ عَلَيْهِمْ، وَأَنْتَ عَلَى كُلِّ شَيْءٍ شَهِيدٌ، إِنْ تُعَذِّبْهُمْ فَإِنَّهُمْ عِبَادُكَ، وَإِنْ تَغْفِرْ لَهُمْ، فَإِنَّكَ أَنْتَ الْعَزِيزُ الْحَكِيمُ} [المائدة: ١١٨] قَالَ: فَيُقَالُ لِي: أَنَّهُمْ لَمْ يَزَالُوا مُرْتَدِّينَ عَلَى أَعْقَابِهِمْ مُنْذُ فَارَقْتَهُمْ - وَفِي حَدِيثِ وَكِيعٍ وَمُعَاذٍ – فَيُقَالُ: إِنَّكَ لَا تَدْرِي مَا أَحْدَثُوا بَعْدَكَ".
+    </p>
+    <p class="terjemah">
+      Dan dalam lafazh lain: Rasulullah ﷺ berdiri di tengah-tengah kami untuk berkhutbah memberikan nasehat, beliau bersabda: "Wahai manusia, sesungguhnya kalian akan dikumpulkan menghadap Allah dalam keadaan tidak beralas kaki, telanjang, dan tidak berkhitan. {Sebagaimana Kami telah memulai penciptaan pertama, begitulah Kami akan mengulanginya. Itulah janji yang pasti Kami tepati; sesungguhnya Kamilah yang akan melaksanakannya.} [QS. Al-Anbiya: 104]. Ketahuilah, sesungguhnya makhluk yang pertama kali diberi pakaian pada hari kiamat adalah Ibrahim 'alaihis salam. Ketahuilah, sesungguhnya akan didatangkan beberapa orang dari umatku, lalu mereka dibawa ke sebelah kiri. Maka aku berkata: 'Wahai Rabb-ku, (mereka adalah) sahabat-sahabatku.' Maka dikatakan: 'Sesungguhnya kamu tidak tahu apa yang mereka ada-adakan (bid'ah) sepeninggalmu.' Maka aku berkata sebagaimana yang dikatakan oleh hamba yang shalih: {Dan adalah aku menjadi saksi terhadap mereka, selama aku berada di antara mereka. Maka setelah Engkau wafatkan aku, Engkau-lah yang mengawasi mereka. Dan Engkau adalah Maha Menyaksikan atas segala sesuatu. Jika Engkau siksa mereka, maka sesungguhnya mereka adalah hamba-hamba-Mu, dan jika Engkau ampuni mereka, maka sesungguhnya Engkau-lah Yang Maha Perkasa lagi Maha Bijaksana.} [QS. Al-Maidah: 117-118]. Beliau bersabda: Maka dikatakan kepadaku: 'Sesungguhnya mereka terus-menerus murtad (berbalik ke belakang) di atas tumit-tumit mereka sejak kamu meninggalkan mereka.' - Dan dalam hadits Waki' dan Mu'adz - Maka dikatakan: 'Sesungguhnya kamu tidak tahu apa yang mereka ada-adakan (bid'ah) sepeninggalmu.'"
+    </p>
+
+    <hr class="sep">
+
+    <!-- Hadits 3 -->
+    <h3 class="hadits-title">Hadits 3</h3>
+    <p class="arab">
+      ٣ - ​عَنْ أَبِي هُرَيْرَةَ، عَنِ النَّبِيِّ صَلَّى الله عَلَيْهِ وَسَلَّMÁ، قَالَ: «يُحْشَرُ النَّاسِ عَلَى ثَلَاثِ طَرَائِقَ، رَاغِبِينَ رَاهِبِينَ، وَاثْنَانِ عَلَى بَعِيرٍ، وَثَلَاثَةٌ عَلَى بَعِيرٍ، وَأَرْبَعَةٌ عَلَى بَعِيرٍ، وَعَشَرَةٌ عَلَى بَعِيرٍ، وَتَحْشُرُ بَقِيَّتَهُمُ النَّارُ تَبِيتُ مَعَهُمْ، حَيْثُ بَاتُوا وَتَقِيلُ مَعَهُمْ حَيْثُ قَالُوا، وَتُصْبِحُ مَعَهُمْ حَيْثُ أَصْبَحُوا، وَتُمْسِي مَعَهُمْ حَيْثُ أَمْسَوْا».
+    </p>
+    <p class="terjemah">
+      3. Dari Abu Hurairah, dari Nabi ﷺ, beliau bersabda: "Manusia akan dikumpulkan (di Padang Mahsyar) dalam tiga kelompok: kelompok yang penuh harap dan cemas, (kelompok dimana) dua orang di atas satu unta, tiga orang di atas satu unta, empat orang di atas satu unta, dan sepuluh orang di atas satu unta. Dan sisa mereka akan digiring oleh api yang akan bermalam bersama mereka di mana pun mereka bermalam, dan akan beristirahat (siang) bersama mereka di mana pun mereka beristirahat, dan akan berpagi bersama mereka di mana pun mereka berpagi, dan akan bersore bersama mereka di mana pun mereka bersore."
+    </p>
+
+    <hr class="sep">
+
+    <!-- Video Kajian Terkait -->
+    <h3 class="hadits-title">Video Kajian Terkait</h3>
+    <div class="video-container">
+      <iframe 
+        src="https://www.youtube.com/embed/NdQ9ey_zxMk" 
+        title="YouTube video player" 
+        frameborder="0" 
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+        allowfullscreen>
+      </iframe>
+    </div>
+
+  </div> <!-- Penutup .card -->
+
+  <hr class="sep" />
+  <footer>
+    Data oleh: Tim Jadwal Kajian Kaskus.<br>
+    Informasi ini hanya rangkuman, mohon cek kembali info kajian ke penyelenggara.<br><br>
+    Ikuti channel WhatsApp <a href="https://whatsapp.com/channel/0029VamBns5KLaHl0a7jma1t" target="_blank">Jadwal Kajian Kaskus</a>
+  </footer>
+</main>
+<!-- Tidak ada JavaScript yang diperlukan untuk halaman statis ini -->
+</body>
+</html>
+
