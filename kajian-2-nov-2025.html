@@ -64,11 +64,18 @@ select, .search-input input[type="text"]{
 
 /* Style untuk pesan informasi filter */
 .filter-info {
-    font-size: 13px; /* Ukuran font sama dengan footer */
-    color: #456;
-    text-align: center;
     margin-top: 10px;
     margin-bottom: 20px;
+}
+
+/* Style untuk teks debug lokasi */
+#locationDebug {
+    font-size: 12px;
+    font-style: italic;
+    color: #555;
+    margin-top: 8px; /* Beri sedikit jarak */
+    text-align: center;
+    min-height: 1em; /* Jaga layout tetap stabil */
 }
 
 footer{text-align:center;margin:24px 0 36px;color:#345;font-size:13px}
@@ -106,6 +113,9 @@ hr.sep{border:none;border-top:1px dashed #cfe3d8;margin:18px 0}
   </div>
 
   <div class="count"><span id="countText"></span></div>
+  <!-- DIV BARU UNTUK DEBUG LOKASI -->
+  <div id="locationDebug"></div>
+  
   <div id="grid" class="grid"></div>
   <hr class="sep" />
   <footer>
@@ -1406,6 +1416,8 @@ const dataKajian = [
 
 // Variabel global untuk menyimpan lokasi user
 let userLocation = null;
+// Variabel untuk menyimpan elemen debug
+let locationDebugEl = null;
 
 /**
  * Fungsi untuk menghitung jarak antara dua koordinat (Haversine Formula)
@@ -1416,34 +1428,23 @@ let userLocation = null;
  * @returns {number} Jarak dalam kilometer
  */
 function getDistance(lat1, lon1, lat2, lon2) {
-  // --- FUNGSI DIPERBARUI ---
-  // Mengganti implementasi sebelumnya dengan formula Haversine
-  // yang lebih standar untuk meningkatkan presisi.
   if (!lat1 || !lon1 || !lat2 || !lon2) {
       return Infinity;
   }
   
   const R = 6371; // Radius bumi dalam km
-  
-  // Fungsi helper untuk konversi ke radian
   const toRad = (value) => (value * Math.PI) / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const lat1Rad = toRad(lat1);
+  const lat2Rad = toRad(lat2);
 
-  const dLat = toRad(lat2 - lat1); // delta lat in rad
-  const dLon = toRad(lon2 - lon1); // delta lon in rad
-  
-  const lat1Rad = toRad(lat1); // lat1 in rad
-  const lat2Rad = toRad(lat2); // lat2 in rad
-
-  // Implementasi formula Haversine yang lebih standar
   const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
             Math.cos(lat1Rad) * Math.cos(lat2Rad) *
             Math.sin(dLon / 2) * Math.sin(dLon / 2);
-            
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   
-  const distance = R * c;
-  return distance;
-  // --- AKHIR FUNGSI DIPERBARUI ---
+  return R * c; // Jarak dalam km
 }
 
 /**
@@ -1451,6 +1452,7 @@ function getDistance(lat1, lon1, lat2, lon2) {
  */
 function getLocationAndFilter() {
     const countText = document.getElementById('countText');
+    locationDebugEl = document.getElementById('locationDebug'); // Ambil elemen debug
     
     // Jika lokasi sudah ada, langsung filter
     if (userLocation) {
@@ -1460,24 +1462,28 @@ function getLocationAndFilter() {
 
     if (!navigator.geolocation) {
         countText.textContent = "Browser Anda tidak mendukung Geolocation.";
+        locationDebugEl.textContent = "Geolocation tidak didukung.";
         document.getElementById('filterJarak').value = '__all__'; // Reset dropdown
         return;
     }
 
-    // --- Teks helper diperbarui ---
     countText.textContent = "Meminta izin lokasi... (Gunakan GPS/WiFi untuk akurasi terbaik)";
+    locationDebugEl.textContent = "Sedang mencari lokasi Anda...";
 
     navigator.geolocation.getCurrentPosition(
         (position) => {
             userLocation = position.coords; // Simpan lokasi
+            // Tampilkan info debug lokasi
+            locationDebugEl.textContent = `Lokasi Anda: (Lat: ${userLocation.latitude.toFixed(5)}, Lng: ${userLocation.longitude.toFixed(5)}) Akurasi: ${userLocation.accuracy.toFixed(0)}m`;
+            
             // Reset filter kota dan ustadz saat jarak dipilih
             document.getElementById('filterKota').value = '__all__';
             document.getElementById('filterUstadz').value = '__all__';
             applyFilter(userLocation.latitude, userLocation.longitude); // Panggil filter DENGAN koordinat
         },
         () => {
-            // --- Teks helper diperbarui ---
-            countText.textContent = "Gagal mendapatkan lokasi. (Lokasi via IP/WiFi mungkin tidak akurat)";
+            countText.textContent = "Gagal mendapatkan lokasi.";
+            locationDebugEl.textContent = "Gagal mendapatkan lokasi. Pastikan izin lokasi aktif dan gunakan GPS di HP untuk akurasi terbaik.";
             document.getElementById('filterJarak').value = '__all__'; // Reset dropdown
             applyFilter(); // Panggil filter tanpa koordinat
         },
@@ -1487,30 +1493,20 @@ function getLocationAndFilter() {
 
 
 function normalizePhone(num) {
-  // Menjaga hanya digit
   const digits = (num||'').replace(/[^0-9]/g,'');
   if(!digits) return null;
-  // Mengubah format 08... menjadi 628...
   const fixed = digits.startsWith('0') ? '62' + digits.slice(1) : (digits.startsWith('62') ? digits : '62' + digits);
   return 'https://wa.me/' + fixed;
 }
 
 // Fungsi untuk merender ulang opsi Ustadz berdasarkan kota yang dipilih
 function renderUstadzOptions(filteredData = dataKajian) {
-  // Mengambil semua ustadz unik dari data yang difilter
   const ustadzSet = new Set(filteredData.map(x=>x.ustadz));
   const ust = document.getElementById('filterUstadz');
-  
-  // Ambil nilai filter Ustadz saat ini untuk mencegah reset yang tidak perlu
   const currentUstVal = ust.value; 
-
-  // Buat opsi Ustadz yang baru
   const newOptions = '<option value="__all__">Semua Ustadz</option>' + 
     Array.from(ustadzSet).sort().map(u=>`<option value="${u}">${u}</option>`).join('');
-
   ust.innerHTML = newOptions;
-
-  // Coba pertahankan pilihan Ustadz jika masih ada
   if (ustadzSet.has(currentUstVal)) {
     ust.value = currentUstVal;
   }
@@ -1528,16 +1524,12 @@ function cardHTML(item) {
   const kontak = (item.kontak||[]).filter(Boolean);
   const kontakLinks = kontak.map(k=>{ 
     const href = normalizePhone(k); 
-    // Menghapus tag gender 🚹/🚺 yang mungkin ada di kontak text
     const cleanK = k.replace(/[\uD83D\uDEB9\uD83D\uDEBA]/g, '').trim(); 
     return href ? `<a class="btn btn-wa" href="${href}" target="_blank">📱 ${cleanK}</a>` : ''; 
   }).join(' ');
   const mapBtn = item.maps ? `<a class="btn btn-map" target="_blank" href="${item.maps}">📍 Lihat Peta</a>` : '';
-  
   const babContent = item.bab ? `<div class="meta">📖 Bab: <strong>${item.bab}</strong></div>` : '';
-  
-  // Tampilkan jarak jika ada
-  const distanceContent = item.distance ? `<div class="meta">📏 Jarak: <strong>${item.distance.toFixed(1)} km</strong></div>` : '';
+  const distanceContent = item.distance != null ? `<div class="meta">📏 Jarak: <strong>${item.distance.toFixed(1)} km</strong></div>` : '';
 
   return `<div class="card">
     <h3>${item.tempat}</h3>
@@ -1556,13 +1548,14 @@ function cardHTML(item) {
 function applyFilter(userLat = null, userLng = null) {
   const kotaVal = document.getElementById('filterKota').value;
   const ustVal = document.getElementById('filterUstadz').value;
-  const searchVal = document.getElementById('searchInput').value.toLowerCase(); // Ambil nilai search
-  const jarakVal = document.getElementById('filterJarak').value; // Ambil nilai jarak
+  const searchVal = document.getElementById('searchInput').value.toLowerCase();
+  const jarakVal = document.getElementById('filterJarak').value; 
+  locationDebugEl = document.getElementById('locationDebug'); // Pastikan elemen debug diambil
 
   let initialFilteredList = dataKajian.slice();
   let distanceStatus = '';
 
-  // 1. Filter data berdasarkan jarak (JIKA DIMINTA dan koordinat tersedia)
+  // 1. Filter data berdasarkan jarak
   if (jarakVal !== '__all__' && userLat && userLng) {
       const maxDistance = parseInt(jarakVal, 10);
       initialFilteredList = initialFilteredList.filter(item => {
@@ -1570,20 +1563,21 @@ function applyFilter(userLat = null, userLng = null) {
           item.distance = distance; // Simpan jarak untuk ditampilkan
           return distance <= maxDistance;
       });
-      // Urutkan berdasarkan jarak terdekat
       initialFilteredList.sort((a, b) => a.distance - b.distance);
       distanceStatus = ` (dalam ${maxDistance} km)`;
   } else {
-      // Hapus properti jarak jika tidak memfilter berdasarkan jarak
       initialFilteredList.forEach(item => item.distance = null);
+      if (jarakVal === '__all__') {
+          // Hanya bersihkan teks debug jika filter jarak direset
+          if(locationDebugEl) locationDebugEl.textContent = ''; 
+      }
   }
 
-  // 2. Filter data berdasarkan kata kunci pencarian global (dari list hasil filter jarak)
+  // 2. Filter data berdasarkan kata kunci pencarian global
   let filteredBySearch = initialFilteredList;
   if (searchVal) {
     filteredBySearch = initialFilteredList.filter(item => {
-        // Gabungkan semua nilai string item untuk pencarian
-        const text = (item.tempat + ' ' + item.alamat + ' ' + item.kitab + ' ' + item.ustadz + ' ' + item.kota + ' ' + (item.bab || '')).toLowerCase();
+        const text = (item.tempat + ' ' + item.alamat + ' ' + item.kitab + ' '.ustadz + ' ' + item.kota + ' ' + (item.bab || '')).toLowerCase();
         return text.includes(searchVal);
     });
   }
@@ -1594,13 +1588,12 @@ function applyFilter(userLat = null, userLng = null) {
     filteredByKota = filteredBySearch.filter(x => x.kota === kotaVal);
   }
   
-  // 4. Update dropdown Ustadz berdasarkan hasil filter
+  // 4. Update dropdown Ustadz
   renderUstadzOptions(filteredByKota);
 
-  // 5. Lanjutkan proses filter berdasarkan Ustadz
+  // 5. Filter berdasarkan Ustadz
   let finalFilteredList = filteredByKota;
   const currentUstValAfterUpdate = document.getElementById('filterUstadz').value;
-
   if (currentUstValAfterUpdate !== '__all__') {
     finalFilteredList = finalFilteredList.filter(x => x.ustadz === currentUstValAfterUpdate);
   }
@@ -1608,7 +1601,7 @@ function applyFilter(userLat = null, userLng = null) {
   const grid = document.getElementById('grid');
   grid.innerHTML = finalFilteredList.map(cardHTML).join('');
   
-  // Update teks jumlah kajian
+  // 6. Update teks jumlah kajian
   let filterStatus = '';
   if ((kotaVal !== '__all__' && jarakVal === '__all__') || currentUstValAfterUpdate !== '__all__' || searchVal) {
       filterStatus = ' (terfilter)';
@@ -1627,49 +1620,43 @@ function applyFilter(userLat = null, userLng = null) {
 document.getElementById('filterJarak').addEventListener('change', () => {
     const jarakVal = document.getElementById('filterJarak').value;
     if (jarakVal !== '__all__') {
-        // Jika user memilih jarak, panggil fungsi geolokasi
-        document.getElementById('filterKota').value = '__all__'; // Reset kota
-        document.getElementById('filterUstadz').value = '__all__'; // Reset ustadz
+        document.getElementById('filterKota').value = '__all__'; 
+        document.getElementById('filterUstadz').value = '__all__'; 
         getLocationAndFilter(); 
     } else {
-        // User memilih "Semua Jarak", reset lokasi dan filter ulang
-        userLocation = null; // Hapus cache lokasi
-        applyFilter(); // Terapkan filter tanpa info jarak
+        userLocation = null; 
+        applyFilter(); 
     }
 });
 
 // Handler untuk filter kota
 document.getElementById('filterKota').addEventListener('change', () => {
-    // Ketika kota berubah, reset filter jarak
     document.getElementById('filterJarak').value = '__all__';
     userLocation = null;
+    if(locationDebugEl) locationDebugEl.textContent = ''; // Bersihkan debug
     applyFilter();
 });
 
 // Handler untuk filter Ustadz
 document.getElementById('filterUstadz').addEventListener('change', () => {
-    // Cukup panggil applyFilter dengan lokasi yang mungkin sudah ada
     applyFilter(userLocation?.latitude, userLocation?.longitude);
 });
 
 // Handler untuk Search Input
 document.getElementById('searchInput').addEventListener('keyup', () => {
-    // Reset filter Ustadz, Kota, dan Jarak saat melakukan pencarian baru
     document.getElementById('filterKota').value = '__all__';
     document.getElementById('filterUstadz').value = '__all__';
     document.getElementById('filterJarak').value = '__all__';
     userLocation = null;
+    if(locationDebugEl) locationDebugEl.textContent = ''; // Bersihkan debug
     applyFilter();
 });
 
 // Inisialisasi awal
 renderKotaOptions();
-// Render Ustadz Options pertama kali dengan semua data
 renderUstadzOptions(); 
-// Tampilkan semua data kajian saat pertama kali dimuat
 applyFilter(); 
 </script>
 </body>
 </html>
-
 
