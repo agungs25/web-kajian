@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quran Player Ust. Abu Usamah</title> <!-- Nama diringkaskan -->
+    <!-- Muat Tailwind CSS (dibiarkan untuk susun atur asas jika perlu) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Muat ikon Lucide untuk butang kawalan -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* CSS Variables from 'jadwal' */
+        :root {
+          --green-1: #0f5132; /* dark */
+          --green-2: #198754; /* primary */
+          --green-3: #d1e7dd; /* pale */
+          --green-4: #e9f7f1; /* bg */
+          --text-dark: #123;
+          --border-light: #e6f0ea;
+        }
+
+        /* Body style from 'jadwal' */
+        body {
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+            margin: 0;
+            background: var(--green-4);
+            color: var(--text-dark);
+            padding: 1rem; /* Menggantikan p-4 sm:p-8 */
+            min-height: 100vh;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+        }
+        
+        /* Icon style from 'quran_player' */
+        .icon {
+            display: inline-block;
+            width: 1.5rem;
+            height: 1.5rem;
+            stroke-width: 2;
+            stroke: currentColor;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* Main container style based on 'jadwal' .card */
+        .main-container {
+            width: 100%;
+            max-width: 64rem; /* 1024px, replaces max-w-4xl */
+            background: #fff;
+            border-radius: 14px;
+            border: 1px solid var(--border-light);
+            box-shadow: 0 2px 8px rgba(16, 94, 60, .06);
+            overflow: hidden;
+        }
+
+        /* Header style from 'jadwal' */
+        .player-header {
+            background: linear-gradient(135deg, var(--green-2), var(--green-1));
+            color: #fff;
+            padding: 1.5rem 2rem; /* p-6 md:p-8 */
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem; /* space-y-4 */
+        }
+        @media (min-width: 768px) { /* md: breakpoint */
+            .player-header {
+                flex-direction: row;
+            }
+        }
+        .player-header h1 {
+            margin: 0;
+            font-size: 1.5rem; /* text-2xl */
+            font-weight: 700; /* font-bold */
+        }
+        /* Style untuk sari kata, diambil dari fail jadwal */
+        .header-subtitle {
+            margin: 0;
+            opacity: .95;
+            font-size: 0.95rem; /* Saiz disesuaikan sedikit */
+            order: 2; /* Pastikan ia di bawah status */
+        }
+        @media (min-width: 768px) { /* md: breakpoint */
+             .header-subtitle {
+                order: 0; /* Balik ke susunan asal pada skrin besar */
+                text-align: left;
+                align-self: flex-start; /* Selarikan ke atas kiri */
+                flex: 1; /* Ambil ruang */
+             }
+             .player-header h1 {
+                 margin-bottom: 6px; /* Jarak antara tajuk dan sari kata */
+             }
+             .player-header {
+                 flex-direction: column; /* Tukar ke lajur */
+                 align-items: flex-start; /* Selarikan ke kiri */
+                 gap: 0.5rem; /* Kurangkan jarak */
+             }
+             #status-message {
+                 align-self: flex-end; /* Pindah status ke kanan atas */
+                 margin-top: -0.5rem; /* Tindih sedikit */
+             }
+        }
+
+
+        /* Status Message */
+        #status-message {
+            font-size: 0.875rem; /* text-sm */
+            padding: 0.25rem 0.75rem; /* px-3 py-1 */
+            border-radius: 9999px; /* rounded-full */
+            display: none; /* hidden */
+            order: 1; /* Pastikan ia di atas sari kata pada mod mudah alih */
+        }
+        #status-message.info {
+            background: var(--green-3);
+            color: var(--green-1);
+        }
+        #status-message.error {
+            background: #f8d7da; /* Bootstrap red */
+            color: #721c24;
+        }
+
+        /* Grid layout */
+        .player-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+        }
+        @media (min-width: 1024px) { /* lg: breakpoint */
+            .player-grid {
+                grid-template-columns: 2fr 1fr; /* Susun atur 2/3 dan 1/3 */
+            }
+        }
+
+        /* Player Control Card */
+        .player-controls-card {
+            padding: 1.5rem 2rem; /* p-6 md:p-8 */
+            border-bottom: 1px solid var(--border-light);
+        }
+        @media (min-width: 1024px) { /* lg: breakpoint */
+            .player-controls-card {
+                border-bottom: 0;
+                border-right: 1px solid var(--border-light);
+            }
+        }
+        .player-controls-inner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem; /* space-y-6 */
+        }
+
+        /* Surah Display */
+        #current-surah-name {
+            font-size: 1.875rem; /* text-3xl */
+            font-weight: 800; /* font-extrabold */
+            color: var(--green-1); /* Replaces text-white */
+            margin-top: 0.25rem;
+            min-height: 40px;
+        }
+        #current-surah-juz {
+            color: var(--green-2); /* Replaces text-sky-400 */
+            margin-top: 0.25rem;
+        }
+
+        /* Progress Bar from 'quran_player' adapted */
+        .progress-bar-container {
+            height: 8px;
+            cursor: pointer;
+            background-color: #f0f0f0; /* Lighter bg */
+            border-radius: 4px;
+            width: 100%;
+            max-width: 32rem; /* max-w-lg */
+        }
+        .progress-bar {
+            height: 100%;
+            background-color: var(--green-2); /* Replaces sky-400 */
+            border-radius: 4px;
+            transition: width 0.1s linear;
+        }
+
+        /* Controls from 'quran_player' adapted */
+        .control-button {
+            transition: transform 0.1s, background-color 0.2s, border-color 0.2s;
+            border-radius: 9999px;
+            padding: 0.75rem; /* p-3 */
+            border: 1px solid transparent;
+        }
+        .control-button:active {
+            transform: scale(0.95);
+        }
+        
+        /* Style for prev/next based on 'btn-map' */
+        .control-button.secondary {
+            background: #fff;
+            border-color: #cfe3d8;
+            color: var(--green-1);
+        }
+        .control-button.secondary:hover {
+            background: #f9fafb;
+        }
+
+        /* Style for play/pause based on 'btn-wa' */
+        .control-button.primary {
+            background: var(--green-2);
+            color: #fff;
+            padding: 1rem; /* p-4 */
+            box-shadow: 0 4px 6px -1px rgba(25, 135, 84, 0.3), 0 2px 4px -2px rgba(25, 135, 84, 0.2);
+        }
+        .control-button.primary:hover {
+             background: var(--green-1);
+        }
+        
+        /* Footer style from 'jadwal' (DIALIHKAN KE BAWAH) */
+        .app-footer {
+            text-align: center;
+            padding: 1.5rem; /* 24px */
+            color: #6c757d; /* Guna warna yang lebih lembut sikit */
+            font-size: 13px;
+            background: #fff; /* Pastikan ia ada latar belakang putih */
+            border-top: 1px solid var(--border-light); /* Garisan pemisah */
+        }
+
+        /* Playlist from 'quran_player' adapted */
+        .playlist-card {
+            padding: 1rem;
+        }
+        .playlist-card h3 {
+            font-size: 1.25rem; /* text-xl */
+            font-weight: 600; /* font-semibold */
+            margin-bottom: 0.75rem; /* mb-3 */
+            color: var(--green-1);
+        }
+        #playlist {
+            /* space-y: 0.25rem; */ /* (dibuang, guna margin) */
+            overflow-y: auto;
+            max-height: 36rem; /* max-h-96 lg:max-h-[500px] */
+        }
+
+        .playlist-item {
+            transition: background-color 0.2s, transform 0.1s;
+            padding: 0.75rem; /* p-3 */
+            cursor: pointer;
+            border-radius: 10px; /* rounded-lg */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--text-dark); /* Replaces text-gray-300 */
+            margin-bottom: 0.25rem; /* Ganti space-y-1 */
+        }
+        .playlist-item:hover {
+            background-color: var(--green-4); /* Replaces #1f2937 */
+        }
+        .playlist-item.active {
+            background-color: var(--green-3); /* Replaces teal-600 */
+            color: var(--green-1); /* Replaces white */
+            font-weight: 600;
+            border-left: 4px solid var(--green-2); /* Replaces sky-400 */
+        }
+        
+        /* Playlist Juz Title */
+        .juz-title {
+            font-size: 1.125rem; /* text-lg */
+            font-weight: 700; /* font-bold */
+            color: var(--green-2); /* Replaces sky-400 */
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            padding-top: 0.5rem;
+            border-top: 1px dashed var(--border-light);
+        }
+
+    </style>
+</head>
+<body class=""> <!-- Kelas Tailwind dibuang, diurus oleh CSS <style> -->
+
+    <div class="main-container">
+
+        <!-- HEADER PLAYER -->
+        <div class="player-header">
+             <!-- Diubah mengikut permintaan -->
+            <h1>Quran Player</h1>
+            <p class="header-subtitle">Ustadz Abu Usaman Syamsul Hadi Lc. hafizhahullah</p>
+            <div id="status-message"></div> <!-- Kelas dibuang, diurus oleh JS -->
+        </div>
+
+        <div class="player-grid">
+
+            <!-- PLAYER CONTROL CARD (Left/Top) -->
+            <div class="player-controls-card">
+                <div class="player-controls-inner">
+
+                    <!-- Paparan Surah Semasa -->
+                    <div class="text-center w-full">
+                        <p class="text-sm font-light text-gray-500">Sedang Dimainkan:</p> <!-- Teks digelapkan sedikit -->
+                        <h2 id="current-surah-name">Tiada Surah Dipilih</h2>
+                        <p id="current-surah-juz"></p>
+                    </div>
+
+                    <!-- Audio Element (Tersembunyi) -->
+                    <audio id="quran-audio" preload="auto" class="hidden"></audio>
+
+                    <!-- Progress Bar -->
+                    <div class="w-full max-w-lg">
+                        <div id="progress-container" class="progress-bar-container">
+                            <div id="progress-bar" class="progress-bar" style="width: 0%;"></div>
+                        </div>
+                        <div class="flex justify-between text-xs mt-2 text-gray-500"> <!-- Teks digelapkan sedikit -->
+                            <span id="current-time">0:00</span>
+                            <span id="duration">0:00</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Controls -->
+                    <div class="flex items-center space-x-6 pt-4">
+                        <button id="prev-btn" class="control-button secondary" aria-label="Surah Sebelumnya">
+                            <span class="icon" data-lucide="skip-back"></span>
+                        </button>
+                        <button id="play-pause-btn" class="control-button primary" aria-label="Main/Jeda">
+                            <span id="play-pause-icon" class="icon" data-lucide="play"></span>
+                        </button>
+                        <button id="next-btn" class="control-button secondary" aria-label="Surah Seterusnya">
+                            <span class="icon" data-lucide="skip-forward"></span>
+                        </button>
+                    </div>
+                    
+                    <!-- FOOTER PLAYER DIHAPUS DARI SINI -->
+
+                </div>
+            </div>
+
+            <!-- PLAYLIST (Right/Bottom) -->
+            <div class="playlist-card">
+                <h3>Senarai Surah</h3>
+                <div id="playlist" class="">
+                    <!-- Playlist akan dimuatkan oleh JavaScript -->
+                </div>
+            </div>
+        </div> <!-- Penutup .player-grid -->
+
+        <!-- FOOTER BARU (di luar grid, di dalam main-container) -->
+        <footer class="app-footer">
+            Sumber dari Archive.org
+        </footer>
+
+    </div> <!-- Penutup .main-container -->
+
+    <script>
+        // Ambil elemen DOM
+        const audio = document.getElementById('quran-audio');
+        const playPauseBtn = document.getElementById('play-pause-btn');
+        const playPauseIcon = document.getElementById('play-pause-icon');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const progressBar = document.getElementById('progress-bar');
+        const progressContainer = document.getElementById('progress-container');
+        const currentTimeEl = document.getElementById('current-time');
+        const durationEl = document.getElementById('duration');
+        const playlistEl = document.getElementById('playlist');
+        const currentSurahNameEl = document.getElementById('current-surah-name');
+        const currentSurahJuzEl = document.getElementById('current-surah-juz');
+        const statusMessageEl = document.getElementById('status-message');
+
+        const BASE_URL = 'https://archive.org/download/067AlMulk_201611/';
+
+        const quranPlaylist = [
+            // Juz 1
+            { number: 1, name: "Al-Fatihah", juz: 1, file: "https://ia601506.us.archive.org/17/items/RadioRodja_MurottalAbuUsamah/001_Abu%20Usamah_Al-Fatihah.ogg" },
+
+            // Juz 27
+            { number: 55, name: "Ar-Rahman", juz: 27, file: "https://dn720302.ca.archive.org/0/items/ar-rahman-abu-u/Ar%20rahman_abu%20u.mp3" },
+            
+            // Juz 29
+            { number: 67, name: "Al-Mulk", juz: 29, file: "067%20Al%20Mulk.mp3" },
+            { number: 68, name: "Al-Qalam", juz: 29, file: "068%20Al%20Qolam.mp3" },
+            { number: 69, name: "Al-Haqqah", juz: 29, file: "069%20Al%20Haaqqoh.mp3" },
+            { number: 70, name: "Al-Ma'arij", juz: 29, file: "070%20Al%20Maarij.mp3" },
+            { number: 71, name: "Nuh", juz: 29, file: "071%20Nuh.mp3" },
+            { number: 72, name: "Al-Jinn", juz: 29, file: "072%20Al%20Jin.mp3" },
+            { number: 73, name: "Al-Muzzammil", juz: 29, file: "073%20Al%20Muzzammil.mp3" },
+            { number: 74, name: "Al-Muddaththir", juz: 29, file: "074%20Al%20Muddattsir.mp3" },
+            { number: 75, name: "Al-Qiyamah", juz: 29, file: "075%20Al%20Qiyamah.mp3" },
+            { number: 76, name: "Al-Insan", juz: 29, file: "076%20Al%20Insan.mp3" },
+            { number: 77, name: "Al-Mursalat", juz: 29, file: "077%20Al%20Mursalaat.mp3" },
+
+            // Juz 30
+            // Catatan: Surah 78 (An-Naba) mempunyai nama fail "078 Al Fatihah dan An Naba.mp3"
+            { number: 78, name: "An-Naba", juz: 30, file: "078%20Al%20Fatihah%20dan%20An%20Naba.mp3" }, 
+            { number: 79, name: "An-Nazi'at", juz: 30, file: "079%20An%20Naaziat.mp3" },
+            { number: 80, name: "'Abasa", juz: 30, file: "080%20Abasa.mp3" },
+            { number: 81, name: "At-Takwir", juz: 30, file: "081%20At%20Takwir.mp3" },
+            { number: 82, name: "Al-Infitar", juz: 30, file: "082%20Al%20Infithar.mp3" },
+            { number: 83, name: "Al-Mutaffifin", juz: 30, file: "083%20Al%20Mutoffifiin.mp3" },
+            { number: 84, name: "Al-Inshiqaq", juz: 30, file: "084%20Al%20Insyiqoq.mp3" },
+            { number: 85, name: "Al-Buruj", juz: 30, file: "085%20Al%20Buruj.mp3" },
+            { number: 86, name: "At-Tariq", juz: 30, file: "086%20Al%20Thoriq.mp3" },
+            { number: 87, name: "Al-A'la", juz: 30, file: "087%20Al%20Ala.mp3" },
+            { number: 88, name: "Al-Ghashiyah", juz: 30, file: "088%20Al%20Ghosiyah.mp3" },
+            { number: 89, name: "Al-Fajr", juz: 30, file: "089%20Al%20Fajr.mp3" },
+            { number: 90, name: "Al-Balad", juz: 30, file: "090%20Al%20Balad.mp3" },
+            { number: 91, name: "Ash-Shams", juz: 30, file: "091%20As%20Syams.mp3" },
+            { number: 92, name: "Al-Lail", juz: 30, file: "092%20Al%20Lail.mp3" },
+            { number: 93, name: "Ad-Duha", juz: 30, file: "093%20Ad%20Dhuha.mp3" },
+            { number: 94, name: "Al-Inshirah", juz: 30, file: "094%20Ash-Sharh.mp3" },
+            { number: 95, name: "At-Tin", juz: 30, file: "095%20At%20Tiin.mp3" },
+            { number: 96, name: "Al-'Alaq", juz: 30, file: "096%20Al%20Alaq.mp3" },
+            { number: 97, name: "Al-Qadr", juz: 30, file: "097%20Al%20Qodar.mp3" },
+            { number: 98, name: "Al-Bayyinah", juz: 30, file: "098%20Al%20Bayyinah.mp3" },
+            { number: 99, name: "Az-Zalzalah", juz: 30, file: "099%20Al%20Zalzalah.mp3" },
+            { number: 100, name: "Al-'Adiyat", juz: 30, file: "100%20Al%20Adiyat.mp3" },
+            { number: 101, name: "Al-Qari'ah", juz: 30, file: "101%20Al-Qariah.mp3" },
+            { number: 102, name: "At-Takathur", juz: 30, file: "102%20At%20Takaatsur.mp3" },
+            { number: 103, name: "Al-'Asr", juz: 30, file: "103%20Al%20Ashr.mp3" },
+            { number: 104, name: "Al-Humazah", juz: 30, file: "104%20Al%20Humazah.mp3" },
+            { number: 105, name: "Al-Fil", juz: 30, file: "105%20Al%20Fiil.mp3" },
+            { number: 106, name: "Quraish", juz: 30, file: "106%20Quraisy.mp3" },
+            { number: 107, name: "Al-Ma'un", juz: 30, file: "107%20Al%20Maaun.mp3" },
+            { number: 108, name: "Al-Kauthar", juz: 30, file: "108%20Al%20Kautsar.mp3" },
+            { number: 109, name: "Al-Kafirun", juz: 30, file: "109%20Al%20Kaafirun.mp3" },
+            { number: 110, name: "An-Nasr", juz: 30, file: "110%20An%20Nashr.mp3" },
+            { number: 111, name: "Al-Masad", juz: 30, file: "111%20Al%20Masad.mp3" },
+            { number: 112, name: "Al-Ikhlas", juz: 30, file: "112%20Al%20Ikhlas.mp3" },
+            { number: 113, name: "Al-Falaq", juz: 30, file: "113%20Al%20Falaq.mp3" },
+            { number: 114, name: "An-Nas", juz: 30, file: "114%20An%20Naas.mp3" },
+        ];
+
+        let currentTrackIndex = -1;
+        let isPlaying = false;
+        let pendingCanPlayListener = null;
+
+        // Fungsi utiliti untuk format nombor Surah (cth: 1 -> 001)
+        const formatSurahNumber = (num) => {
+            return String(num).padStart(3, '0');
+        };
+
+        // Fungsi utiliti untuk format masa (cth: 65 -> 1:05)
+        const formatTime = (seconds) => {
+            if (isNaN(seconds)) return '0:00';
+            const minutes = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${minutes}:${secs < 10 ? '0' : ''}${secs}`;
+        };
+
+        // Fungsi untuk memaparkan mesej sementara di UI
+        const showMessage = (message, type = 'info') => {
+            statusMessageEl.textContent = message;
+            statusMessageEl.className = ''; // Kosongkan kelas sedia ada
+            if (type === 'error') {
+                statusMessageEl.classList.add('error');
+            } else {
+                statusMessageEl.classList.add('info');
+            }
+            statusMessageEl.style.display = 'block'; // Guna style untuk tunjuk
+
+            setTimeout(() => {
+                statusMessageEl.style.display = 'none'; // Guna style untuk sembunyi
+            }, 5000);
+        };
+
+        // Fungsi untuk mengemas kini butang Main/Jeda
+        const setPlayPauseState = (playing) => {
+            isPlaying = playing;
+            const iconName = playing ? 'pause' : 'play';
+            // Kaedah yang betul untuk menukar ikon Lucide secara dinamik
+            playPauseIcon.setAttribute('data-lucide', iconName);
+            playPauseIcon.innerHTML = ''; // Kosongkan SVG lama
+            lucide.createIcons({
+                nodes: [playPauseIcon],
+                attrs: { 'class': 'icon' }
+            });
+        };
+
+        // Fungsi utama untuk memuat dan mula memainkan Surah
+        const loadTrack = (index) => {
+            // 1. Bersihkan listener canplay lama yang belum dipicu
+            if (pendingCanPlayListener) {
+                audio.removeEventListener('canplay', pendingCanPlayListener);
+                pendingCanPlayListener = null;
+            }
+            
+            // 2. Tetapkan sumber audio
+            currentTrackIndex = index;
+            const track = quranPlaylist[index];
+            const surahPadded = formatSurahNumber(track.number);
+            
+            // Menggunakan properti file yang betul dari senarai main
+            let audioPath;
+            if (track.file.startsWith('http')) {
+                audioPath = track.file; // Gunakan URL penuh jika ia bermula dengan http
+            } else {
+                audioPath = `${BASE_URL}${track.file}`; // Gunakan BASE_URL untuk fail relatif
+            }
+            
+            audio.src = audioPath;
+            audio.currentTime = 0; // Set semula masa ke 0
+
+            // 3. Kemas kini paparan UI
+            currentSurahNameEl.textContent = track.name;
+            currentSurahJuzEl.textContent = `Juz ${track.juz}`;
+            showMessage(`Memuatkan: ${track.name}...`);
+            
+            // Kemas kini kelas 'active' pada senarai main
+            document.querySelectorAll('.playlist-item').forEach((item) => {
+                if (item.dataset.index == index) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+
+            // 4. Sediakan listener 'canplay' baharu
+            // Ini adalah fungsi yang akan dipanggil apabila audio sedia
+            const playOnReady = () => {
+                if (isPlaying) {
+                    audio.play().catch((e) => {
+                        console.error("Kesilapan memainkan audio: ", e);
+                        showMessage(`Gagal memainkan: ${track.name}`, 'error');
+                        setPlayPauseState(false);
+                    });
+                }
+                // Buang listener ini selepas ia digunakan
+                audio.removeEventListener('canplay', playOnReady);
+                pendingCanPlayListener = null;
+            };
+
+            // Simpan rujukan kepada listener baharu
+            pendingCanPlayListener = playOnReady;
+            // Lampirkan listener
+            audio.addEventListener('canplay', playOnReady);
+
+            // 5. Muatkan audio
+            audio.load();
+        };
+
+        const renderPlaylist = () => {
+            let currentJuz = 0;
+            playlistEl.innerHTML = ''; // Pastikan senarai dikosongkan jika dipanggil semula
+            quranPlaylist.forEach((track, index) => {
+                // Tambah tajuk Juz jika ia Surah pertama dalam Juz itu
+                if (track.juz !== currentJuz) {
+                    const juzTitle = document.createElement('h4');
+                    juzTitle.className = 'juz-title'; // Guna kelas CSS baharu
+                    juzTitle.textContent = `Juz ${track.juz}`;
+                    playlistEl.appendChild(juzTitle);
+                    currentJuz = track.juz;
+                }
+
+                const listItem = document.createElement('div');
+                listItem.className = 'playlist-item'; // Guna kelas CSS baharu
+                listItem.textContent = `${formatSurahNumber(track.number)}. ${track.name}`;
+                listItem.dataset.index = index;
+                
+                listItem.addEventListener('click', () => {
+                    // Hentikan audio semasa sebelum memuatkan
+                    audio.pause();
+                    setPlayPauseState(true); // Tetapkan niat untuk main
+                    loadTrack(index);
+                });
+                playlistEl.appendChild(listItem);
+            });
+        };
+
+        // Fungsi untuk menguruskan Main/Jeda
+        const togglePlayPause = () => {
+            if (currentTrackIndex === -1) {
+                // Tiada trek dimuatkan, mainkan yang pertama
+                setPlayPauseState(true);
+                loadTrack(0);
+            } else if (!audio.src) {
+                // Surah dipilih tetapi belum dimuat (jarang berlaku, tapi sebagai jaminan)
+                setPlayPauseState(true);
+                loadTrack(currentTrackIndex);
+            } else if (isPlaying) {
+                // Jika sedang main, jeda
+                audio.pause();
+                setPlayPauseState(false);
+            } else {
+                // Jika dijeda, mainkan
+                audio.play().catch(e => {
+                    console.error("Gagal main semula: ", e);
+                    showMessage('Gagal main semula, sila muat semula.', 'error');
+                });
+                setPlayPauseState(true);
+            }
+        };
+
+        // Fungsi untuk main Surah seterusnya
+        const playNext = () => {
+            let nextIndex = currentTrackIndex + 1;
+            if (nextIndex >= quranPlaylist.length) {
+                nextIndex = 0; // Pusing semula ke Surah pertama
+            }
+            setPlayPauseState(true); // Pastikan ia akan main
+            loadTrack(nextIndex);
+        };
+
+        // Fungsi untuk main Surah sebelumnya
+        const playPrev = () => {
+            let prevIndex = currentTrackIndex - 1;
+            if (prevIndex < 0) {
+                prevIndex = quranPlaylist.length - 1; // Pusing semula ke Surah terakhir
+            }
+            setPlayPauseState(true); // Pastikan ia akan main
+            loadTrack(prevIndex);
+        };
+
+        // --- Event Listeners ---
+
+        playPauseBtn.addEventListener('click', togglePlayPause);
+        nextBtn.addEventListener('click', playNext);
+        prevBtn.addEventListener('click', playPrev);
+
+        // Apabila audio tamat, mainkan Surah seterusnya secara automatik
+        audio.addEventListener('ended', playNext);
+
+        // Kemas kini paparan masa dan bar kemajuan
+        audio.addEventListener('timeupdate', () => {
+            const { currentTime, duration } = audio;
+            if (isNaN(duration)) return;
+            
+            const progressPercent = (currentTime / duration) * 100;
+            progressBar.style.width = `${progressPercent}%`;
+            currentTimeEl.textContent = formatTime(currentTime);
+            durationEl.textContent = formatTime(duration);
+        });
+
+        // Benarkan klik pada bar kemajuan untuk 'seek'
+        progressContainer.addEventListener('click', (e) => {
+            if (currentTrackIndex === -1) return; // Jangan buat apa-apa jika tiada audio
+            const width = progressContainer.clientWidth;
+            const clickX = e.offsetX;
+            const duration = audio.duration;
+            audio.currentTime = (clickX / width) * duration;
+        });
+
+        // Kendalikan ralat audio
+        audio.addEventListener('error', (e) => {
+            console.error("Ralat audio: ", e);
+            showMessage('Fail audio tidak dapat dimuatkan.', 'error');
+            setPlayPauseState(false);
+        });
+    
+        window.onload = () => {
+            // Panggil lucide.createIcons() DAHULU untuk menukar ikon statik.
+            lucide.createIcons();
+            
+            renderPlaylist();
+            // Mesej diubah suai untuk mencerminkan perubahan rupa
+            showMessage('Selamat datang! Reka bentuk telah dikemas kini.');
+        };
+    </script>
+</body>
+</html>
+
