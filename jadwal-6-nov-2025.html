@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Meta Property untuk Social Media Preview (Open Graph & Twitter) -->
+<meta property="og:title" content="Jadwal Kajian Sunnah – Kamis, 6 November 2025" />
+<meta property="og:description" content="Daftar lengkap kajian Sunnah se-Jabodetabek untuk hari Kamis, 6 November 2025" />
+<meta property="og:image" content="https://placehold.co/1200x630/198754/ffffff?text=JADWAL+KAJIAN+SUNNAH+KAMIS" />
+<meta property="og:url" content="#" /> <!-- Ganti dengan URL halaman sebenarnya jika sudah di-deploy -->
+<meta name="twitter:card" content="summary_large_image" />
+<title>Jadwal Kajian Sunnah Sejabodetabek</title>
+<style>
+:root{
+  --green-1:#0f5132; /* dark */
+  --green-2:#198754; /* primary */
+  --green-3:#d1e7dd; /* pale */
+  --green-4:#e9f7f1; /* bg */
+}
+*{box-sizing:border-box}
+body{
+  font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  margin:0;background:var(--green-4);color:#123;
+}
+header{background:linear-gradient(135deg,var(--green-2),var(--green-1));color:#fff;padding:28px 16px;text-align:center}
+header h1{margin:0 0 6px;font-size:clamp(20px,3vw,28px)}
+header p{margin:0;opacity:.95}
+main{max-width:1100px;margin:20px auto;padding:16px}
+/* Layout untuk filter dan search */
+.filter-group {
+    margin: 12px 0 20px;
+}
+.search-input {
+    width: 100%;
+    margin-bottom: 12px;
+}
+.controls{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+}
+@media (max-width:720px){.controls{grid-template-columns:1fr}}
+/* Menggunakan kelas 'search' untuk input text agar stylenya sama dengan select */
+select, .search-input input[type="text"]{
+    padding:10px 12px;
+    border-radius:10px;
+    border:1px solid #cfe3d8;
+    background:#fff;
+    box-shadow:0 1px 0 #fff inset;
+    width: 100%; /* Pastikan input text juga 100% lebarnya */
+}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media (max-width:1024px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:680px){.grid{grid-template-columns:1fr}}
+.card{background:#fff;border-radius:14px;padding:14px;border:1px solid #e6f0ea;box-shadow:0 2px 8px rgba(16,94,60,.06)}
+.card h3{margin:0 0 8px;font-size:18px;color:var(--green-1)}
+.meta{font-size:14px;line-height:1.5;margin:6px 0}
+.badge{display:inline-block;background:var(--green-3);color:var(--green-1);padding:2px 8px;border-radius:999px;font-size:12px;margin-right:6px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.btn{text-decoration:none;display:inline-block;padding:8px 10px;border-radius:10px;border:1px solid transparent;font-weight:600;font-size:13px}
+.btn-map{background:#fff;border-color:#cfe3d8;color:var(--green-1)}
+.btn-wa{background:var(--green-2);color:#fff}
+.count{margin:18px 0 12px;color:#456} /* Margin top diatur agar ada jarak dari teks info */
+
+/* Style untuk pesan informasi filter */
+.filter-info {
+    font-size: 13px; /* Ukuran font sama dengan footer */
+    color: #456;
+    text-align: center;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+footer{text-align:center;margin:24px 0 36px;color:#345;font-size:13px}
+hr.sep{border:none;border-top:1px dashed #cfe3d8;margin:18px 0}
+</style>
+</head>
+<body>
+<header>
+  <h1>Jadwal Kajian Sunnah Sejabodetabek</h1>
+  <!-- TANGGAL DIPERBARUI: KAMIS, 6 NOVEMBER 2025 -->
+  <p>📆 Kamis, 6 November 2025 / 15 Jumadal Ula 1447 H</p>
+</header>
+<main>
+  <div class="filter-group">
+    <!-- Input Search -->
+    <div class="search-input">
+        <input type="text" id="searchInput" placeholder="Cari Ustadz, Masjid, Kitab, atau Kota..." />
+    </div>
+
+    <div class="controls">
+      <select id="filterKota"></select>
+      <select id="filterUstadz"></select>
+    </div>
+
+    <!-- Teks informasi filter dinamis -->
+    <div class="filter-info">
+      Filter ustadz akan otomatis menyesuaikan setelah memilih kota.
+    </div>
+  </div>
+
+  <div class="count"><span id="countText"></span></div>
+  <div id="grid" class="grid"></div>
+  <hr class="sep" />
+  <footer>
+    Data oleh: Tim Jadwal Kajian Kaskus.<br>
+    Informasi ini hanya rangkuman, mohon cek kembali info kajian ke penyelenggara.<br><br>
+    Ikuti channel WhatsApp <a href="https://whatsapp.com/channel/0029VamBns5KLaHl0a7jma1t" target="_blank">Jadwal Kajian Kaskus</a>
+  </footer>
+</main>
+<script>
+// DATA KAJIAN UNTUK KAMIS, 6 NOVEMBER 2025
+const dataKajian = [
+  {
+    "kota": "Jakarta Timur",
+    "tempat": "Almaz Perumnas Klender (Lt.2) (Depan ITBU / Samping Masjid Nurul Islam Mawar Merah / Dekat RS. Islam Jakarta Pondok Kopi)",
+    "alamat": "Jl. Mawar Merah No.1, Prumnas Klender, Pondok Kopi, Kota Jakarta Timur",
+    "maps": "https://g.co/kgs/QvRRyrV",
+    "waktu": "09.00 – 11.00 WIB (khusus ikhwan)",
+    "kitab": "Tafsir QS. An-Nas, QS. Al-Falaq, QS. Al-Ikhlash",
+    "bab": "",
+    "ustadz": "Ustadz Djazuli Ruhan Basyir, Lc., M.A",
+    "kontak": ["0818-0870-0053"]
+  },
+  {
+    "kota": "Jakarta Timur",
+    "tempat": "Masjid Al Muhajirin (Pulo Gebang Permai Blok D)",
+    "alamat": "Jl. Pulau Bali, Pulo Gebang, Kec. Cakung, Kota Jakarta Timur",
+    "maps": "https://maps.app.goo.gl/dLsJWDDL98qjLcT16",
+    "waktu": "09.00 – 11.00 WIB",
+    "kitab": "Kitab al-Kabair",
+    "bab": "Thiyarah (Merasa Pesimis Karena Burung dan Semacamnya)",
+    "ustadz": "Ustadz Nizar Saad Jabal, Lc., M.Pd",
+    "kontak": ["0812-9631-074", "0813-1596-2590", "0812-8750-1977"]
+  },
+  {
+    "kota": "Jakarta Timur",
+    "tempat": "Musholla Imam Syafi’i (MUIS)",
+    "alamat": "Jl. Raya Condet No.45, Balekambang, Kec. Kramat jati, Kota Jakarta Timur",
+    "maps": "https://goo.gl/maps/TEaZU7ekX4Jcs9ri8",
+    "waktu": "09.00 WIB – selesai (khusus akhwat)",
+    "kitab": "Tathoyyur, Syirik Yang Diremehkan",
+    "bab": "",
+    "ustadz": "Ustadz Fachrurozi ibnu Mu'allim, Lc",
+    "kontak": ["0812-8500-9678"]
+  },
+  {
+    "kota": "Jakarta Timur",
+    "tempat": "Musholla Baiturrahman",
+    "alamat": "Gg. Olah Raga 2, Cililitan, Kec. Kramat jati, Kota Jakarta Timur",
+    "maps": "https://maps.app.goo.gl/aUkrTHS2fuUhVciU7",
+    "waktu": "Ba'da Maghrib – selesai (setiap kamis) (khusus ikhwan)",
+    "kitab": "Kitab Syarah Ushul Tsalatsah",
+    "bab": "Kebangkitan Setelah Kematian",
+    "ustadz": "Ustadz Pamuji Hadi Waluyo, Lc",
+    "kontak": ["0813-1444-4332"]
+  },
+  {
+    "kota": "Jakarta Timur",
+    "tempat": "Masjid Jami Daarul Iman",
+    "alamat": "Jl. Puskesmas Gg. H.Imih, 5, Kalisari, Kec. Ps. Rebo, Kota Jakarta Timur",
+    "maps": "https://maps.app.goo.gl/KNpTRrCPcFBmCxpJA",
+    "waktu": "Ba'da Maghrib – selesai",
+    "kitab": "Malu, Sifat Allah dan Akhlak Mulia Nabi Muhammad",
+    "bab": "",
+    "ustadz": "Syaikh Dr. Arkam Ziyadah",
+    "kontak": ["0859-4139-8320"]
+  },
+  {
+    "kota": "Jakarta Timur",
+    "tempat": "Masjid Al Mizan",
+    "alamat": "Jl. Gabus II, Rawamangun, Kec. Pulo Gadung, Kota Jakarta Timur",
+    "maps": "https://maps.app.goo.gl/FTMxrnvKF75jEGxJ6",
+    "waktu": "Ba’da Maghrib – selesai",
+    "kitab": "Kitab Tazkiyatunnafs",
+    "bab": "Neraka",
+    "ustadz": "Ustadz Ahmad Rasyid Bazher",
+    "kontak": ["0815-1373-2646", "0812-9037-017"]
+  },
+  {
+    "kota": "Jakarta Timur",
+    "tempat": "Masjid SD Nabawi Islamic School",
+    "alamat": "Jl. Sawo Raya No.24, Rawamangun, Kec. Pulo Gadung, Kota Jakarta Timur",
+    "maps": "https://goo.gl/maps/i8DmWYPVi482",
+    "waktu": "Ba’da Maghrib – selesai",
+    "kitab": "Kitab Fawaidul Fawaid",
+    "bab": "",
+    "ustadz": "Ustadz Nizar Saad Jabal, Lc., M.Pd",
+    "kontak": []
+  },
+  {
+    "kota": "Jakarta Timur",
+    "tempat": "Masjid Imam Nawawi",
+    "alamat": "Jl. Panti Asuhan No.32, RT.07/RW.04, Cipinang Cempedak, Kecamatan Jatinegara, Kota Jakarta Timur",
+    "maps": "https://maps.app.goo.gl/ZfmvRc9NjtmG6Tfy8",
+    "waktu": "Ba’da Maghrib – selesai",
+    "kitab": "Tafsir Al-Qur'an",
+    "bab": "",
+    "ustadz": "Ustadz Muammar Attamimi, Lc",
+    "kontak": ["0819-1188-0101"]
+  },
+  {
+    "kota": "Jakarta Timur",
+    "tempat": "Masjid Kubah 9 Al Muhajirin (Transito Transmigrasi PPKD)",
+    "alamat": "Jl. H. Naman No.1, RT.1/RW.3, Kompleks Kantor Pondok Kelapa, Kota Jakarta Timur",
+    "maps": "https://maps.app.goo.gl/6s7adkfovDqRFXYx8",
+    "waktu": "Ba’da Maghrib – selesai",
+    "kitab": "Umdatul Ahkam, Kitab Haji",
+    "bab": "Haji Tamattu'",
+    "ustadz": "Ustadz Abu Ya'la Kurnaedi, Lc., M.Pd",
+    "kontak": ["0816-988-553"]
+  },
+  {
+    "kota": "Jakarta Selatan",
+    "tempat": "Masjid Al Sofwa",
+    "alamat": "Jl. Lenteng Agung Raya No.35, RT.7/RW.1, Lenteng Agung, Kec. Jagakarsa, Kota Jakarta Selatan",
+    "maps": "https://maps.app.goo.gl/vSiZ14sNviDveg2Z6",
+    "waktu": "09.00 – 11.00 WIB (khusus akhwat)",
+    "kitab": "Ya Allah... Pertolongan Mu Yang Kuharapkan",
+    "bab": "",
+    "ustadz": "Ustadzah Ummu Ihsan Choiriyah",
+    "kontak": []
+  },
+  {
+    "kota": "Jakarta Selatan",
+    "tempat": "Masjid Baitussalam",
+    "alamat": "Jl. BNI 46, Cilandak Barat, Kec. Cilandak, Kota Jakarta Selatan",
+    "maps": "https://goo.gl/maps/SuzsWEHnDVFGcGQ8A",
+    "waktu": "09.30 – 11.00 WIB",
+    "kitab": "Kitab Tauhid",
+    "bab": "",
+    "ustadz": "Ustadz Mohamad Nursamsul Qamar",
+    "kontak": []
+  },
+  {
+    "kota": "Jakarta Selatan",
+    "tempat": "Masjid Nurul Hidayah (Sesi 1)",
+    "alamat": "Jl. Brawijaya XII, Pulo, Kec. Kby. Baru, Kota Jakarta Selatan",
+    "maps": "https://maps.app.goo.gl/k8FymSTed9nxspbf6",
+    "waktu": "09.30 WIB – selesai",
+    "kitab": "Husnul Khatimah Hanya Untuk Orang Yang Bertauhid",
+    "bab": "",
+    "ustadz": "Ustadz Yovin Abu Hammam",
+    "kontak": []
+  },
+  {
+    "kota": "Jakarta Selatan",
+    "tempat": "Masjid Nurul Hidayah (Sesi 2)",
+    "alamat": "Jl. Brawijaya XII, Pulo, Kec. Kby. Baru, Kota Jakarta Selatan",
+    "maps": "https://maps.app.goo.gl/k8FymSTed9nxspbf6",
+    "waktu": "13.00 WIB – selesai",
+    "kitab": "Dosa Orang Tua Kepada Anaknya",
+    "bab": "",
+    "ustadz": "Ustadz Najmi Umar Bakkar",
+    "kontak": []
+  },
+  {
+    "kota": "Jakarta Selatan",
+    "tempat": "Masjid Fatimah Muhammad",
+    "alamat": "Jl. Tebet Barat Raya No.44, Tebet Bar., Kec. Tebet, Kota Jakarta Selatan",
+    "maps": "https://maps.app.goo.gl/fqd3dvhTy545FVAK8",
+    "waktu": "10.00 WIB – selesai",
+    "kitab": "Kitab ad-Daa' wa ad-Dawaa'",
+    "bab": "Hukuman Qadariyyah Terdiri Dari Hukuman Hati Serta Jasad",
+    "ustadz": "Ustadz Ahmad Rasyid Bazher",
+    "kontak": ["0813-5201-5757", "0818-0692-4440"]
+  },
+  {
+    "kota": "Jakarta Selatan",
+    "tempat": "Gedung Yayasan Al Jannah",
+    "alamat": "Jl. Gudang Peluru Raya Blok B1 No.4, Kb. Baru, Kec. Tebet, Kota Jakarta Selatan",
+    "maps": "https://maps.app.goo.gl/Z7e7Un7anujnN7ik8",
+    "waktu": "13.00 WIB – selesai (khusus akhwat)",
+    "kitab": "Ringkasan Kitab Qahotsaluhafan Ibnu Qoyyim",
+    "bab": "",
+    "ustadz": "Ustadz Abu Yahya Badru Salam, Lc",
+    "kontak": ["0851-0210-7741"]
+  },
+  {
+    "kota": "Jakarta Selatan",
+    "tempat": "Masjid Nurul Iman (Blok M Square Mall, Lt.7) (Sesi 1)",
+    "alamat": "Jl. Melawai 5, Melawai, Kec. Kby. Baru, Kota Jakarta Selatan",
+    "maps": "https://goo.gl/maps/p26d1YXFeeT2",
+    "waktu": "Ba'da Ashar – selesai",
+    "kitab": "Fiqih Dzikir dan Do'a",
+    "bab": "Doa Orang Beriman Pada Hari Perhitungan",
+    "ustadz": "Ustadz Nurdin Apud Sarbini, Lc., M.Pd",
+    "kontak": ["0838-7444-2121"]
+  },
+  {
+    "kota": "Jakarta Selatan",
+    "tempat": "Masjid Nurul Iman (Blok M Square Mall, Lt.7) (Sesi 2)",
+    "alamat": "Jl. Melawai 5, Melawai, Kec. Kby. Baru, Kota Jakarta Selatan",
+    "maps": "https://goo.gl/maps/p26d1YXFeeT2",
+    "waktu": "Ba'da Maghrib – selesai",
+    "kitab": "Kitab Intisari Hilyah Thalibil Ilmi",
+    "bab": "",
+    "ustadz": "Ustadz Muflih Safitra, M.Sc",
+    "kontak": ["0838-7444-2121"]
+  },
+  {
+    "kota": "Jakarta Selatan",
+    "tempat": "Masjid Al Hikmah (Komplek DDN II)",
+    "alamat": "Jl. Pangkalan Jati, Pd. Labu, Kec. Cilandak, Kota Jakarta Selatan",
+    "maps": "https://maps.app.goo.gl/XNyRfo5p7uTFJVs79",
+    "waktu": "Ba'da Maghrib – selesai",
+    "kitab": "Kitabul Jami",
+    "bab": "Menghindari Syahwat Dunia",
+    "ustadz": "Ustadz Abdullah Sya'roni",
+    "kontak": []
+  },
+  {
+    "kota": "Jakarta Barat",
+    "tempat": "Masjid Nurul Iman",
+    "alamat": "Jl. Raya Pos Pengumben, Srengseng, Kec. Kembangan, Kota Jakarta Barat",
+    "maps": "https://maps.app.goo.gl/dfX1LQhEtx3g4By7A",
+    "waktu": "Ba'da Subuh – selesai (setiap senin - kamis)",
+    "kitab": "Qowa'idul Arba",
+    "bab": "",
+    "ustadz": "Ustadz Aldhi Ferdian, Lc",
+    "kontak": ["0812-8765-7371"]
+  },
+  {
+    "kota": "Jakarta Barat",
+    "tempat": "Masjid At Tabayyun (Perumahan Taman Villa Meruya Blok D12)",
+    "alamat": "Meruya Selatan, Kec. Kembangan, Kota Jakarta Barat",
+    "maps": "https://maps.app.goo.gl/hiKuge5uD6DXHEiv9",
+    "waktu": "09.00 WIB – selesai",
+    "kitab": "Salafy Yang Berkualitas",
+    "bab": "",
+    "ustadz": "Ustadz Muflih Safitra, M.Sc",
+    "kontak": []
+  },
+  {
+    "kota": "Jakarta Barat",
+    "tempat": "Masjid Nurul Falah (Komplek Pajak)",
+    "alamat": "Jl. Penyelesaian Tomang 3, Meruya Utara, Kec. Kembangan, Kota Jakarta Barat",
+    "maps": "https://maps.app.goo.gl/ZPUggLHfEJZXSnEw5",
+    "waktu": "09.00 WIB – selesai (setiap selasa & kamis)",
+    "kitab": "Kitab Riyadhsuh Shalihin, Taman Orang-Orang Saleh",
+    "bab": "",
+    "ustadz": "Ustadz Aldhi Ferdian, Lc",
+    "kontak": ["0817-143-700"]
+  },
+  {
+    "kota": "Jakarta Utara",
+    "tempat": "Masjid Al Khodamuttaqwa",
+    "alamat": "Jl. Padamarang No.10, Tanjung Priok, Kec. Tanjung Priok, Jakarta Utara",
+    "maps": "https://maps.app.goo.gl/FNLfAsKywijGrPQCA",
+    "waktu": "Ba’da Dzuhur – selesai",
+    "kitab": "Fiqh Jual Beli",
+    "bab": "",
+    "ustadz": "Usatdz Syahrul Fatwa, Lc",
+    "kontak": []
+  },
+  {
+    "kota": "Jakarta Pusat",
+    "tempat": "Masjid Al Azhar (Sesi 1)",
+    "alamat": "Jl. Cempaka Putih Barat III, Cempaka Putih, Jakarta Pusat, Kota Jakarta Pusat",
+    "maps": "https://maps.app.goo.gl/YCurPeaSCPruFbCE9",
+    "waktu": "10.00 WIB – selesai (khusus akhwat)",
+    "kitab": "Hal-Hal Yang Wajib Diketahui",
+    "bab": "",
+    "ustadz": "Ustadz Gigih Surya Nugraha, S.H",
+    "kontak": ["0812-9057-3437"]
+  },
+  {
+    "kota": "Jakarta Pusat",
+    "tempat": "Masjid Al Azhar (Sesi 2)",
+    "alamat": "Jl. Cempaka Putih Barat III, Cempaka Putih, Jakarta Pusat, Kota Jakarta Pusat",
+    "maps": "https://maps.app.goo.gl/YCurPeaSCPruFbCE9",
+    "waktu": "Ba’da Maghrib– selesai",
+    "kitab": "Kitab Kaidah Tauhid Rububiyyah",
+    "bab": "Kaidah-Kaidah Tauhid",
+    "ustadz": "Ustadz Zainudin Khuzairi",
+    "kontak": ["0812-9057-3437"]
+  },
+  {
+    "kota": "Jakarta Pusat",
+    "tempat": "Masjid Al Hidayah (Basement Tower Fagio, Apartemen Green Pramuka)",
+    "alamat": "Rawasari, Cempaka Putih, Central Jakarta City",
+    "maps": "https://maps.app.goo.gl/3oVzLc92uFA6q8Nn9",
+    "waktu": "13.00 WIB – selesai",
+    "kitab": "Doa Yang Terhalang",
+    "bab": "",
+    "ustadz": "Ustadz Novtriadi, Lc., M.Pd",
+    "kontak": ["0812-8025-6009"]
+  },
+  {
+    "kota": "Bogor",
+    "tempat": "Masjid Alumni IPB",
+    "alamat": "Jl. Cidangiang No.4, Baranangsiang, Kecamatan Bogor Tengah, Kota Bogor",
+    "maps": "https://goo.gl/maps/UTrdEE1ikg82",
+    "waktu": "09.00 WIB – selesai (khusus akhwat)",
+    "kitab": "Kapan Istri Boleh Minta Cerai?",
+    "bab": "",
+    "ustadz": "Ustadz Abdul Aziz al-Owainy, Lc",
+    "kontak": ["0811-8030-070"]
+  },
+  {
+    "kota": "Bogor",
+    "tempat": "Baitul Qur’an Linnisa (Nirwana Estate Cikaret)",
+    "alamat": "Jl. HM. Toha, Cikaret, Kec. Cibinong, Kabupaten Bogor",
+    "maps": "https://maps.app.goo.gl/ieXiHXY9XJdQxU9w6",
+    "waktu": "09.00 – 10.45 WIB (khusus akhwat)",
+    "kitab": "Sebagian Umat Ini Ada Yang Menyembah Berhala",
+    "bab": "",
+    "ustadz": "Ustadz Ruslan Nurhadi, Lc., M.Pd.I",
+    "kontak": ["0812-9367-7914"]
+  },
+  {
+    "kota": "Bogor",
+    "tempat": "Masjid Muadz Bin Jabal (Dekat Kota Wisata)",
+    "alamat": "Jl. H. Iping, Kav. Bulog, Bojong Kulur, Kec. Gunung Putri, Kabupaten Bogor",
+    "maps": "https://maps.app.goo.gl/jfkCUdDDNfSFZbzG6",
+    "waktu": "09.00 – 11.00 WIB",
+    "kitab": "8 Pilar Sukses Mendidik Anak",
+    "bab": "",
+    "ustadz": "Ustadz Novtriadi, Lc., M.Pd",
+    "kontak": ["0878-7472-0020"]
+  },
+  {
+    "kota": "Bogor",
+    "tempat": "Masjid Shafa Marwah",
+    "alamat": "Jl. Letda Nasir No.85, Cikeas Udik, Kec. Gn. Putri, Kabupaten Bogor",
+    "maps": "https://maps.app.goo.gl/8P7Zunadf1vJG56v9",
+    "waktu": "09.00 – 11.00 WIB",
+    "kitab": "Pengaruh Al-Qur'an Untuk Penyembuh Hati",
+    "bab": "",
+    "ustadz": "Ustadz Abu Bakar al-Akhdhory, Lc., M.Pd",
+    "kontak": ["0813-1870-8075"]
+  },
+  {
+    "kota": "Bogor",
+    "tempat": "MT Al Hikmah Pati (Ex. MT Tazkia Aulia – Citra Gran)",
+    "alamat": "(Masuk Kompleks Citra Gran arah sport club lalu belok kiri lewatin jembatan masuk gerbang). Jl. Wira Bhakti 3 No. WB 13, Cikeas Udik, Kec. Gn. Putri, Kabupaten Bogor",
+    "maps": "https://maps.app.goo.gl/c6uZL618uzGsXa827",
+    "waktu": "09.30 WIB – selesai",
+    "kitab": "Tasfir QS. Al-Baqarah ayat 62",
+    "bab": "",
+    "ustadz": "Ustadz Abu Ya'la Kurnaedi, Lc., M.Pd",
+    "kontak": []
+  },
+  {
+    "kota": "Bogor",
+    "tempat": "Masjid Al Furqon (Vilani) (Villa Nusa Indah 2 Blok Z)",
+    "alamat": "Bojong Kulur, Gunung Putri, Bogor Regency",
+    "maps": "https://maps.app.goo.gl/ArGqxJEkqBCuba6j9",
+    "waktu": "09.30 WIB – selesai",
+    "kitab": "Kitab Bulughul Maram",
+    "bab": "Zuhud dan Wara, Peringatan Tentang Kecintaan Terhadap Dunia",
+    "ustadz": "Ustadz Ega Abu Fahd, Lc",
+    "kontak": ["0813-8442-4575", "0812-8713-8489", "0813-1905-8966", "0813-8185-8892"]
+  },
+  {
+    "kota": "Bogor",
+    "tempat": "Muniira Office Halal Destination",
+    "alamat": "Jl. Alternatif Cibubur, Cileungsi, Kec. Cileungsi, Kabupaten Bogor",
+    "maps": "https://maps.app.goo.gl/Te3VrKaXxeFdESaP9",
+    "waktu": "09.30 – 11.00 WIB (khusus akhwat)",
+    "kitab": "Asmaul Husna",
+    "bab": "",
+    "ustadz": "Ustadz Abu Ihsan al-Atsary, M.A",
+    "kontak": ["0818-832-184"]
+  },
+  {
+    "kota": "Bogor",
+    "tempat": "Masjid Jami Al Barkah",
+    "alamat": "Jl. Transyogi KM.7 No.756 / Jl. Pahlawan Kampung Tengah, Cileungsi, Kec. Cileungsi, Kabupaten Bogor",
+    "maps": "https://maps.app.goo.gl/VBeJuprEfz1d4rix8",
+    "waktu": "Ba'da Ashar – 17.00 WIB (khusus akhwat)",
+    "kitab": "karakteristik Istri Yang Shalihah",
+    "bab": "",
+    "ustadz": "Ustadz Abu Zaid Cecep Nurohman, Lc., M.A",
+    "kontak": ["0822-9800-0756"]
+  },
+  {
+    "kota": "Bogor",
+    "tempat": "Masjid Darul Hijrah (Perumahan Taman Ria Persada)",
+    "alamat": "Pasir Angin, Cileungsi, Pasir Angin, Bogor, Kabupaten Bogor",
+    "maps": "https://maps.app.goo.gl/y6kC43o4ZiWUufNr7",
+    "waktu": "Ba'da Maghrib – isya",
+    "kitab": "Kitab Tadzkirotus Sami'",
+    "bab": "",
+    "ustadz": "Ustadz Dr. Abu Ja'far Cecep Rahmat, Lc., M.Ag",
+    "kontak": ["0896-9916-4133"]
+  },
+  {
+    "kota": "Depok",
+    "tempat": "Masjid Merah Baiturrahman",
+    "alamat": "Jl. Tole Iskandar No.KM. 3, Mekar Jaya, Kec. Sukmajaya, Kota Depok",
+    "maps": "https://maps.app.goo.gl/tmdoKufCFb9tEMZq6",
+    "waktu": "09.30 – 11.00 WIB",
+    "kitab": "Tafsir QS. An-Naba",
+    "bab": "Mereka Tidak Akan Berbicara Dihadapan Allah",
+    "ustadz": "Ustadz Luthfi Abdul Jabbar",
+    "kontak": ["0895-3279-82905"]
+  },
+  {
+    "kota": "Depok",
+    "tempat": "Masjid KH. Muhammad Yusuf (Komplek Pesona Khayangan)",
+    "alamat": "Jl. Pesona Khayangan Blok FI No.12, Mekar Jaya, Kec. Sukmajaya, Kota Depok",
+    "maps": "https://maps.app.goo.gl/2QAUxsiiJkGvQxnH9",
+    "waktu": "09.30 WIB – selesai",
+    "kitab": "Hidup Ini Terlalu Singkat Untuk di Sia-Siakan",
+    "bab": "",
+    "ustadz": "Ustadz Farhan Abu Furaihan",
+    "kontak": []
+  },
+  {
+    "kota": "Depok",
+    "tempat": "Musholla At Taubah (Depan Jati Cafe)",
+    "alamat": "Jl. Kebun Jati, TMP Kalimulya, Pondok Rajeg, Kec. Cibinong, Kota Depok",
+    "maps": "https://maps.app.goo.gl/DCL8eizKRQunidxS9",
+    "waktu": "Ba’da Maghrib – selesai (setiap kamis ke 1, 2 & 3)",
+    "kitab": "al-Mulakkhas fi Syarhi Kitab at-Tauhid",
+    "bab": "",
+    "ustadz": "Ustadz Sofyan Chalid bin Idham Ruray, Lc",
+    "kontak": ["0811-8184-211"]
+  },
+  {
+    "kota": "Tangerang",
+    "tempat": "Masjid Jami’ Al Jihad",
+    "alamat": "Jl. Cipto Mangunkusumo, Paninggilan Utara, Ciledug, Tangerang City",
+    "maps": "https://maps.app.goo.gl/xZDVTbBFLvroy5h47",
+    "waktu": "09.00 – 10.30 WIB (khusus akhwat)",
+    "kitab": "Tafsir Al-Qur'an",
+    "bab": "",
+    "ustadz": "Ustadz Afdhol Noverdi, Lc",
+    "kontak": ["0878-7191-4586"]
+  },
+  {
+    "kota": "Tangerang",
+    "tempat": "Musholla Raudhah",
+    "alamat": "Pendopo Islamic village, Klp. Dua, Kecamatan Kelapa Dua, Kabupaten Tangerang",
+    "maps": "https://maps.app.goo.gl/TruuGfXFLFGfiFmy9",
+    "waktu": "09.00 – 11.00 WIB (khusus akhwat)",
+    "kitab": "Kitab ad-Daa' wa ad-Dawaa'",
+    "bab": "",
+    "ustadz": "Ustadzah Dina Ummu Zuhair",
+    "kontak": []
+  },
+  {
+    "kota": "Tangerang",
+    "tempat": "Masjid Nurul Amal (Ubud Village Ciledug)",
+    "alamat": "East Sudimara, Ciledug, Tangerang City",
+    "maps": "https://maps.app.goo.gl/KDy3jdALGTJ3E8CF8",
+    "waktu": "09.30 – 11.00 WIB",
+    "kitab": "Amalan Terbaik",
+    "bab": "",
+    "ustadz": "Ustadz Naiim Luthfi Ambadar, Lc",
+    "kontak": []
+  },
+  {
+    "kota": "Tangerang",
+    "tempat": "Masjid Rahmatan Lil Alamin (Marala)",
+    "alamat": "Jl. Taman Golf Raya, Buaran Indah, Kec. Tangerang, Kota Tangerang",
+    "maps": "https://maps.app.goo.gl/uLDKRDNvb8JFcreG9",
+    "waktu": "12.30 WIB – selesai",
+    "kitab": "Kitab Arbain Nawawiyah",
+    "bab": "",
+    "ustadz": "Ustadz Azhar Khalid bin Seff, Lc., M.A",
+    "kontak": ["0812-9020-1800"]
+  },
+  {
+    "kota": "Tangerang",
+    "tempat": "Masjid An Naba",
+    "alamat": "Jl. Akses Graha Raya Km.01, Pinang, Sudimara Pinang, Kec. Pinang, Kota Tangerang",
+    "maps": "https://maps.app.goo.gl/t8XqzGe8ah5FZJCBA",
+    "waktu": "Ba'da Maghrib – selesai",
+    "kitab": "Kitab Aqidah Ahli Sunnah wal Jama'ah",
+    "bab": "",
+    "ustadz": "Ustadz Dr. Musyaffa' ad-Dariny, M.A",
+    "kontak": []
+  },
+  {
+    "kota": "Tangerang Selatan",
+    "tempat": "Masjid Al Amanah (Perumahan Bukit Nusa Indah)",
+    "alamat": "Jl. Kakak Tua, Kel.Serua Kec.Ciputat, Serua, Ciputat, South Tangerang City",
+    "maps": "https://maps.app.goo.gl/tVovb627w15yxzxv8",
+    "waktu": "Ba'da Maghrib – selesai",
+    "kitab": "Lamud Durril Mantsur min Aqwalil Ma'tsur fil I'tiqod was Sunnah",
+    "bab": "",
+    "ustadz": "Ustadz Abu Yahya Tomy",
+    "kontak": ["0896-5513-1603"]
+  },
+  {
+    "kota": "Bekasi",
+    "tempat": "Masjid Raya At Taqwa",
+    "alamat": "Jl. Jembatan 11, Lumbu Utara Raya, Bojong Rawalumbu, Kec. Rawalumbu, Kota Bekasi",
+    "maps": "https://maps.app.goo.gl/hrjSW9PErBsZhbzB8",
+    "waktu": "08.30 – 10.00 WIB (khusus akhwat)",
+    "kitab": "Tafsir QS. Maryam",
+    "bab": "",
+    "ustadz": "Ustadz Subakir Ahmad",
+    "kontak": []
+  },
+  {
+    "kota": "Bekasi",
+    "tempat": "Masjid Al Furqon Taman Galaxy",
+    "alamat": "Jl. Pulosirih Tengah Raya XII, Jaka Setia, Kec. Bekasi Selatan, Kota Bekasi",
+    "maps": "https://maps.app.goo.gl/yURrhgCNqRTz3fiv5",
+    "waktu": "09.30 – 11.00 WIB",
+    "kitab": "Tafsir QS. Hud ayat 112",
+    "bab": "Istiqomah",
+    "ustadz": "Ustadz Abu Ja'far Khalil Gibran, Lc",
+    "kontak": ["0812-8482-0497", "0812-8734-113", "0812-1000-3525"]
+  },
+  {
+    "kota": "Bekasi",
+    "tempat": "Masjid Al Azhar Summarecon",
+    "alamat": "Jl. Bulevar Utara, Marga Mulya, Kec. Bekasi Utara, Kota Bekasi",
+    "maps": "https://maps.app.goo.gl/EBSsJiQ2zvDn1Mza6",
+    "waktu": "09.30 WIB – selesai (khusus akhwat)",
+    "kitab": "Kitab Fiqih Wanita",
+    "bab": "Akhir Kehidupan Yang Paling Tragis",
+    "ustadz": "Ustadz Sofyan Chalid Ruray, Lc",
+    "kontak": ["0813-1629-9603"]
+  },
+  {
+    "kota": "Bekasi",
+    "tempat": "Masjid Bunga Bangsa",
+    "alamat": "Jl. KH. Agus Salim No.100, RT.001/RW.008, Bekasi Jaya, Kec. Bekasi Tim., Kota Bekasi",
+    "maps": "https://maps.app.goo.gl/rKBmJVhJf94KaYJ18",
+    "waktu": "09.30 WIB – selesai",
+    "kitab": "Air Mata Yang Menghantarkan ke Syurga",
+    "bab": "",
+    "ustadz": "Ustadz Zainal Abidin, Lc., M.M",
+    "kontak": ["0813-8100-9822"]
+  },
+  {
+    "kota": "Bekasi",
+    "tempat": "Masjid Ar Rahman (Taman Sentosa Cikarang)",
+    "alamat": "Jl. Villa Sentosa VII No.C7, RW.12, Pasirsari, Cikarang Selatan",
+    "maps": "https://maps.app.goo.gl/qZzpfRiPc7nn6nkA8",
+    "waktu": "13.30 – 15.00 WIB (khusus akhwat)",
+    "kitab": "Kitab Tauhid",
+    "bab": "Tentang Nusyrah",
+    "ustadz": "Ustadz Muhammad Mukhtar, Lc., M.H",
+    "kontak": ["0812-9670-214"]
+  },
+  {
+    "kota": "Bekasi",
+    "tempat": "Masjid Al Fursan Islamic School",
+    "alamat": "Jl. Raya Parpostel No.102, Jatiasih, Kec. Jatiasih, Kota Bekasi",
+    "maps": "https://maps.app.goo.gl/aacypt35hHtakGXQ8",
+    "waktu": "Ba'da Maghrib – selesai",
+    "kitab": "Tafsir QS. An-Nazi'at",
+    "bab": "",
+    "ustadz": "Ustadz Rizki Ahmad Baswedan, Lc",
+    "kontak": []
+  }
+];
+
+function normalizePhone(num) {
+  // Menjaga hanya digit
+  const digits = (num||'').replace(/[^0-9]/g,'');
+  if(!digits) return null;
+  // Mengubah format 08... menjadi 628...
+  const fixed = digits.startsWith('0') ? '62' + digits.slice(1) : (digits.startsWith('62') ? digits : '62' + digits);
+  return 'https://wa.me/' + fixed;
+}
+
+// Fungsi untuk merender ulang opsi Ustadz berdasarkan kota yang dipilih
+function renderUstadzOptions(filteredData = dataKajian) {
+  // Mengambil semua ustadz unik dari data yang difilter
+  const ustadzSet = new Set(filteredData.map(x=>x.ustadz));
+  const ust = document.getElementById('filterUstadz');
+  
+  // Ambil nilai filter Ustadz saat ini untuk mencegah reset yang tidak perlu
+  const currentUstVal = ust.value; 
+
+  // Buat opsi Ustadz yang baru
+  const newOptions = '<option value="__all__">Semua Ustadz</option>' + 
+    Array.from(ustadzSet).sort().map(u=>`<option value="${u}">${u}</option>`).join('');
+
+  ust.innerHTML = newOptions;
+
+  // Coba pertahankan pilihan Ustadz jika masih ada
+  if (ustadzSet.has(currentUstVal)) {
+    ust.value = currentUstVal;
+  }
+}
+
+// Fungsi untuk merender opsi Kota saat inisialisasi
+function renderKotaOptions() {
+  const kotaSet = new Set(dataKajian.map(x=>x.kota));
+  const kota = document.getElementById('filterKota');
+  kota.innerHTML = '<option value="__all__">Semua Kota</option>' + 
+    Array.from(kotaSet).sort().map(k=>`<option value="${k}">${k}</option>`).join('');
+}
+
+function cardHTML(item) {
+  const kontak = (item.kontak||[]).filter(Boolean);
+  const kontakLinks = kontak.map(k=>{ 
+    const href = normalizePhone(k); 
+    // Menghapus tag gender 🚹/🚺 yang mungkin ada di kontak text
+    const cleanK = k.replace(/[\uD83D\uDEB9\uD83D\uDEBA]/g, '').trim(); 
+    return href ? `<a class="btn btn-wa" href="${href}" target="_blank">📱 ${cleanK}</a>` : ''; 
+  }).join(' ');
+  const mapBtn = item.maps ? `<a class="btn btn-map" target="_blank" href="${item.maps}">📍 Lihat Peta</a>` : '';
+  
+  const babContent = item.bab ? `<div class="meta">📖 Bab: <strong>${item.bab}</strong></div>` : '';
+  
+  // Menampilkan hanya kitab saja di baris 📚
+  return `<div class="card">
+    <h3>${item.tempat}</h3>
+    <div class="meta">${item.alamat}</div>
+    <div class="meta">🕒 ${item.waktu}</div>
+    <div class="meta">📚 <strong>${item.kitab}</strong></div>
+    ${babContent}
+    <div class="meta">👤 ${item.ustadz}</div>
+    <div class="actions">
+      ${mapBtn} ${kontakLinks || ''}
+    </div>
+  </div>`;
+}
+
+function applyFilter() {
+  const kotaVal = document.getElementById('filterKota').value;
+  const ustVal = document.getElementById('filterUstadz').value;
+  const searchVal = document.getElementById('searchInput').value.toLowerCase(); // Ambil nilai search
+
+  // 1. Filter data berdasarkan kata kunci pencarian global (dari semua data)
+  let initialFilteredList = dataKajian.slice();
+  if (searchVal) {
+    initialFilteredList = dataKajian.filter(item => {
+        // Gabungkan semua nilai string item untuk pencarian
+        const text = (item.tempat + ' ' + item.alamat + ' ' + item.kitab + ' ' + item.ustadz + ' ' + item.kota + ' ' + (item.bab || '')).toLowerCase();
+        return text.includes(searchVal);
+    });
+  }
+
+  // 2. Filter data berdasarkan kota yang dipilih (dari list hasil search)
+  let filteredByKota = initialFilteredList;
+  if (kotaVal !== '__all__') {
+    filteredByKota = initialFilteredList.filter(x => x.kota === kotaVal);
+  }
+  
+  // 3. Update dropdown Ustadz berdasarkan hasil filter kota
+  renderUstadzOptions(filteredByKota);
+
+  // 4. Lanjutkan proses filter berdasarkan Ustadz
+  let finalFilteredList = filteredByKota;
+  
+  // Ambil nilai ustadz yang mungkin sudah disesuaikan setelah renderUstadzOptions
+  const currentUstValAfterUpdate = document.getElementById('filterUstadz').value;
+
+  if (currentUstValAfterUpdate !== '__all__') {
+    finalFilteredList = finalFilteredList.filter(x => x.ustadz === currentUstValAfterUpdate);
+  }
+  
+  const grid = document.getElementById('grid');
+  grid.innerHTML = finalFilteredList.map(cardHTML).join('');
+  
+  // Update teks jumlah kajian
+  let filterStatus = '';
+  if (kotaVal !== '__all__' || currentUstValAfterUpdate !== '__all__' || searchVal) {
+      filterStatus = ' (terfilter)';
+  } else {
+      filterStatus = ' (semua)';
+  }
+
+  document.getElementById('countText').textContent = `${finalFilteredList.length} kajian ditampilkan` + filterStatus;
+}
+
+// Handler untuk filter kota yang akan merender ulang Ustadz
+document.getElementById('filterKota').addEventListener('change', () => {
+    // Ketika kota berubah, jalankan applyFilter() yang di dalamnya akan merender ulang Ustadz dan filter kartu.
+    applyFilter();
+});
+
+// Handler untuk filter Ustadz
+document.getElementById('filterUstadz').addEventListener('change', () => {
+    // Ketika Ustadz berubah, kita hanya perlu memanggil applyFilter()
+    applyFilter();
+});
+
+// Handler untuk Search Input (trigger saat user selesai mengetik dan melepaskan tombol)
+document.getElementById('searchInput').addEventListener('keyup', () => {
+    // Reset filter Ustadz dan Kota ke default saat melakukan pencarian baru
+    document.getElementById('filterKota').value = '__all__';
+    document.getElementById('filterUstadz').value = '__all__';
+    applyFilter();
+});
+
+// Inisialisasi awal
+renderKotaOptions();
+// Render Ustadz Options pertama kali dengan semua data
+renderUstadzOptions(); 
+// Tampilkan semua data kajian saat pertama kali dimuat
+applyFilter(); 
+</script>
+</body>
+</html>
+
