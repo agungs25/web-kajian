@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitor Tensi Harian</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Firebase SDKs -->
+    <script type="module">
+        // Import modul Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, Timestamp, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Aktifkan logging debug untuk Firebase Firestore
+        setLogLevel('debug');
+
+        // Variabel global dari lingkungan Canvas (WAJIB digunakan)
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        let db, auth, userId;
+        let readings = []; // State untuk menyimpan data tensi
+        let isAuthReady = false; // Status untuk melacak kesiapan autentikasi
+
+        // Fungsi inisialisasi Firebase dan Autentikasi
+        async function initFirebase() {
+            if (!firebaseConfig) {
+                console.error("Firebase config tidak ditemukan.");
+                document.getElementById('app-status').textContent = "EROR: Konfigurasi Firebase tidak ditemukan.";
+                return;
+            }
+
+            try {
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                
+                // Set up authentication listener - Ini adalah sumber tunggal untuk mengatur userId dan memuat data
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        isAuthReady = true;
+                        document.getElementById('user-id-display').textContent = `ID Pengguna: ${userId}`;
+                        document.getElementById('app-status').textContent = "Autentikasi BERHASIL. Data dimuat secara real-time.";
+                        setupDataListener();
+                    } else {
+                        // Kasus fallback jika token hilang atau tidak valid (jarang terjadi di lingkungan Canvas)
+                        // Kita tetap menggunakan user ID sementara (misalnya UUID) jika anonim, meskipun ini akan membuat data terpisah.
+                        userId = auth.currentUser?.uid || crypto.randomUUID();
+                        isAuthReady = true;
+                        document.getElementById('app-status').textContent = "PERINGATAN: Autentikasi anonim atau sementara. Data dimuat.";
+                        document.getElementById('user-id-display').textContent = `ID Pengguna sementara: ${userId}`;
+                        // Tetap panggil listener, meskipun datanya mungkin tidak ditemukan (karena userId baru)
+                        setupDataListener(); 
+                    }
+                });
+
+                // Coba masuk menggunakan token kustom, jika gagal, masuk secara anonim
+                if (initialAuthToken) {
+                    console.log("Mencoba masuk dengan token kustom...");
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    console.log("Tidak ada token kustom, masuk secara anonim...");
+                    await signInAnonymously(auth);
+                }
+
+            } catch (error) {
+                console.error("Error saat inisialisasi Firebase atau autentikasi:", error);
+                document.getElementById('app-status').textContent = `EROR Kritis: Gagal mengautentikasi pengguna. ${error.message}`;
+            }
+        }
+
+        // Fungsi untuk mendapatkan path koleksi data pengguna
+        function getCollectionRef() {
+            if (!db || !userId) {
+                console.error("Database atau User ID tidak siap.");
+                return null;
+            }
+            // Path: /artifacts/{appId}/users/{userId}/blood_pressure_readings
+            return collection(db, 'artifacts', appId, 'users', userId, 'blood_pressure_readings');
+        }
+        
+        // Utilitas untuk mengelola status tombol
+        function setButtonState(buttonId, isLoading) {
+            const btn = document.getElementById(buttonId);
+            const icon = btn.querySelector('svg');
+            const text = btn.querySelector('span');
+
+            if (isLoading) {
+                btn.disabled = true;
+                btn.classList.add('opacity-50', 'cursor-not-allowed');
+                text.textContent = 'Menyimpan...';
+                if (icon) icon.style.display = 'none';
+            } else {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                text.textContent = buttonId === 'btnPagi' ? 'Pagi' : 'Sore';
+                if (icon) icon.style.display = 'inline';
+            }
+        }
+
+        // Fungsi untuk menyimpan data tensi baru
+        window.saveReading = async function(timeOfDay) {
+            const systolicInput = document.getElementById('systolic');
+            const diastolicInput = document.getElementById('diastolic');
+            const systolic = parseInt(systolicInput.value);
+            const diastolic = parseInt(diastolicInput.value);
+            const buttonId = timeOfDay === 'Pagi' ? 'btnPagi' : 'btnSore';
+
+            setButtonState(buttonId, true); // Loading state
+
+            if (!db || !userId || !isAuthReady) {
+                showMessage("Aplikasi belum siap. Tunggu Autentikasi selesai.", 'bg-yellow-500');
+                setButtonState(buttonId, false);
+                return;
+            }
+
+            if (isNaN(systolic) || isNaN(diastolic) || systolic <= 0 || diastolic <= 0) {
+                showMessage("Masukkan nilai sistolik dan diastolik yang valid (angka positif).", 'bg-red-500');
+                setButtonState(buttonId, false);
+                return;
+            }
+
+            try {
+                const readingsCol = getCollectionRef();
+                if (readingsCol) {
+                    await addDoc(readingsCol, {
+                        systolic: systolic,
+                        diastolic: diastolic,
+                        timeOfDay: timeOfDay,
+                        timestamp: Timestamp.now()
+                    });
+                    
+                    // Reset input field setelah sukses
+                    systolicInput.value = '';
+                    diastolicInput.value = '';
+                    showMessage(`Data Tensi ${timeOfDay} (${systolic}/${diastolic}) berhasil **Tersimpan**!`, 'bg-green-3');
+                }
+            } catch (e) {
+                console.error("Error menambahkan dokumen: ", e);
+                showMessage("Gagal menyimpan data. Cek konsol.", 'bg-red-500');
+            } finally {
+                setButtonState(buttonId, false); // Stop loading
+            }
+        }
+
+        // Fungsi untuk menampilkan pesan (pengganti alert)
+        function showMessage(message, bgColorClass = 'bg-green-3') {
+            const msgBox = document.getElementById('message-box');
+            msgBox.innerHTML = message;
+            
+            // Mengatur kelas warna berdasarkan class yang dikirim
+            let colorClass = 'text-green-1';
+            if (bgColorClass.includes('red') || bgColorClass.includes('yellow')) {
+                colorClass = 'text-white';
+            } else if (bgColorClass === 'bg-green-3') {
+                colorClass = 'var(--green-1)';
+            }
+
+
+            msgBox.className = `p-3 mb-4 text-sm rounded-lg shadow-md transition-opacity duration-300 ${colorClass} ${bgColorClass}`;
+            msgBox.style.opacity = '1';
+            msgBox.style.color = colorClass;
+            setTimeout(() => {
+                msgBox.style.opacity = '0';
+            }, 5000);
+        }
+
+        // Fungsi untuk setup listener data real-time
+        function setupDataListener() {
+            const readingsCol = getCollectionRef();
+            if (readingsCol) {
+                // Query: Urutkan berdasarkan timestamp terbaru
+                const q = query(readingsCol, orderBy("timestamp", "desc"));
+
+                onSnapshot(q, (snapshot) => {
+                    const newReadings = [];
+                    snapshot.forEach((doc) => {
+                        const data = doc.data();
+                        newReadings.push({ id: doc.id, ...data });
+                    });
+                    readings = newReadings;
+                    renderReadingsTable(readings);
+                    renderChart(readings);
+                    console.log(`Data Tensi dimuat: ${readings.length} entri ditemukan.`);
+                }, (error) => {
+                    console.error("Error mendengarkan data: ", error);
+                    showMessage("Gagal memuat data real-time.", 'bg-red-500');
+                });
+            }
+        }
+
+        // Fungsi utilitas untuk memformat tanggal
+        function formatDate(timestamp) {
+            if (!timestamp || !timestamp.toDate) return 'N/A';
+            const date = timestamp.toDate();
+            return date.toLocaleDateString('id-ID', {
+                day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+            });
+        }
+
+        // Fungsi untuk menentukan kategori tensi (sederhana)
+        function getBpCategory(systolic, diastolic) {
+            if (systolic >= 180 || diastolic >= 120) return { text: "Krisis Hipertensi", color: "text-red-700 font-bold", badgeClass: "bg-red-200 text-red-700" };
+            if (systolic >= 140 || diastolic >= 90) return { text: "Hipertensi Tingkat 2", color: "text-red-500", badgeClass: "bg-red-100 text-red-500" };
+            if (systolic >= 130 || diastolic >= 80) return { text: "Hipertensi Tingkat 1", color: "text-orange-500", badgeClass: "bg-orange-100 text-orange-500" };
+            if (systolic < 120 && diastolic < 80) return { text: "Normal", color: "text-green-500", badgeClass: "bg-green-100 text-green-500" };
+            return { text: "Elevated/Perhatian", color: "text-yellow-600", badgeClass: "bg-yellow-100 text-yellow-600" };
+        }
+
+        // Fungsi untuk merender tabel riwayat
+        function renderReadingsTable(data) {
+            const tableBody = document.getElementById('readings-table-body');
+            if (!tableBody) return;
+
+            tableBody.innerHTML = '';
+            if (data.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="4" class="py-4 text-center text-gray-500">Belum ada data tensi yang tersimpan.</td></tr>';
+                return;
+            }
+
+            // Hanya tampilkan 10 data terbaru di tabel
+            data.slice(0, 10).forEach(reading => {
+                const category = getBpCategory(reading.systolic, reading.diastolic);
+                const row = document.createElement('tr');
+                row.className = 'border-b border-green-3 bg-white hover:bg-green-4';
+                
+                row.innerHTML = `
+                    <td class="px-4 py-3 text-center text-sm">${reading.timeOfDay}</td>
+                    <td class="px-4 py-3 text-center font-semibold text-lg">${reading.systolic}/${reading.diastolic}</td>
+                    <td class="px-4 py-3 text-center text-sm">
+                        <span class="badge ${category.badgeClass}">${category.text}</span>
+                    </td>
+                    <td class="px-4 py-3 text-xs text-gray-500 text-right">${formatDate(reading.timestamp)}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // --- Fungsi untuk merender Grafik (Canvas) ---
+        function renderChart(data) {
+            const canvas = document.getElementById('bpChart');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const container = canvas.parentElement;
+
+            // Pastikan canvas memiliki dimensi yang responsif
+            canvas.width = container.offsetWidth;
+            canvas.height = 300;
+
+            // 1. Proses Data: Ambil rata-rata sistolik/diastolik per hari
+            const dailyData = {}; // { YYYY-MM-DD: { totalSystolic: N, totalDiastolic: N, count: N } }
+            
+            data.forEach(reading => {
+                const dateKey = reading.timestamp.toDate().toISOString().substring(0, 10);
+                if (!dailyData[dateKey]) {
+                    dailyData[dateKey] = { totalSystolic: 0, totalDiastolic: 0, count: 0 };
+                }
+                dailyData[dateKey].totalSystolic += reading.systolic;
+                dailyData[dateKey].totalDiastolic += reading.diastolic;
+                dailyData[dateKey].count++;
+            });
+
+            // Ubah ke array terurut (7 hari terakhir)
+            const sortedDates = Object.keys(dailyData).sort().slice(-7); // Ambil 7 hari terakhir
+            
+            const chartData = sortedDates.map(dateKey => {
+                const day = dailyData[dateKey];
+                return {
+                    date: dateKey.substring(5).replace('-', '/'), // MM/DD
+                    avgSystolic: Math.round(day.totalSystolic / day.count),
+                    avgDiastolic: Math.round(day.totalDiastolic / day.count)
+                };
+            });
+
+            // Jika tidak ada data 
+            if (chartData.length < 2) { // Minimal 2 titik untuk garis
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#6b7280';
+                ctx.font = '14px system-ui, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('Tidak ada data yang cukup untuk grafik (Min. 2 data).', canvas.width / 2, canvas.height / 2);
+                return;
+            }
+
+            // 2. Persiapan Gambar
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const padding = 40;
+            const width = canvas.width - 2 * padding;
+            const height = canvas.height - 2 * padding;
+            
+            // Tentukan skala Y
+            const allValues = [].concat(
+                chartData.map(d => d.avgSystolic),
+                chartData.map(d => d.avgDiastolic)
+            );
+            const dataMax = Math.max(140, ...allValues); // Skala minimal 140
+            const dataMin = Math.min(80, ...allValues);  // Skala minimal 80
+            const range = dataMax - dataMin;
+            const stepY = height / range;
+            const stepX = width / (chartData.length - 1);
+
+            // Fungsi helper untuk menggambar garis
+            const drawLine = (dataKey, color) => {
+                ctx.beginPath();
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 2;
+                
+                chartData.forEach((point, i) => {
+                    const x = padding + i * stepX;
+                    // Normalisasi Y terhadap dataMin
+                    const y = padding + height - ((point[dataKey] - dataMin) * stepY);
+                    
+                    if (i === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                    
+                    // Gambar titik data
+                    ctx.fillStyle = color;
+                    ctx.beginPath();
+                    ctx.arc(x, y, 4, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Tampilkan nilai
+                    ctx.font = '10px system-ui, sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillStyle = '#123';
+                    ctx.fillText(point[dataKey], x, y - 8);
+                });
+                ctx.stroke();
+            };
+
+            // 3. Gambar Sumbu X dan Label Tanggal
+            ctx.beginPath();
+            ctx.strokeStyle = '#e6f0ea'; // Garis dari pakde.css
+            ctx.moveTo(padding, padding + height);
+            ctx.lineTo(padding + width, padding + height);
+            ctx.stroke();
+
+            ctx.fillStyle = '#456';
+            ctx.font = '10px system-ui, sans-serif';
+            chartData.forEach((point, i) => {
+                const x = padding + i * stepX;
+                ctx.textAlign = 'center';
+                ctx.fillText(point.date, x, canvas.height - 10);
+            });
+            
+            // 4. Gambar Garis-garis Panduan (Garis Normal)
+            const normalSystolic = 120;
+            const normalDiastolic = 80;
+
+            // Hanya gambar jika berada dalam rentang Y
+            if (normalSystolic >= dataMin && normalSystolic <= dataMax) {
+                const y120 = padding + height - ((normalSystolic - dataMin) * stepY);
+                // Garis 120 (Normal Sistolik)
+                ctx.strokeStyle = 'rgba(25, 135, 84, 0.5)'; // Hijau primary (var(--green-2)) tipis
+                ctx.setLineDash([5, 5]); // Garis putus-putus
+                ctx.beginPath();
+                ctx.moveTo(padding, y120);
+                ctx.lineTo(padding + width, y120);
+                ctx.stroke();
+                ctx.fillStyle = 'var(--green-1)';
+                ctx.textAlign = 'right';
+                ctx.fillText('120', padding - 5, y120 + 3);
+            }
+
+            if (normalDiastolic >= dataMin && normalDiastolic <= dataMax) {
+                const y80 = padding + height - ((normalDiastolic - dataMin) * stepY);
+                // Garis 80 (Normal Diastolik)
+                ctx.strokeStyle = 'rgba(25, 135, 84, 0.3)'; // Hijau lebih tipis
+                ctx.beginPath();
+                ctx.moveTo(padding, y80);
+                ctx.lineTo(padding + width, y80);
+                ctx.stroke();
+                ctx.fillStyle = 'var(--green-1)';
+                ctx.textAlign = 'right';
+                ctx.fillText('80', padding - 5, y80 + 3);
+            }
+
+            ctx.setLineDash([]); // Reset garis putus-putus
+
+            // 5. Gambar Garis Data
+            drawLine('avgSystolic', '#ef4444'); // Merah untuk Sistolik (Tetap, karena batas risiko)
+            drawLine('avgDiastolic', '#3b82f6'); // Biru untuk Diastolik (Tetap)
+            
+            // 6. Legenda
+            ctx.font = '12px system-ui, sans-serif';
+            ctx.textAlign = 'left';
+            
+            ctx.fillStyle = '#ef4444';
+            ctx.fillRect(padding, 10, 10, 10);
+            ctx.fillText('Sistolik (Rata-rata 7 hari)', padding + 25, 19);
+
+            ctx.fillStyle = '#3b82f6';
+            ctx.fillRect(padding + 200, 10, 10, 10);
+            ctx.fillText('Diastolik (Rata-rata 7 hari)', padding + 215, 19);
+        }
+        
+        // Atur agar grafik digambar ulang saat ukuran jendela berubah (Responsif)
+        window.addEventListener('resize', () => {
+             // Pastikan auth/db sudah siap sebelum mencoba merender
+            if (readings.length > 0) {
+                 renderChart(readings);
+            }
+        });
+
+        // Panggil inisialisasi saat DOM siap
+        document.addEventListener('DOMContentLoaded', initFirebase);
+    </script>
+    <style>
+        /* CSS DARI FILE pakde.css DITEMPEL DI SINI */
+        :root {
+          --green-1: #0f5132; /* dark */
+          --green-2: #198754; /* primary */
+          --green-3: #d1e7dd; /* pale */
+          --green-4: #e9f7f1; /* bg */
+        }
+
+        * {
+          box-sizing: border-box;
+        }
+
+        body {
+          font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+          margin: 0;
+          background: var(--green-4);
+          color: #123;
+        }
+
+        header {
+          background: linear-gradient(135deg, var(--green-2), var(--green-1));
+          color: #fff;
+          padding: 28px 16px;
+          text-align: center;
+        }
+        header h1 {
+          margin: 0 0 6px;
+          font-size: clamp(20px, 3vw, 28px);
+        }
+        header p {
+          margin: 0;
+          opacity: .95;
+        }
+
+        main {
+          max-width: 1100px;
+          margin: 20px auto;
+          padding: 16px;
+        }
+        
+        /* Filter/Controls (diadaptasi untuk layout ini) */
+        .controls {
+          display: flex;
+          gap: 12px;
+        }
+        @media (max-width: 600px) {
+          .controls {
+            flex-direction: column;
+          }
+        }
+
+        .input-group input[type="number"] {
+          padding: 10px 12px;
+          border-radius: 10px;
+          border: 1px solid #cfe3d8;
+          background: #fff;
+          box-shadow: 0 1px 0 #fff inset;
+          width: 100%;
+        }
+
+        /* Card dari pakde.css */
+        .card {
+          background: #fff;
+          border-radius: 14px;
+          padding: 14px;
+          border: 1px solid #e6f0ea;
+          box-shadow: 0 2px 8px rgba(16, 94, 60, .06);
+          margin-bottom: 20px; /* Tambahkan margin agar terpisah */
+        }
+        .card h2 { /* Modifikasi h3 menjadi h2 */
+          margin: 0 0 10px;
+          font-size: 18px;
+          font-weight: 600;
+          color: var(--green-1);
+        }
+
+        /* Badge dari pakde.css */
+        .badge {
+          display: inline-block;
+          background: var(--green-3);
+          color: var(--green-1);
+          padding: 2px 8px;
+          border-radius: 999px;
+          font-size: 12px;
+          margin-right: 6px;
+        }
+        /* Tambahan warna badge untuk kategori BP */
+        .badge.bg-red-200 { background-color: #fca5a5; color: #991b1b; }
+        .badge.bg-red-100 { background-color: #fee2e2; color: #ef4444; }
+        .badge.bg-orange-100 { background-color: #ffedd5; color: #f97316; }
+        .badge.bg-green-100 { background-color: #d1e7dd; color: var(--green-1); }
+        .badge.bg-yellow-100 { background-color: #fef9c3; color: #ca8a04; }
+
+        /* Button styling (diadaptasi dari .btn) */
+        .btn-green {
+            background: var(--green-2);
+            color: #fff;
+            padding: 10px 12px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+        .btn-green:hover:not(:disabled) {
+            background: var(--green-1);
+        }
+
+        /* Tweak untuk tabel */
+        .table-header {
+            background-color: var(--green-3);
+            color: var(--green-1);
+        }
+        .table-header th {
+            padding: 12px 10px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        /* Style untuk Canvas */
+        #bpChart {
+            display: block;
+            margin: 10px auto;
+        }
+        /* Tambahan untuk pesan notifikasi */
+        #message-box {
+            color: var(--green-1);
+            background-color: var(--green-3);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <header>
+        <h1 class="font-bold">Monitor Tensi Harian</h1>
+        <p>Aplikasi untuk penderita hipertensi: Catat Tensi Pagi & Sore</p>
+    </header>
+
+    <main>
+        <p class="text-xs text-center mb-4 opacity-70" id="user-id-display">ID Pengguna: Menunggu Autentikasi...</p>
+
+        <div id="app-status" class="p-3 mb-4 text-sm rounded-lg border border-green-2 text-green-1 bg-green-3">
+            Memuat data...
+        </div>
+
+        <div id="message-box" class="opacity-0 transition-opacity duration-300"></div>
+
+        <!-- Bagian Input Data -->
+        <div class="card">
+            <h2 class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Input Tensi Baru
+            </h2>
+            <hr class="sep">
+            <div class="controls mb-6">
+                <div class="input-group">
+                    <label for="systolic" class="block text-sm font-medium text-gray-700 mb-1">Sistolik (atas)</label>
+                    <input type="number" id="systolic" placeholder="e.g. 135" class="w-full">
+                </div>
+                <div class="input-group">
+                    <label for="diastolic" class="block text-sm font-medium text-gray-700 mb-1">Diastolik (bawah)</label>
+                    <input type="number" id="diastolic" placeholder="e.g. 85" class="w-full">
+                </div>
+            </div>
+            
+            <p class="text-sm font-medium text-gray-700 mb-3">Waktu Pengukuran:</p>
+            <div class="controls">
+                <button id="btnPagi" onclick="saveReading('Pagi')" class="btn-green">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline mr-2" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M10 2a1 1 0 011 1v2a1 1 0 01-2 0V3a1 1 0 011-1zm4 12a1 1 0 01-1 1h-6a1 1 0 01-1-1v-6a1 1 0 011-1h6a1 1 0 011 1v6zm-1.707-8.293a1 1 0 00-1.414-1.414l-.001.001A1 1 0 0010 6a1 1 0 00-1 1v.001a1 1 0 00-.707.293l-1.414 1.414A1 1 0 008 10v.001A1 1 0 0010 12a1 1 0 001-1v-2a1 1 0 00-1-1z" />
+                    </svg>
+                    <span>Pagi</span>
+                </button>
+                <button id="btnSore" onclick="saveReading('Sore')" class="btn-green">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline mr-2" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 12a1 1 0 01-1 1h-6a1 1 0 01-1-1v-6a1 1 0 011-1h6a1 1 0 011 1v6zm-3.293-1.707a1 1 0 00-1.414 1.414A1 1 0 0010 14a1 1 0 00.707-.293l1.414-1.414A1 1 0 0012 10V8a1 1 0 112 0v2a1 1 0 01-1 1h-1a1 1 0 01-.707.293z" />
+                    </svg>
+                    <span>Sore</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Bagian Grafik Tren -->
+        <div class="card">
+            <h2 class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M7 12l3-3 3 3 4-4M7 21a2 2 0 01-2-2V5a2 2 0 012-2h10a2 2 0 012 2v14a2 2 0 01-2 2H7z" />
+                </svg>
+                Tren Tensi (Rata-rata 7 Hari Terakhir)
+            </h2>
+            <hr class="sep">
+            <div class="relative overflow-x-auto">
+                <canvas id="bpChart" class="w-full"></canvas>
+            </div>
+        </div>
+
+        <!-- Bagian Riwayat Data -->
+        <div class="card">
+            <h2 class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.42 9.643 5 8.328 5 4.49 5 1 8.5 1 12s3.49 7 7.328 7c1.315 0 2.504-.42 3.672-1.253M12 6.253c1.168.832 2.357 1.253 3.672 1.253 3.839 0 7.328-3.5 7.328-7s-3.489-7-7.328-7c-1.315 0-2.504.42-3.672 1.253" />
+                </svg>
+                Riwayat 10 Data Terbaru
+            </h2>
+            <hr class="sep">
+            <div class="overflow-x-auto rounded-lg border border-green-3">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="table-header">
+                        <tr>
+                            <th scope="col" class="px-4 py-3 text-xs font-medium uppercase tracking-wider">WAKTU</th>
+                            <th scope="col" class="px-4 py-3 text-xs font-medium uppercase tracking-wider">TENSI (MMHG)</th>
+                            <th scope="col" class="px-4 py-3 text-xs font-medium uppercase tracking-wider">KATEGORI</th>
+                            <th scope="col" class="px-4 py-3 text-xs font-medium uppercase tracking-wider text-right">TANGGAL</th>
+                        </tr>
+                    </thead>
+                    <tbody id="readings-table-body" class="bg-white divide-y divide-green-3">
+                        <!-- Data akan diisi oleh JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <footer>
+            Data disimpan aman menggunakan Firebase Firestore.
+        </footer>
+    </main>
+</body>
+</html>
+
