@@ -1,909 +1,118 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Monitor Tensi Harian</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
-    <!-- CSS tidak berubah -->
-    <style>
-      :root {
-        --green-1: #0f5132; /* dark */
-        --green-2: #198754; /* primary */
-        --green-3: #d1e7dd; /* pale */
-        --green-4: #e9f7f1; /* bg */
-
-        /* Variabel tambahan untuk UI */
-        --red-light: #f8d7da;
-        --red-dark: #842029;
-        --yellow-light: #fff3cd;
-        --yellow-dark: #664d03;
-        --blue-light: #cfe2ff;
-        --blue-dark: #0a58ca;
-      }
-
-      * {
-        box-sizing: border-box;
-      }
-
-      body {
-        font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-        margin: 0;
-        background: var(--green-4);
-        color: #123;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-      }
-
-      header {
-        background: linear-gradient(135deg, var(--green-2), var(--green-1));
-        color: #fff;
-        padding: 24px 16px;
-        text-align: center;
-        border-bottom: 4px solid var(--green-1);
-      }
-      header h1 {
-        margin: 0 0 6px;
-        font-size: clamp(20px, 4vw, 26px);
-        font-weight: 700;
-      }
-      header p {
-        margin: 0;
-        opacity: .95;
-        font-size: 15px;
-      }
-
-      main {
-        max-width: 800px;
-        margin: 20px auto;
-        padding: 0 16px 32px 16px;
-      }
-      
-      .user-id-box {
-        font-size: 13px;
-        color: var(--green-1);
-        background: #fff;
-        border: 1px solid var(--green-3);
-        padding: 10px 14px;
-        border-radius: 12px;
-        text-align: center;
-        word-break: break-all;
-        box-shadow: 0 1px 3px rgba(16, 94, 60, .05);
-      }
-      .user-id-box strong {
-        font-weight: 600;
-      }
-      
-      .status-box {
-        padding: 12px 16px;
-        border-radius: 12px;
-        margin-top: 16px;
-        font-size: 14px;
-        font-weight: 500;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        border: 1px solid;
-      }
-      .status-box.success {
-        background: var(--green-3);
-        color: var(--green-1);
-        border-color: var(--green-2);
-      }
-      .status-box.error {
-        background: var(--red-light);
-        color: var(--red-dark);
-        border-color: var(--red-dark);
-      }
-      .status-box.loading {
-        background: var(--yellow-light);
-        color: var(--yellow-dark);
-        border-color: var(--yellow-dark);
-      }
-      .status-box i {
-        font-size: 16px;
-      }
-
-      .card {
-        background: #fff;
-        border-radius: 14px;
-        padding: 16px 20px;
-        border: 1px solid #e6f0ea;
-        box-shadow: 0 2px 8px rgba(16, 94, 60, .06);
-        margin-top: 20px;
-      }
-      .card h2 {
-        margin: 0 0 16px;
-        font-size: 18px;
-        color: var(--green-1);
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-weight: 700;
-      }
-      
-      .form-group {
-        margin-bottom: 16px;
-      }
-      .form-group label {
-        display: block;
-        font-weight: 600;
-        font-size: 14px;
-        color: #333;
-        margin-bottom: 6px;
-      }
-      
-      .input-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-      }
-      
-      input[type="text"],
-      input[type="number"],
-      input[type="date"],
-      input[type="time"],
-      select {
-        padding: 12px 14px;
-        border-radius: 10px;
-        border: 1px solid #cfe3d8;
-        background: #fff;
-        box-shadow: 0 1px 0 #fff inset;
-        width: 100%;
-        font-size: 16px;
-        font-family: inherit;
-        color: #333;
-      }
-      input[type="text"]:focus,
-      input[type="number"]:focus,
-      input[type="date"]:focus,
-      input[type="time"]:focus,
-      select:focus {
-        outline: none;
-        border-color: var(--green-2);
-        box-shadow: 0 0 0 2px var(--green-3);
-      }
-      input::placeholder {
-        color: #999;
-      }
-
-      .btn {
-        text-decoration: none;
-        display: inline-block;
-        padding: 12px 16px;
-        border-radius: 10px;
-        border: 1px solid transparent;
-        font-weight: 600;
-        font-size: 15px;
-        cursor: pointer;
-        width: 100%;
-        font-family: inherit;
-        transition: all 0.2s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-      }
-      .btn-green {
-        background: var(--green-2);
-        color: #fff;
-        border-color: var(--green-1);
-      }
-      .btn-green:hover {
-        background: var(--green-1);
-      }
-      .btn:disabled {
-        background: #ccc;
-        border-color: #999;
-        color: #666;
-        cursor: not-allowed;
-      }
-
-      #trendChart {
-        width: 100%;
-        height: 250px;
-        background: #fdfdfd;
-        border-radius: 8px;
-        border: 1px solid #eee;
-      }
-      .chart-placeholder {
-        width: 100%;
-        height: 250px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: #f9f9f9;
-        border-radius: 8px;
-        border: 1px dashed #ccc;
-        color: #777;
-        font-style: italic;
-      }
-
-      .table-wrapper {
-        width: 100%;
-        overflow-x: auto;
-        border: 1px solid #e6f0ea;
-        border-radius: 12px;
-        background: #fff;
-      }
-      table {
-        width: 100%;
-        border-collapse: collapse;
-      }
-      th, td {
-        padding: 12px 14px;
-        text-align: left;
-        font-size: 14px;
-        border-bottom: 1px solid #e6f0ea;
-      }
-      th {
-        background: var(--green-4);
-        color: var(--green-1);
-        font-weight: 600;
-        font-size: 13px;
-        text-transform: uppercase;
-      }
-      tr:last-child td {
-        border-bottom: none;
-      }
-      tr:hover {
-        background-color: #fcfcfc;
-      }
-      .table-placeholder td {
-        text-align: center;
-        color: #777;
-        font-style: italic;
-        padding: 20px;
-      }
-
-      .badge {
-        display: inline-block;
-        padding: 3px 10px;
-        border-radius: 999px;
-        font-size: 12px;
-        font-weight: 600;
-        white-space: nowrap;
-      }
-      .badge-normal { background: var(--green-3); color: var(--green-1); }
-      .badge-elevated { background: var(--yellow-light); color: var(--yellow-dark); }
-      .badge-high-1 { background: #ffc9a8; color: #a14000; }
-      .badge-high-2 { background: var(--red-light); color: var(--red-dark); }
-      .badge-crisis { background: #000; color: #fff; }
-      
-      .badge-pulse-low { background: var(--blue-light); color: var(--blue-dark); }
-      .badge-pulse-normal { background: var(--green-3); color: var(--green-1); }
-      .badge-pulse-high { background: var(--red-light); color: var(--red-dark); }
-      
-      footer {
-        text-align: center;
-        margin: 24px 0 36px;
-        color: #555;
-        font-size: 13px;
-      }
-      footer a {
-        color: var(--green-2);
-        font-weight: 600;
-      }
-
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Monitor Tensi Harian</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0; background: #f6fdf8; }
+    header { background: linear-gradient(135deg, #198754, #0f5132); color: #fff; padding: 24px 16px; text-align: center; border-bottom: 4px solid #0f5132; }
+    main { max-width: 800px; margin: 20px auto; padding: 0 16px 32px 16px; }
+    .status-box { padding: 12px 16px; border-radius: 12px; margin-top: 16px; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 10px; border: 1px solid; }
+    .status-box.success { background: #d1e7dd; color: #0f5132; border-color: #198754; }
+    .status-box.error { background: #f8d7da; color: #842029; border-color: #842029; }
+    .status-box.loading { background: #fff3cd; color: #664d03; border-color: #664d03; }
+    .card { background: #fff; border-radius: 14px; padding: 16px 20px; border: 1px solid #e6f0ea; box-shadow: 0 2px 8px rgba(16, 94, 60, .06); margin-top: 20px; }
+    .btn { display: flex; align-items: center; justify-content: center; gap: 8px; border-radius: 10px; border: none; background: #198754; color: #fff; font-weight: 600; padding: 12px; cursor: pointer; }
+    footer { text-align: center; margin: 24px 0 36px; color: #555; font-size: 13px; }
+  </style>
 </head>
 <body>
-    <!-- HTML tidak berubah -->
-    <header>
-        <h1>Monitor Tensi Harian</h1>
-        <p>Aplikasi untuk penderita hipertensi: Catat Tensi Pagi & Sore</p>
-    </header>
+  <header>
+    <h1>Monitor Tensi Harian</h1>
+    <p>Aplikasi untuk penderita hipertensi: Catat Tensi Pagi &amp; Sore</p>
+  </header>
 
-    <main>
-        <div class="user-id-box">
-            <strong>ID Pengguna:</strong> <span id="userIdDisplay">Menunggu Autentikasi...</span>
-        </div>
-        
-        <div id="authStatus" class="status-box loading">
-            <i class="fa-solid fa-spinner fa-spin"></i>
-            <span>Mencoba autentikasi...</span>
-        </div>
+  <main>
+    <div class="user-id-box">
+      <strong>ID Pengguna:</strong> <span id="userIdDisplay">Menunggu Autentikasi...</span>
+    </div>
 
-        <div class="card">
-            <h2><i class="fa-solid fa-file-medical"></i>Input Tensi Baru</h2>
-            <div class="input-grid" style="grid-template-columns: 1fr 1fr 1fr;">
-                <div class="form-group">
-                    <label for="systolic">Sistolik (atas)</label>
-                    <input type="number" id="systolic" placeholder="e.g. 135" inputmode="numeric">
-                </div>
-                <div class="form-group">
-                    <label for="diastolic">Diastolik (bawah)</label>
-                    <input type="number" id="diastolic" placeholder="e.g. 85" inputmode="numeric">
-                </div>
-                <div class="form-group">
-                    <label for="pulse">Pulse (detak/menit)</label>
-                    <input type="number" id="pulse" placeholder="e.g. 70" inputmode="numeric">
-                </div>
-            </div>
-            <hr style="border:none; border-top: 1px dashed #eee; margin: 0 0 16px 0;">
-            <div class="input-grid">
-                <div class="form-group">
-                    <label for="inputDate">Tanggal (Kosongkan = Hari Ini)</label>
-                    <input type="date" id="inputDate">
-                </div>
-                <div class="form-group">
-                    <label for="timeOfDay">Waktu Pengukuran</label>
-                    <select id="timeOfDay">
-                        <option value="">Otomatis (Saat Ini)</option>
-                        <option value="Pagi">Pagi (08:00)</option>
-                        <option value="Malam">Malam (20:00)</option>
-                    </select>
-                </div>
-            </div>
-            <div class="form-group" style="margin-top: 16px; margin-bottom: 0;">
-                <button id="saveButton" class="btn btn-green">
-                    <i class="fa-solid fa-floppy-disk"></i>
-                    <span>Simpan Data Tensi</span>
-                </button>
-            </div>
-        </div>
+    <div id="authStatus" class="status-box loading">
+      <i class="fa-solid fa-spinner fa-spin"></i>
+      <span>Mencoba autentikasi...</span>
+    </div>
 
-        <div class="card">
-            <h2><i class="fa-solid fa-chart-line"></i>Tren Tensi (Rata-rata 7 Hari Terakhir)</h2>
-            <div id="chartContainer">
-                <div class="chart-placeholder" id="chartPlaceholder">
-                    Memuat data grafik...
-                </div>
-            </div>
-            <canvas id="trendChart" style="display: none;"></canvas>
-        </div>
-        
-        <div class="card">
-            <h2><i class="fa-solid fa-clock-rotate-left"></i>Riwayat 10 Data Terbaru</h2>
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Tanggal</th>
-                            <th>Waktu</th>
-                            <th>Tensi (mmHg)</th>
-                            <th>Pulse</th>
-                            <th>Kategori</th>
-                        </tr>
-                    </thead>
-                    <tbody id="historyTableBody">
-                        <tr class="table-placeholder">
-                            <td colspan="5">Memuat data riwayat...</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </main>
-    
-    <footer>
-        Dibuat untuk monitoring hipertensi.
-    </footer>
+    <div class="card">
+      <h2><i class="fa-solid fa-file-medical"></i> Input Tensi Baru</h2>
+      <div class="input-grid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+        <div><label>Sistolik</label><input type="number" id="systolic" placeholder="135"></div>
+        <div><label>Diastolik</label><input type="number" id="diastolic" placeholder="85"></div>
+        <div><label>Pulse</label><input type="number" id="pulse" placeholder="70"></div>
+      </div>
+      <button id="saveButton" class="btn"><i class="fa-solid fa-floppy-disk"></i><span>Simpan Data</span></button>
+    </div>
 
-    <!-- Firebase SDK -->
-    <script type="module">
-        // Import fungsi yang diperlukan dari Firebase SDK
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        
-        // --- IMPORT BARU UNTUK REALTIME DATABASE (RTDB) ---
-        import { 
-            getDatabase, 
-            ref, 
-            push, 
-            onValue, 
-            query as rtQuery, 
-            limitToLast, 
-            orderByChild,
-            serverTimestamp // Pengganti Timestamp
-        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
-        // --- HAPUS IMPORT FIRESTORE ---
-        // import { getFirestore, ... } from "...";
+    <div class="card">
+      <h2><i class="fa-solid fa-clock-rotate-left"></i> Riwayat</h2>
+      <div id="history">Memuat data...</div>
+    </div>
+  </main>
 
-        // Aktifkan log debug untuk Firebase (membantu troubleshooting)
-        // setLogLevel('debug'); // setLogLevel tidak tersedia di RTDB, kita skip
+  <footer>Dibuat untuk monitoring hipertensi.</footer>
 
-        // --- Variabel Global Aplikasi ---
-        let app, db, auth;
-        let userId = null;
-        let isAuthReady = false;
-        let readingsListener = null; // Ini sekarang adalah fungsi `off` untuk RTDB
-        let chartInstance = null;
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getDatabase, ref, push, onValue, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
 
-        // --- Elemen UI (Tidak Berubah) ---
-        const authStatusEl = document.getElementById('authStatus');
-        const userIdDisplayEl = document.getElementById('userIdDisplay');
-        const saveButton = document.getElementById('saveButton');
-        const systolicInput = document.getElementById('systolic');
-        const diastolicInput = document.getElementById('diastolic');
-        const pulseInput = document.getElementById('pulse');
-        const inputDateEl = document.getElementById('inputDate');
-        const timeOfDayEl = document.getElementById('timeOfDay');
-        const historyTableBody = document.getElementById('historyTableBody');
-        const chartContainer = document.getElementById('chartContainer');
-        const chartPlaceholder = document.getElementById('chartPlaceholder');
-        const canvas = document.getElementById('trendChart');
-        const ctx = canvas.getContext('2d');
+    // --- Firebase Config Pakde (tinggal isi API key) ---
+    const firebaseConfig = {
+      apiKey: "AIzaSyC70xZ8VsDlfbsa-_JNmNoh6qdf9-PdJgk",
+      authDomain: "monitor-tensi.firebaseapp.com",
+      databaseURL: "https://monitor-tensi-default-rtdb.firebaseio.com",
+      projectId: "monitor-tensi",
+      storageBucket: "monitor-tensi.firebasestorage.app",
+      messagingSenderId: "917331085991",
+      appId: "1:917331085991:web:037e3650f60776db53e982"
+    };
 
-        // --- 1. Konfigurasi Firebase (Self-Hosting) ---
-        function getFirebaseConfig() {
-            if (typeof __firebase_config !== 'undefined' && __firebase_config) {
-                console.log("Menggunakan konfigurasi Firebase dari kanvas.");
-                try {
-                    return JSON.parse(__firebase_config);
-                } catch (e) {
-                    console.error("Gagal mem-parsing __firebase_config:", e);
-                    return null;
-                }
-            }
-            
-            // --- PENTING UNTUK SELF-HOSTING ---
-            console.log("Menggunakan konfigurasi Firebase self-hosted.");
-            const firebaseConfig = {
-                apiKey: "AIzaSyC70xZ8VsDlfbsa-_JNmNoh6qdf9-PdJgk",
-                authDomain: "monitor-tensi.firebaseapp.com",
-                databaseURL: "https://monitor-tensi-default-rtdb.firebaseio.com", // Cth: https://monitor-tensi-xxxx.firebaseio.com
-                projectId: "monitor-tensi",
-                storageBucket: "monitor-tensi.firebasestorage.app",
-                messagingSenderId: "917331085991",
-                appId: "1:917331085991:web:037e3650f60776db53e982"
-            };
-            
-            // Validasi sederhana
-            if (firebaseConfig.apiKey === "AIzaSyC70xZ8VsDlfbsa-_JNmNoh6qdf9-PdJgk" || !firebaseConfig.databaseURL || firebaseConfig.databaseURL.includes("GANTI_")) {
-                console.error("Konfigurasi Firebase (terutama databaseURL) belum diisi. Harap edit file HTML.");
-                return null;
-            }
-            
-            return firebaseConfig;
-        }
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const auth = getAuth(app);
 
-        function getAuthToken() {
-            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                console.log("Menggunakan token autentikasi dari kanvas.");
-                return __initial_auth_token;
-            }
-            console.log("Tidak ada token autentikasi kanvas. Akan menggunakan login anonim.");
-            return null;
-        }
+    const userIdDisplayEl = document.getElementById("userIdDisplay");
+    const authStatusEl = document.getElementById("authStatus");
+    const saveButton = document.getElementById("saveButton");
+    const historyEl = document.getElementById("history");
 
-        // --- 2. Inisialisasi dan Autentikasi Firebase ---
-        async function initializeFirebase() {
-            const firebaseConfig = getFirebaseConfig();
-            
-            if (!firebaseConfig) {
-                updateAuthStatus("EROR: Konfigurasi Firebase tidak ditemukan. Harap edit file HTML untuk self-hosting.", "error");
-                return;
-            }
+    function updateStatus(msg, type="success") {
+      authStatusEl.className = `status-box ${type}`;
+      authStatusEl.innerHTML = `<i class="fa-solid ${type==="error"?"fa-triangle-exclamation":type==="loading"?"fa-spinner fa-spin":"fa-check-circle"}"></i> <span>${msg}</span>`;
+    }
 
-            try {
-                app = initializeApp(firebaseConfig);
-                // --- GUNAKAN RTDB ---
-                db = getDatabase(app); 
-                // --- BUKAN FIRESTORE ---
-                // db = getFirestore(app);
-                auth = getAuth(app);
-                
-                console.log("Firebase App & Realtime Database diinisialisasi.");
-                
-                onAuthStateChanged(auth, async (user) => {
-                    if (user) {
-                        userId = user.uid;
-                        isAuthReady = true;
-                        console.log("Autentikasi BERHASIL. UserID:", userId);
-                        userIdDisplayEl.textContent = userId;
-                        updateAuthStatus("Autentikasi BERHASIL. Data dimuat secara real-time.", "success");
-                        setupDataListener();
-                        
-                    } else {
-                        console.log("Belum ada pengguna. Mencoba login...");
-                        const token = getAuthToken();
-                        
-                        try {
-                            if (token) {
-                                await signInWithCustomToken(auth, token);
-                                console.log("Login dengan Custom Token berhasil.");
-                            } else {
-                                await signInAnonymously(auth);
-                                console.log("Login Anonim berhasil.");
-                            }
-                        } catch (authError) {
-                            console.error("Gagal melakukan autentikasi:", authError);
-                            isAuthReady = false;
-                            updateAuthStatus(`EROR Autentikasi: ${authError.message}`, "error");
-                        }
-                    }
-                });
+    function renderHistory(data){
+      if(!data || !data.length){historyEl.textContent="Belum ada data.";return;}
+      historyEl.innerHTML = data.map(r => `<div>${r.date} — ${r.sys}/${r.dia} (${r.pulse||'–'})</div>`).join("");
+    }
 
-            } catch (e) {
-                console.error("Gagal inisialisasi Firebase:", e);
-                updateAuthStatus(`EROR Inisialisasi: ${e.message}`, "error");
-            }
-        }
-
-        // --- 3. Logika Aplikasi (Simpan & Baca Data) ---
-
-        /**
-         * Menyiapkan listener real-time (onValue) ke RTDB.
-         */
-        function setupDataListener() {
-            if (!db || !userId || !isAuthReady) {
-                console.warn("Mencoba setup listener sebelum auth siap. Menunggu...");
-                return;
-            }
-            
-            if (readingsListener) {
-                readingsListener(); // Hentikan listener lama (jika ada)
-            }
-
-            const rawAppId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-            // RTDB paths cannot contain '.', '#', '$', '[', or ']', so we sanitize the app ID.
-            const sanitizedAppId = rawAppId.replace(/[.#$[\]]/g, '_');
-            const readingsColPath = `artifacts/${sanitizedAppId}/users/${userId}/bloodPressureReadings`;
-            
-            console.log("Menyiapkan listener untuk path RTDB:", readingsColPath);
-
-            // Buat referensi ke data
-            const readingsRef = ref(db, readingsColPath);
-            
-            // Query untuk 50 data terakhir (diurutkan berdasarkan Kunci/Waktu Penambahan, yang sudah cukup)
-            // Menghapus orderByChild("timestamp") untuk menghindari error permission_denied jika .indexOn belum diatur di Rules Firebase
-            const q = rtQuery(readingsRef, limitToLast(50));
-
-            // Gunakan onValue (pengganti onSnapshot)
-            readingsListener = onValue(q, (snapshot) => {
-                console.log("Menerima data snapshot RTDB baru...");
-                const readings = [];
-                // Snapshot RTDB perlu di-loop dengan forEach
-                snapshot.forEach(childSnapshot => {
-                    readings.push({ id: childSnapshot.key, ...childSnapshot.val() });
-                });
-                
-                // Urutkan data di client-side (terbaru dulu)
-                // RTDB mengembalikan urutan ascending, jadi kita balik
-                readings.reverse();
-
-                // Proses data untuk tabel (ambil 10 terbaru)
-                updateHistoryTable(readings.slice(0, 10));
-                
-                // Proses data untuk grafik (semua data yang ditarik, 50 terakhir)
-                updateChart(readings);
-
-            }, (error) => {
-                console.error("Error mendengarkan data (onValue):", error);
-                updateAuthStatus(`EROR Baca Data: ${error.message}`, "error");
-                historyTableBody.innerHTML = `<tr class="table-placeholder"><td colspan="5">Gagal memuat data.</td></tr>`;
-                chartPlaceholder.textContent = "Gagal memuat data grafik.";
-            });
-        }
-
-        /**
-         * Menyimpan data bacaan baru ke RTDB.
-         */
-        async function saveReading() {
-            if (!db || !userId || !isAuthReady) {
-                console.error("Tidak bisa menyimpan: Autentikasi belum siap.");
-                updateAuthStatus("EROR: Belum terautentikasi. Coba muat ulang halaman.", "error");
-                return;
-            }
-
-            const systolic = parseInt(systolicInput.value);
-            const diastolic = parseInt(diastolicInput.value);
-            const pulse = parseInt(pulseInput.value) || null;
-            const inputDate = inputDateEl.value;
-            const timeOfDay = timeOfDayEl.value;
-
-            if (isNaN(systolic) || isNaN(diastolic) || systolic <= 0 || diastolic <= 0) {
-                updateAuthStatus("EROR: Sistolik dan Diastolik harus diisi angka yang valid.", "error");
-                return;
-            }
-
-            // --- Logika Penentuan Timestamp (jadi Angka/Number) ---
-            let finalTimestamp;
-            const now = new Date();
-
-            if (inputDate) {
-                const [year, month, day] = inputDate.split('-').map(Number);
-                const selectedDate = new Date(year, month - 1, day);
-
-                if (timeOfDay === "Pagi") selectedDate.setHours(8, 0, 0, 0);
-                else if (timeOfDay === "Malam") selectedDate.setHours(20, 0, 0, 0);
-                else selectedDate.setHours(12, 0, 0, 0);
-                
-                finalTimestamp = selectedDate.getTime(); // Dapatkan .getTime() (angka milidetik)
-                
-            } else {
-                if (timeOfDay === "Pagi") now.setHours(8, 0, 0, 0);
-                else if (timeOfDay === "Malam") now.setHours(20, 0, 0, 0);
-                
-                finalTimestamp = now.getTime(); // Dapatkan .getTime()
-            }
-            
-            // Tentukan label Waktu (Pagi/Malam/Jam)
-            const displayTime = timeOfDay || new Date(finalTimestamp).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-
-            const newReading = {
-                systolic: systolic,
-                diastolic: diastolic,
-                pulse: pulse,
-                timestamp: finalTimestamp, // Simpan sebagai angka
-                displayTime: displayTime,
-                createdAt: serverTimestamp() // Gunakan serverTimestamp RTDB
-            };
-
-            toggleButton(saveButton, "Menyimpan...", true);
-
-            try {
-                const rawAppId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id'; // FIX: Typo corrected from 'default-abpp-id' to 'default-app-id'
-                // RTDB paths cannot contain '.', '#', '$', '[', or ']', so we sanitize the app ID.
-                const sanitizedAppId = rawAppId.replace(/[.#$[\]]/g, '_');
-                const readingsColPath = `artifacts/${sanitizedAppId}/users/${userId}/bloodPressureReadings`;
-                
-                // Buat referensi dan gunakan PUSH (pengganti addDoc)
-                const readingsRef = ref(db, readingsColPath);
-                await push(readingsRef, newReading);
-                
-                console.log("Data berhasil disimpan ke RTDB.");
-                updateAuthStatus("Data berhasil disimpan! Riwayat diperbarui.", "success");
-
-                systolicInput.value = '';
-                diastolicInput.value = '';
-                pulseInput.value = '';
-                inputDateEl.value = '';
-                timeOfDayEl.value = '';
-
-            } catch (e) {
-                console.error("Gagal menyimpan data:", e);
-                updateAuthStatus(`EROR Simpan: ${e.message}`, "error");
-            } finally {
-                toggleButton(saveButton, "Simpan Data Tensi", false);
-            }
-        }
-
-        // --- 4. Fungsi Utilitas & Tampilan ---
-        // (Fungsi-fungsi ini sebagian besar tidak berubah, kecuali format timestamp)
-
-        function updateAuthStatus(message, type = "success") {
-            authStatusEl.className = `status-box ${type}`;
-            let iconClass = "fa-solid fa-check-circle";
-            if (type === "error") iconClass = "fa-solid fa-exclamation-triangle";
-            if (type === "loading") iconClass = "fa-solid fa-spinner fa-spin";
-            
-            authStatusEl.innerHTML = `<i class="${iconClass}"></i> <span>${message}</span>`;
-            
-            if (type === "success" && message.startsWith("Data berhasil disimpan")) {
-                setTimeout(() => {
-                    if (authStatusEl.textContent.includes("Data berhasil disimpan")) {
-                         updateAuthStatus("Autentikasi BERHASIL. Data dimuat secara real-time.", "success");
-                    }
-                }, 3000);
-            }
-        }
-        
-        function toggleButton(button, text, disabled) {
-            button.disabled = disabled;
-            const textSpan = button.querySelector('span');
-            const icon = button.querySelector('i');
-            
-            if (textSpan) textSpan.textContent = text;
-            if (disabled) icon.className = "fa-solid fa-spinner fa-spin";
-            else icon.className = "fa-solid fa-floppy-disk";
-        }
-
-        function getPressureCategory(sys, dia) {
-            if (sys < 120 && dia < 80) return { text: "Normal", class: "badge-normal" };
-            if (sys >= 120 && sys <= 129 && dia < 80) return { text: "Elevated", class: "badge-elevated" };
-            if ((sys >= 130 && sys <= 139) || (dia >= 80 && dia <= 89)) return { text: "Hipertensi Stg 1", class: "badge-high-1" };
-            if (sys >= 140 || dia >= 90) return { text: "Hipertensi Stg 2", class: "badge-high-2" };
-            if (sys > 180 || dia > 120) return { text: "Krisis Hipertensi", class: "badge-crisis" };
-            return { text: "N/A", class: "badge-normal" };
-        }
-        
-        function getPulseCategory(pulse) {
-            if (!pulse) return { text: "N/A", class: "badge-normal" };
-            if (pulse < 60) return { text: "Rendah", class: "badge-pulse-low" };
-            if (pulse > 100) return { text: "Tinggi", class: "badge-pulse-high" };
-            return { text: "Normal", class: "badge-pulse-normal" };
-        }
-
-        /**
-         * Memformat timestamp (ANGKA) ke tanggal (DD/MM/YYYY).
-         */
-        function formatTimestampDate(timestamp) {
-            if (!timestamp) return "N/A";
-            // Ubah 'timestamp' (angka) menjadi Objek Date
-            return new Date(timestamp).toLocaleDateString('id-ID', {
-                day: '2-digit', month: '2-digit', year: 'numeric'
-            });
-        }
-        
-        /**
-         * Memformat timestamp (ANGKA) ke waktu (Pagi/Malam/Jam).
-         */
-        function formatTimestampTime(timestamp, displayTime) {
-             if (displayTime) return displayTime;
-             if (!timestamp) return "N/A";
-             // Ubah 'timestamp' (angka) menjadi Objek Date
-             return new Date(timestamp).toLocaleTimeString('id-ID', {
-                hour: '2-digit', minute: '2-digit'
-             });
-        }
-
-        /**
-         * Memperbarui tabel riwayat di UI.
-         */
-        function updateHistoryTable(readings) {
-            if (readings.length === 0) {
-                historyTableBody.innerHTML = `<tr class="table-placeholder"><td colspan="5">Belum ada data tensi yang tersimpan.</td></tr>`;
-                return;
-            }
-
-            historyTableBody.innerHTML = '';
-            readings.forEach(reading => {
-                const pressureCat = getPressureCategory(reading.systolic, reading.diastolic);
-                const pulseCat = getPulseCategory(reading.pulse);
-                
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${formatTimestampDate(reading.timestamp)}</td>
-                    <td><b>${formatTimestampTime(reading.timestamp, reading.displayTime)}</b></td>
-                    <td>${reading.systolic} / ${reading.diastolic}</td>
-                    <td>${reading.pulse || 'N/A'}</td>
-                    <td>
-                        <span class="badge ${pressureCat.class}">${pressureCat.text}</span>
-                        ${reading.pulse ? `<span class="badge ${pulseCat.class}">${pulseCat.text}</span>` : ''}
-                    </td>
-                `;
-                historyTableBody.appendChild(tr);
-            });
-        }
-        
-        /**
-         * Memperbarui grafik tren.
-         */
-        function updateChart(allReadings) {
-            if (allReadings.length < 2) {
-                chartPlaceholder.textContent = "Data tidak cukup untuk grafik (Min. 2 data).";
-                chartPlaceholder.style.display = 'flex';
-                canvas.style.display = 'none';
-                return;
-            }
-
-            const dataByDay = {};
-            const sevenDaysAgo = new Date();
-            sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-            sevenDaysAgo.setHours(0, 0, 0, 0);
-
-            allReadings.forEach(r => {
-                // Ubah 'timestamp' (angka) menjadi Objek Date
-                const date = new Date(r.timestamp); 
-                if (date >= sevenDaysAgo) {
-                    const dayString = date.toLocaleDateString('id-ID', { day: '2-digit', month: 'short' });
-                    if (!dataByDay[dayString]) {
-                        dataByDay[dayString] = { sys: [], dia: [], timestamps: [] };
-                    }
-                    dataByDay[dayString].sys.push(r.systolic);
-                    dataByDay[dayString].dia.push(r.diastolic);
-                    dataByDay[dayString].timestamps.push(date.getTime());
-                }
-            });
-
-            const chartData = Object.keys(dataByDay).map(day => {
-                const sysAvg = dataByDay[day].sys.reduce((a, b) => a + b, 0) / dataByDay[day].sys.length;
-                const diaAvg = dataByDay[day].dia.reduce((a, b) => a + b, 0) / dataByDay[day].dia.length;
-                const avgTimestamp = dataByDay[day].timestamps.reduce((a, b) => a + b, 0) / dataByDay[day].timestamps.length;
-                return {
-                    label: day,
-                    timestamp: avgTimestamp,
-                    sys: Math.round(sysAvg),
-                    dia: Math.round(diaAvg)
-                };
-            }).sort((a, b) => a.timestamp - b.timestamp);
-            
-            if (chartData.length < 2) {
-                chartPlaceholder.textContent = "Data tidak cukup dalam 7 hari terakhir (Min. 2 hari berbeda).";
-                chartPlaceholder.style.display = 'flex';
-                canvas.style.display = 'none';
-                return;
-            }
-
-            chartPlaceholder.style.display = 'none';
-            canvas.style.display = 'block';
-
-            if (chartInstance) {
-                chartInstance.destroy();
-            }
-
-            drawSimpleChart(chartData);
-        }
-
-        // Fungsi drawSimpleChart tidak berubah sama sekali
-        function drawSimpleChart(data) {
-            const padding = 40;
-            const width = canvas.width;
-            const height = canvas.height;
-            const usableWidth = width - padding * 2;
-            const usableHeight = height - padding * 2;
-
-            const labels = data.map(d => d.label);
-            const sysData = data.map(d => d.sys);
-            const diaData = data.map(d => d.dia);
-
-            const allData = [...sysData, ...diaData, 80, 130];
-            const minVal = Math.min(...allData) - 10;
-            const maxVal = Math.max(...allData) + 10;
-            const range = maxVal - minVal;
-
-            const xStep = usableWidth / (labels.length - 1 || 1);
-            const y = (val) => usableHeight - ((val - minVal) / range) * usableHeight + padding;
-            const x = (i) => i * xStep + padding;
-
-            ctx.clearRect(0, 0, width, height);
-            ctx.fillStyle = "#fff";
-            ctx.fillRect(0, 0, width, height);
-
-            ctx.strokeStyle = '#eee';
-            ctx.fillStyle = '#777';
-            ctx.font = '12px Arial';
-            ctx.lineWidth = 1;
-            
-            const yLabels = [Math.round(minVal + range * 0.25), Math.round(minVal + range * 0.5), Math.round(minVal + range * 0.75)];
-            [...yLabels, 130, 80].forEach(val => {
-                const yPos = y(val);
-                ctx.beginPath();
-                
-                if (val === 130 || val === 80) {
-                    ctx.setLineDash([5, 5]);
-                    ctx.strokeStyle = (val === 130) ? 'orange' : 'green';
-                } else {
-                    ctx.setLineDash([]);
-                    ctx.strokeStyle = '#eee';
-                }
-                
-                ctx.moveTo(padding, yPos);
-                ctx.lineTo(width - padding, yPos);
-                ctx.stroke();
-                
-                ctx.textAlign = 'right';
-                ctx.fillText(val.toString(), padding - 8, yPos + 4);
-            });
-            ctx.setLineDash([]);
-
-            ctx.textAlign = 'center';
-            labels.forEach((label, i) => {
-                ctx.fillText(label, x(i), height - padding + 20);
-            });
-
-            const drawLine = (dataset, color) => {
-                ctx.strokeStyle = color;
-                ctx.fillStyle = color;
-                ctx.lineWidth = 2.5;
-                
-                ctx.beginPath();
-                ctx.moveTo(x(0), y(dataset[0]));
-                dataset.forEach((val, i) => {
-                    if (i > 0) ctx.lineTo(x(i), y(val));
-                });
-                ctx.stroke();
-
-                dataset.forEach((val, i) => {
-                    ctx.beginPath();
-                    ctx.arc(x(i), y(val), 4, 0, Math.PI * 2);
-                    ctx.fill();
-                });
-            };
-            
-            drawLine(sysData, 'rgba(219, 58, 52, 0.8)');
-            drawLine(diaData, 'rgba(26, 115, 232, 0.8)');
-        }
-
-        // --- 5. Event Listeners ---
-        saveButton.addEventListener('click', saveReading);
-        document.addEventListener('DOMContentLoaded', () => {
-             initializeFirebase();
+    onAuthStateChanged(auth, async (user) => {
+      if(user){
+        updateStatus("Autentikasi sukses.","success");
+        userIdDisplayEl.textContent = user.uid;
+        const readingsRef = ref(db, "users/"+user.uid+"/readings");
+        onValue(readingsRef,(snap)=>{
+          const vals=[]; snap.forEach(c=>vals.push(c.val()));
+          renderHistory(vals.reverse());
         });
+      } else {
+        updateStatus("Login anonim...","loading");
+        await signInAnonymously(auth);
+      }
+    });
 
-    </script>
+    saveButton.onclick = async ()=>{
+      const sys=parseInt(document.getElementById("systolic").value);
+      const dia=parseInt(document.getElementById("diastolic").value);
+      const pulse=parseInt(document.getElementById("pulse").value);
+      if(!sys||!dia){updateStatus("Isi sistolik & diastolik!","error");return;}
+      const u=auth.currentUser;
+      if(!u){updateStatus("Belum login.","error");return;}
+      await push(ref(db,"users/"+u.uid+"/readings"),{sys,dia,pulse,date:new Date().toLocaleString('id-ID'),createdAt:serverTimestamp()});
+      updateStatus("Data tersimpan.","success");
+      document.getElementById("systolic").value=document.getElementById("diastolic").value=document.getElementById("pulse").value="";
+    };
+  </script>
 </body>
 </html>
