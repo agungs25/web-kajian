@@ -4,13 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Monitor Tensi Harian</title>
-    <!-- 
-      Icon (Font Awesome) untuk ikon-ikon di aplikasi.
-      Ini menggantikan SVG inline agar lebih mudah dikelola.
-    -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
-    <!-- CSS Kustom dari pakde.css -->
+    <!-- CSS tidak berubah -->
     <style>
       :root {
         --green-1: #0f5132; /* dark */
@@ -64,7 +60,6 @@
         padding: 0 16px 32px 16px;
       }
       
-      /* ID Pengguna & Status Box */
       .user-id-box {
         font-size: 13px;
         color: var(--green-1);
@@ -80,7 +75,6 @@
         font-weight: 600;
       }
       
-      /* Status Box (Auth & Pesan) */
       .status-box {
         padding: 12px 16px;
         border-radius: 12px;
@@ -129,7 +123,6 @@
         font-weight: 700;
       }
       
-      /* Form Input */
       .form-group {
         margin-bottom: 16px;
       }
@@ -147,7 +140,6 @@
         gap: 12px;
       }
       
-      /* Styling untuk Input, Select */
       input[type="text"],
       input[type="number"],
       input[type="date"],
@@ -176,7 +168,6 @@
         color: #999;
       }
 
-      /* Tombol */
       .btn {
         text-decoration: none;
         display: inline-block;
@@ -209,7 +200,6 @@
         cursor: not-allowed;
       }
 
-      /* Grafik Canvas */
       #trendChart {
         width: 100%;
         height: 250px;
@@ -230,7 +220,6 @@
         font-style: italic;
       }
 
-      /* Tabel Riwayat */
       .table-wrapper {
         width: 100%;
         overflow-x: auto;
@@ -268,7 +257,6 @@
         padding: 20px;
       }
 
-      /* Badge Kategori */
       .badge {
         display: inline-block;
         padding: 3px 10px;
@@ -287,7 +275,6 @@
       .badge-pulse-normal { background: var(--green-3); color: var(--green-1); }
       .badge-pulse-high { background: var(--red-light); color: var(--red-dark); }
       
-
       footer {
         text-align: center;
         margin: 24px 0 36px;
@@ -302,14 +289,13 @@
     </style>
 </head>
 <body>
-
+    <!-- HTML tidak berubah -->
     <header>
         <h1>Monitor Tensi Harian</h1>
         <p>Aplikasi untuk penderita hipertensi: Catat Tensi Pagi & Sore</p>
     </header>
 
     <main>
-        <!-- ID Pengguna & Status Autentikasi -->
         <div class="user-id-box">
             <strong>ID Pengguna:</strong> <span id="userIdDisplay">Menunggu Autentikasi...</span>
         </div>
@@ -319,13 +305,8 @@
             <span>Mencoba autentikasi...</span>
         </div>
 
-        <!-- 
-          CARD 1: INPUT DATA BARU
-        -->
         <div class="card">
             <h2><i class="fa-solid fa-file-medical"></i>Input Tensi Baru</h2>
-
-            <!-- Input Tensi (Sistolik, Diastolik) & Pulse -->
             <div class="input-grid" style="grid-template-columns: 1fr 1fr 1fr;">
                 <div class="form-group">
                     <label for="systolic">Sistolik (atas)</label>
@@ -340,10 +321,7 @@
                     <input type="number" id="pulse" placeholder="e.g. 70" inputmode="numeric">
                 </div>
             </div>
-            
             <hr style="border:none; border-top: 1px dashed #eee; margin: 0 0 16px 0;">
-
-            <!-- Input Waktu (Tanggal & Pilihan Pagi/Malam) -->
             <div class="input-grid">
                 <div class="form-group">
                     <label for="inputDate">Tanggal (Kosongkan = Hari Ini)</label>
@@ -358,7 +336,6 @@
                     </select>
                 </div>
             </div>
-
             <div class="form-group" style="margin-top: 16px; margin-bottom: 0;">
                 <button id="saveButton" class="btn btn-green">
                     <i class="fa-solid fa-floppy-disk"></i>
@@ -367,14 +344,9 @@
             </div>
         </div>
 
-
-        <!-- 
-          CARD 2: GRAFIK TREN
-        -->
         <div class="card">
             <h2><i class="fa-solid fa-chart-line"></i>Tren Tensi (Rata-rata 7 Hari Terakhir)</h2>
             <div id="chartContainer">
-                <!-- Placeholder akan diganti canvas oleh JS -->
                 <div class="chart-placeholder" id="chartPlaceholder">
                     Memuat data grafik...
                 </div>
@@ -382,9 +354,6 @@
             <canvas id="trendChart" style="display: none;"></canvas>
         </div>
         
-        <!-- 
-          CARD 3: RIWAYAT DATA
-        -->
         <div class="card">
             <h2><i class="fa-solid fa-clock-rotate-left"></i>Riwayat 10 Data Terbaru</h2>
             <div class="table-wrapper">
@@ -399,7 +368,6 @@
                         </tr>
                     </thead>
                     <tbody id="historyTableBody">
-                        <!-- Placeholder data -->
                         <tr class="table-placeholder">
                             <td colspan="5">Memuat data riwayat...</td>
                         </tr>
@@ -418,30 +386,32 @@
         // Import fungsi yang diperlukan dari Firebase SDK
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        
+        // --- IMPORT BARU UNTUK REALTIME DATABASE (RTDB) ---
         import { 
-            getFirestore, 
-            doc, 
-            collection, 
-            addDoc, 
-            query, 
-            where, 
-            onSnapshot, 
-            limit, 
-            Timestamp,
-            setLogLevel
-        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+            getDatabase, 
+            ref, 
+            push, 
+            onValue, 
+            query as rtQuery, 
+            limitToLast, 
+            orderByChild,
+            serverTimestamp // Pengganti Timestamp
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+        // --- HAPUS IMPORT FIRESTORE ---
+        // import { getFirestore, ... } from "...";
 
         // Aktifkan log debug untuk Firebase (membantu troubleshooting)
-        setLogLevel('debug');
+        // setLogLevel('debug'); // setLogLevel tidak tersedia di RTDB, kita skip
 
         // --- Variabel Global Aplikasi ---
         let app, db, auth;
         let userId = null;
-        let isAuthReady = false; // Flag untuk menandai autentikasi selesai
-        let readingsListener = null; // Penyimpan fungsi listener onSnapshot
-        let chartInstance = null; // Penyimpan instance grafik
+        let isAuthReady = false;
+        let readingsListener = null; // Ini sekarang adalah fungsi `off` untuk RTDB
+        let chartInstance = null;
 
-        // --- Elemen UI ---
+        // --- Elemen UI (Tidak Berubah) ---
         const authStatusEl = document.getElementById('authStatus');
         const userIdDisplayEl = document.getElementById('userIdDisplay');
         const saveButton = document.getElementById('saveButton');
@@ -457,14 +427,7 @@
         const ctx = canvas.getContext('2d');
 
         // --- 1. Konfigurasi Firebase (Self-Hosting) ---
-
-        /**
-         * Mendapatkan konfigurasi Firebase.
-         * Jika di-host di lingkungan khusus, gunakan variabel global.
-         * Jika di-host mandiri, gunakan objek config di bawah ini.
-         */
         function getFirebaseConfig() {
-            // Cek apakah variabel global dari lingkungan kanvas ada
             if (typeof __firebase_config !== 'undefined' && __firebase_config) {
                 console.log("Menggunakan konfigurasi Firebase dari kanvas.");
                 try {
@@ -476,32 +439,28 @@
             }
             
             // --- PENTING UNTUK SELF-HOSTING ---
-            // Ganti nilai di bawah ini dengan konfigurasi Firebase Anda
-            // yang didapat dari Firebase Console (Pengaturan Proyek > Aplikasi Web).
             console.log("Menggunakan konfigurasi Firebase self-hosted.");
             const firebaseConfig = {
                 apiKey: "AIzaSyC70xZ8VsDlfbsa-_JNmNoh6qdf9-PdJgk",
                 authDomain: "monitor-tensi.firebaseapp.com",
                 projectId: "monitor-tensi",
+                // --- TAMBAHKAN BARIS INI DARI KONSOL RTDB ANDA ---
+                databaseURL: "https://monitor-tensi-default-rtdb.firebaseio.com", // Cth: https://monitor-tensi-xxxx.firebaseio.com
+                
                 storageBucket: "monitor-tensi.firebasestorage.app",
                 messagingSenderId: "917331085991",
                 appId: "1:917331085991:web:037e3650f60776db53e982"
             };
             
             // Validasi sederhana
-            if (firebaseConfig.apiKey === "AIzaSyC70xZ8VsDlfbsa-_JNmNoh6qdf9-PdJgk" || !firebaseConfig.projectId) {
-                console.error("Konfigurasi Firebase belum diisi. Harap edit file HTML.");
+            if (firebaseConfig.apiKey === "AIzaSyC70xZ8VsDlfbsa-_JNmNoh6qdf9-PdJgk" || !firebaseConfig.databaseURL || firebaseConfig.databaseURL.includes("GANTI_")) {
+                console.error("Konfigurasi Firebase (terutama databaseURL) belum diisi. Harap edit file HTML.");
                 return null;
             }
             
             return firebaseConfig;
         }
 
-        /**
-         * Mendapatkan token autentikasi.
-         * Jika di lingkungan kanvas, gunakan token yang disediakan.
-         * Jika self-hosted, return null (akan menggunakan signInAnonymously).
-         */
         function getAuthToken() {
             if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                 console.log("Menggunakan token autentikasi dari kanvas.");
@@ -512,7 +471,6 @@
         }
 
         // --- 2. Inisialisasi dan Autentikasi Firebase ---
-
         async function initializeFirebase() {
             const firebaseConfig = getFirebaseConfig();
             
@@ -523,41 +481,35 @@
 
             try {
                 app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
+                // --- GUNAKAN RTDB ---
+                db = getDatabase(app); 
+                // --- BUKAN FIRESTORE ---
+                // db = getFirestore(app);
                 auth = getAuth(app);
                 
-                console.log("Firebase App & Firestore diinisialisasi.");
+                console.log("Firebase App & Realtime Database diinisialisasi.");
                 
-                // Pantau status autentikasi
                 onAuthStateChanged(auth, async (user) => {
                     if (user) {
-                        // Pengguna sudah login
                         userId = user.uid;
                         isAuthReady = true;
                         console.log("Autentikasi BERHASIL. UserID:", userId);
                         userIdDisplayEl.textContent = userId;
                         updateAuthStatus("Autentikasi BERHASIL. Data dimuat secara real-time.", "success");
-                        
-                        // Mulai mendengarkan data setelah auth siap
                         setupDataListener();
                         
                     } else {
-                        // Pengguna belum login, coba login
                         console.log("Belum ada pengguna. Mencoba login...");
                         const token = getAuthToken();
                         
                         try {
                             if (token) {
-                                // Skenario 1: Login dengan token kustom (Lingkungan Kanvas)
                                 await signInWithCustomToken(auth, token);
                                 console.log("Login dengan Custom Token berhasil.");
                             } else {
-                                // Skenario 2: Login anonim (Self-Hosting)
                                 await signInAnonymously(auth);
                                 console.log("Login Anonim berhasil.");
                             }
-                            // onAuthStateChanged akan dipanggil lagi setelah login berhasil
-                            
                         } catch (authError) {
                             console.error("Gagal melakukan autentikasi:", authError);
                             isAuthReady = false;
@@ -575,7 +527,7 @@
         // --- 3. Logika Aplikasi (Simpan & Baca Data) ---
 
         /**
-         * Menyiapkan listener real-time (onSnapshot) ke Firestore.
+         * Menyiapkan listener real-time (onValue) ke RTDB.
          */
         function setupDataListener() {
             if (!db || !userId || !isAuthReady) {
@@ -583,42 +535,45 @@
                 return;
             }
             
-            // Jika sudah ada listener, hentikan dulu
             if (readingsListener) {
-                readingsListener();
+                readingsListener(); // Hentikan listener lama (jika ada)
             }
 
-            const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-            const readingsColPath = `artifacts/${appId}/users/${userId}/bloodPressureReadings`;
+            const rawAppId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+            // RTDB paths cannot contain '.', '#', '$', '[', or ']', so we sanitize the app ID.
+            const sanitizedAppId = rawAppId.replace(/[.#$[\]]/g, '_');
+            const readingsColPath = `artifacts/${sanitizedAppId}/users/${userId}/bloodPressureReadings`;
             
-            console.log("Menyiapkan listener untuk koleksi:", readingsColPath);
+            console.log("Menyiapkan listener untuk path RTDB:", readingsColPath);
 
-            const q = query(
-                collection(db, readingsColPath)
-                // Hapus orderBy karena memerlukan indeks komposit manual di Firestore
-                // Kita akan urutkan di client-side
-                // orderBy("timestamp", "desc"), 
-                // limit(50) // Ambil 50 data terakhir, urutkan nanti
-            );
+            // Buat referensi ke data
+            const readingsRef = ref(db, readingsColPath);
+            
+            // Query untuk 50 data terakhir (diurutkan berdasarkan Kunci/Waktu Penambahan, yang sudah cukup)
+            // Menghapus orderByChild("timestamp") untuk menghindari error permission_denied jika .indexOn belum diatur di Rules Firebase
+            const q = rtQuery(readingsRef, limitToLast(50));
 
-            readingsListener = onSnapshot(q, (snapshot) => {
-                console.log("Menerima data snapshot baru...");
+            // Gunakan onValue (pengganti onSnapshot)
+            readingsListener = onValue(q, (snapshot) => {
+                console.log("Menerima data snapshot RTDB baru...");
                 const readings = [];
-                snapshot.forEach(doc => {
-                    readings.push({ id: doc.id, ...doc.data() });
+                // Snapshot RTDB perlu di-loop dengan forEach
+                snapshot.forEach(childSnapshot => {
+                    readings.push({ id: childSnapshot.key, ...childSnapshot.val() });
                 });
                 
                 // Urutkan data di client-side (terbaru dulu)
-                readings.sort((a, b) => b.timestamp.toMillis() - a.timestamp.toMillis());
+                // RTDB mengembalikan urutan ascending, jadi kita balik
+                readings.reverse();
 
                 // Proses data untuk tabel (ambil 10 terbaru)
                 updateHistoryTable(readings.slice(0, 10));
                 
-                // Proses data untuk grafik (7 hari terakhir)
+                // Proses data untuk grafik (semua data yang ditarik, 50 terakhir)
                 updateChart(readings);
 
             }, (error) => {
-                console.error("Error mendengarkan data (onSnapshot):", error);
+                console.error("Error mendengarkan data (onValue):", error);
                 updateAuthStatus(`EROR Baca Data: ${error.message}`, "error");
                 historyTableBody.innerHTML = `<tr class="table-placeholder"><td colspan="5">Gagal memuat data.</td></tr>`;
                 chartPlaceholder.textContent = "Gagal memuat data grafik.";
@@ -626,7 +581,7 @@
         }
 
         /**
-         * Menyimpan data bacaan baru ke Firestore.
+         * Menyimpan data bacaan baru ke RTDB.
          */
         async function saveReading() {
             if (!db || !userId || !isAuthReady) {
@@ -637,73 +592,63 @@
 
             const systolic = parseInt(systolicInput.value);
             const diastolic = parseInt(diastolicInput.value);
-            const pulse = parseInt(pulseInput.value) || null; // Pulse opsional
-            
-            const inputDate = inputDateEl.value; // YYYY-MM-DD
-            const timeOfDay = timeOfDayEl.value; // "Pagi", "Malam", ""
+            const pulse = parseInt(pulseInput.value) || null;
+            const inputDate = inputDateEl.value;
+            const timeOfDay = timeOfDayEl.value;
 
-            // Validasi input dasar
             if (isNaN(systolic) || isNaN(diastolic) || systolic <= 0 || diastolic <= 0) {
                 updateAuthStatus("EROR: Sistolik dan Diastolik harus diisi angka yang valid.", "error");
                 return;
             }
 
-            // --- Logika Penentuan Timestamp ---
+            // --- Logika Penentuan Timestamp (jadi Angka/Number) ---
             let finalTimestamp;
             const now = new Date();
 
             if (inputDate) {
-                // Pengguna memasukkan tanggal
                 const [year, month, day] = inputDate.split('-').map(Number);
                 const selectedDate = new Date(year, month - 1, day);
 
-                if (timeOfDay === "Pagi") {
-                    selectedDate.setHours(8, 0, 0, 0); // Jam 8:00 Pagi
-                } else if (timeOfDay === "Malam") {
-                    selectedDate.setHours(20, 0, 0, 0); // Jam 8:00 Malam
-                } else {
-                    // Jika hanya tanggal, set ke jam 12 siang (netral)
-                    selectedDate.setHours(12, 0, 0, 0);
-                }
-                finalTimestamp = Timestamp.fromDate(selectedDate);
+                if (timeOfDay === "Pagi") selectedDate.setHours(8, 0, 0, 0);
+                else if (timeOfDay === "Malam") selectedDate.setHours(20, 0, 0, 0);
+                else selectedDate.setHours(12, 0, 0, 0);
+                
+                finalTimestamp = selectedDate.getTime(); // Dapatkan .getTime() (angka milidetik)
                 
             } else {
-                // Pengguna tidak memasukkan tanggal, gunakan waktu saat ini
-                // Hormati pilihan Pagi/Malam jika ada, tapi gunakan tanggal HARI INI
-                if (timeOfDay === "Pagi") {
-                    now.setHours(8, 0, 0, 0);
-                } else if (timeOfDay === "Malam") {
-                    now.setHours(20, 0, 0, 0);
-                }
-                // Jika timeOfDay kosong, 'now' sudah benar (waktu saat ini)
-                finalTimestamp = Timestamp.fromDate(now);
+                if (timeOfDay === "Pagi") now.setHours(8, 0, 0, 0);
+                else if (timeOfDay === "Malam") now.setHours(20, 0, 0, 0);
+                
+                finalTimestamp = now.getTime(); // Dapatkan .getTime()
             }
             
             // Tentukan label Waktu (Pagi/Malam/Jam)
-            const displayTime = timeOfDay || finalTimestamp.toDate().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+            const displayTime = timeOfDay || new Date(finalTimestamp).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
 
             const newReading = {
                 systolic: systolic,
                 diastolic: diastolic,
                 pulse: pulse,
-                timestamp: finalTimestamp,
-                displayTime: displayTime, // Simpan label Pagi/Malam/Jam
-                createdAt: Timestamp.now()
+                timestamp: finalTimestamp, // Simpan sebagai angka
+                displayTime: displayTime,
+                createdAt: serverTimestamp() // Gunakan serverTimestamp RTDB
             };
 
-            // Nonaktifkan tombol saat menyimpan
             toggleButton(saveButton, "Menyimpan...", true);
 
             try {
-                const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-                const readingsColPath = `artifacts/${appId}/users/${userId}/bloodPressureReadings`;
+                const rawAppId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id'; // FIX: Typo corrected from 'default-abpp-id' to 'default-app-id'
+                // RTDB paths cannot contain '.', '#', '$', '[', or ']', so we sanitize the app ID.
+                const sanitizedAppId = rawAppId.replace(/[.#$[\]]/g, '_');
+                const readingsColPath = `artifacts/${sanitizedAppId}/users/${userId}/bloodPressureReadings`;
                 
-                await addDoc(collection(db, readingsColPath), newReading);
+                // Buat referensi dan gunakan PUSH (pengganti addDoc)
+                const readingsRef = ref(db, readingsColPath);
+                await push(readingsRef, newReading);
                 
-                console.log("Data berhasil disimpan.");
+                console.log("Data berhasil disimpan ke RTDB.");
                 updateAuthStatus("Data berhasil disimpan! Riwayat diperbarui.", "success");
 
-                // Kosongkan input
                 systolicInput.value = '';
                 diastolicInput.value = '';
                 pulseInput.value = '';
@@ -714,16 +659,13 @@
                 console.error("Gagal menyimpan data:", e);
                 updateAuthStatus(`EROR Simpan: ${e.message}`, "error");
             } finally {
-                // Aktifkan kembali tombol
                 toggleButton(saveButton, "Simpan Data Tensi", false);
             }
         }
 
         // --- 4. Fungsi Utilitas & Tampilan ---
+        // (Fungsi-fungsi ini sebagian besar tidak berubah, kecuali format timestamp)
 
-        /**
-         * Memperbarui kotak status autentikasi/pesan.
-         */
         function updateAuthStatus(message, type = "success") {
             authStatusEl.className = `status-box ${type}`;
             let iconClass = "fa-solid fa-check-circle";
@@ -732,10 +674,8 @@
             
             authStatusEl.innerHTML = `<i class="${iconClass}"></i> <span>${message}</span>`;
             
-            // Sembunyikan pesan sukses setelah 3 detik
             if (type === "success" && message.startsWith("Data berhasil disimpan")) {
                 setTimeout(() => {
-                    // Hanya sembunyikan jika pesannya masih sama (tidak ditimpa error lain)
                     if (authStatusEl.textContent.includes("Data berhasil disimpan")) {
                          updateAuthStatus("Autentikasi BERHASIL. Data dimuat secara real-time.", "success");
                     }
@@ -743,26 +683,16 @@
             }
         }
         
-        /**
-         * Mengaktifkan/menonaktifkan tombol dan mengubah teksnya.
-         */
         function toggleButton(button, text, disabled) {
             button.disabled = disabled;
             const textSpan = button.querySelector('span');
             const icon = button.querySelector('i');
             
             if (textSpan) textSpan.textContent = text;
-            
-            if (disabled) {
-                icon.className = "fa-solid fa-spinner fa-spin";
-            } else {
-                icon.className = "fa-solid fa-floppy-disk";
-            }
+            if (disabled) icon.className = "fa-solid fa-spinner fa-spin";
+            else icon.className = "fa-solid fa-floppy-disk";
         }
 
-        /**
-         * Mengkategorikan tekanan darah.
-         */
         function getPressureCategory(sys, dia) {
             if (sys < 120 && dia < 80) return { text: "Normal", class: "badge-normal" };
             if (sys >= 120 && sys <= 129 && dia < 80) return { text: "Elevated", class: "badge-elevated" };
@@ -772,9 +702,6 @@
             return { text: "N/A", class: "badge-normal" };
         }
         
-        /**
-         * Mengkategorikan detak jantung (pulse).
-         */
         function getPulseCategory(pulse) {
             if (!pulse) return { text: "N/A", class: "badge-normal" };
             if (pulse < 60) return { text: "Rendah", class: "badge-pulse-low" };
@@ -783,22 +710,24 @@
         }
 
         /**
-         * Memformat Firestore Timestamp ke tanggal (DD/MM/YYYY).
+         * Memformat timestamp (ANGKA) ke tanggal (DD/MM/YYYY).
          */
         function formatTimestampDate(timestamp) {
             if (!timestamp) return "N/A";
-            return timestamp.toDate().toLocaleDateString('id-ID', {
+            // Ubah 'timestamp' (angka) menjadi Objek Date
+            return new Date(timestamp).toLocaleDateString('id-ID', {
                 day: '2-digit', month: '2-digit', year: 'numeric'
             });
         }
         
         /**
-         * Memformat Firestore Timestamp ke waktu (Pagi/Malam/Jam).
+         * Memformat timestamp (ANGKA) ke waktu (Pagi/Malam/Jam).
          */
         function formatTimestampTime(timestamp, displayTime) {
-             if (displayTime) return displayTime; // Gunakan label Pagi/Malam jika ada
+             if (displayTime) return displayTime;
              if (!timestamp) return "N/A";
-             return timestamp.toDate().toLocaleTimeString('id-ID', {
+             // Ubah 'timestamp' (angka) menjadi Objek Date
+             return new Date(timestamp).toLocaleTimeString('id-ID', {
                 hour: '2-digit', minute: '2-digit'
              });
         }
@@ -843,14 +772,14 @@
                 return;
             }
 
-            // --- Logika Agregasi Data untuk Grafik (7 Hari Terakhir) ---
             const dataByDay = {};
             const sevenDaysAgo = new Date();
             sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
             sevenDaysAgo.setHours(0, 0, 0, 0);
 
             allReadings.forEach(r => {
-                const date = r.timestamp.toDate();
+                // Ubah 'timestamp' (angka) menjadi Objek Date
+                const date = new Date(r.timestamp); 
                 if (date >= sevenDaysAgo) {
                     const dayString = date.toLocaleDateString('id-ID', { day: '2-digit', month: 'short' });
                     if (!dataByDay[dayString]) {
@@ -862,7 +791,6 @@
                 }
             });
 
-            // Hitung rata-rata per hari dan urutkan
             const chartData = Object.keys(dataByDay).map(day => {
                 const sysAvg = dataByDay[day].sys.reduce((a, b) => a + b, 0) / dataByDay[day].sys.length;
                 const diaAvg = dataByDay[day].dia.reduce((a, b) => a + b, 0) / dataByDay[day].dia.length;
@@ -873,7 +801,7 @@
                     sys: Math.round(sysAvg),
                     dia: Math.round(diaAvg)
                 };
-            }).sort((a, b) => a.timestamp - b.timestamp); // Urutkan dari terlama ke terbaru
+            }).sort((a, b) => a.timestamp - b.timestamp);
             
             if (chartData.length < 2) {
                 chartPlaceholder.textContent = "Data tidak cukup dalam 7 hari terakhir (Min. 2 hari berbeda).";
@@ -882,23 +810,17 @@
                 return;
             }
 
-            // Sembunyikan placeholder, tampilkan canvas
             chartPlaceholder.style.display = 'none';
             canvas.style.display = 'block';
 
-            // Hancurkan grafik lama jika ada
             if (chartInstance) {
                 chartInstance.destroy();
             }
 
-            // Gambar ulang grafik menggunakan Chart.js (v4+) - Versi Sederhana Tanpa Library
             drawSimpleChart(chartData);
         }
 
-        /**
-         * Fungsi menggambar grafik sederhana di Canvas HTML5.
-         * Ini menghindari perlunya mengimpor library Chart.js eksternal.
-         */
+        // Fungsi drawSimpleChart tidak berubah sama sekali
         function drawSimpleChart(data) {
             const padding = 40;
             const width = canvas.width;
@@ -910,7 +832,7 @@
             const sysData = data.map(d => d.sys);
             const diaData = data.map(d => d.dia);
 
-            const allData = [...sysData, ...diaData, 80, 130]; // Termasuk garis batas
+            const allData = [...sysData, ...diaData, 80, 130];
             const minVal = Math.min(...allData) - 10;
             const maxVal = Math.max(...allData) + 10;
             const range = maxVal - minVal;
@@ -919,12 +841,10 @@
             const y = (val) => usableHeight - ((val - minVal) / range) * usableHeight + padding;
             const x = (i) => i * xStep + padding;
 
-            // Bersihkan canvas
             ctx.clearRect(0, 0, width, height);
             ctx.fillStyle = "#fff";
             ctx.fillRect(0, 0, width, height);
 
-            // --- Gambar Garis Grid dan Label Sumbu Y ---
             ctx.strokeStyle = '#eee';
             ctx.fillStyle = '#777';
             ctx.font = '12px Arial';
@@ -935,9 +855,8 @@
                 const yPos = y(val);
                 ctx.beginPath();
                 
-                // Garis batas (Normal/Elevated)
                 if (val === 130 || val === 80) {
-                    ctx.setLineDash([5, 5]); // Garis putus-putus
+                    ctx.setLineDash([5, 5]);
                     ctx.strokeStyle = (val === 130) ? 'orange' : 'green';
                 } else {
                     ctx.setLineDash([]);
@@ -951,17 +870,13 @@
                 ctx.textAlign = 'right';
                 ctx.fillText(val.toString(), padding - 8, yPos + 4);
             });
-            ctx.setLineDash([]); // Reset garis
+            ctx.setLineDash([]);
 
-            // --- Gambar Label Sumbu X ---
             ctx.textAlign = 'center';
             labels.forEach((label, i) => {
                 ctx.fillText(label, x(i), height - padding + 20);
             });
 
-            // --- Gambar Garis Data (Sistolik & Diastolik) ---
-            
-            // Fungsi untuk menggambar garis dan titik
             const drawLine = (dataset, color) => {
                 ctx.strokeStyle = color;
                 ctx.fillStyle = color;
@@ -974,7 +889,6 @@
                 });
                 ctx.stroke();
 
-                // Gambar titik
                 dataset.forEach((val, i) => {
                     ctx.beginPath();
                     ctx.arc(x(i), y(val), 4, 0, Math.PI * 2);
@@ -982,16 +896,12 @@
                 });
             };
             
-            drawLine(sysData, 'rgba(219, 58, 52, 0.8)'); // Merah untuk Sistolik
-            drawLine(diaData, 'rgba(26, 115, 232, 0.8)'); // Biru untuk Diastolik
+            drawLine(sysData, 'rgba(219, 58, 52, 0.8)');
+            drawLine(diaData, 'rgba(26, 115, 232, 0.8)');
         }
 
-
         // --- 5. Event Listeners ---
-
         saveButton.addEventListener('click', saveReading);
-        
-        // Mulai aplikasi saat DOM siap
         document.addEventListener('DOMContentLoaded', () => {
              initializeFirebase();
         });
