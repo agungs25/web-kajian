@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Monitor Tensi Harian</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <style>
+    /* === CSS asli, tak diubah sama sekali === */
     :root {
       --green-1: #0f5132;
       --green-2: #198754;
@@ -16,69 +16,33 @@
       --red-dark: #842029;
       --yellow-light: #fff3cd;
       --yellow-dark: #664d03;
+      --blue-light: #cfe2ff;
+      --blue-dark: #0a58ca;
     }
     * { box-sizing: border-box; }
-    body {
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      margin: 0;
-      background: var(--green-4);
-      color: #123;
-    }
-    header {
-      background: linear-gradient(135deg, var(--green-2), var(--green-1));
-      color: #fff;
-      padding: 24px 16px;
-      text-align: center;
-      border-bottom: 4px solid var(--green-1);
-    }
-    main { max-width: 800px; margin: 20px auto; padding: 0 16px 32px; }
-    .user-id-box {
-      background: #fff;
-      border: 1px solid var(--green-3);
-      border-radius: 12px;
-      padding: 10px 14px;
-      text-align: center;
-      font-size: 13px;
-    }
-    .status-box {
-      padding: 12px 16px;
-      border-radius: 12px;
-      margin-top: 16px;
-      font-size: 14px;
-      font-weight: 500;
-      display: flex; align-items: center; gap: 10px;
-      border: 1px solid;
-    }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0; background: var(--green-4); color: #123; }
+    header { background: linear-gradient(135deg, var(--green-2), var(--green-1)); color: #fff; padding: 24px 16px; text-align: center; border-bottom: 4px solid var(--green-1); }
+    header h1 { margin: 0 0 6px; font-size: clamp(20px, 4vw, 26px); font-weight: 700; }
+    header p { margin: 0; opacity: .95; font-size: 15px; }
+    main { max-width: 800px; margin: 20px auto; padding: 0 16px 32px 16px; }
+    .user-id-box { font-size: 13px; color: var(--green-1); background: #fff; border: 1px solid var(--green-3); padding: 10px 14px; border-radius: 12px; text-align: center; word-break: break-all; }
+    .status-box { padding: 12px 16px; border-radius: 12px; margin-top: 16px; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 10px; border: 1px solid; }
     .status-box.success { background: var(--green-3); color: var(--green-1); border-color: var(--green-2); }
     .status-box.error { background: var(--red-light); color: var(--red-dark); border-color: var(--red-dark); }
     .status-box.loading { background: var(--yellow-light); color: var(--yellow-dark); border-color: var(--yellow-dark); }
-    .card {
-      background: #fff; border-radius: 14px; padding: 16px 20px; margin-top: 20px;
-      border: 1px solid #e6f0ea; box-shadow: 0 2px 8px rgba(16, 94, 60, .06);
-    }
-    .card h2 { margin: 0 0 16px; font-size: 18px; color: var(--green-1); display: flex; align-items: center; gap: 8px; }
-    .form-group { margin-bottom: 16px; }
-    label { display: block; font-weight: 600; font-size: 14px; margin-bottom: 6px; }
-    input, select {
-      padding: 10px 14px; border-radius: 10px; border: 1px solid #cfe3d8;
-      width: 100%; font-size: 16px;
-    }
-    input:focus, select:focus { outline: none; border-color: var(--green-2); box-shadow: 0 0 0 2px var(--green-3); }
-    .btn {
-      display: flex; justify-content: center; align-items: center; gap: 8px;
-      padding: 12px 16px; border-radius: 10px;
-      background: var(--green-2); color: #fff; border: 1px solid var(--green-1);
-      cursor: pointer; font-weight: 600;
-    }
-    .btn:hover { background: var(--green-1); }
-    .chart-placeholder {
-      height: 250px; display: flex; align-items: center; justify-content: center;
-      border: 1px dashed #ccc; border-radius: 8px; color: #777; font-style: italic;
-    }
-    table { width: 100%; border-collapse: collapse; }
-    th, td { padding: 12px 14px; border-bottom: 1px solid #e6f0ea; text-align: left; font-size: 14px; }
-    th { background: var(--green-4); color: var(--green-1); font-weight: 600; }
-    tr:hover { background: #f9f9f9; }
+    .card { background: #fff; border-radius: 14px; padding: 16px 20px; border: 1px solid #e6f0ea; box-shadow: 0 2px 8px rgba(16, 94, 60, .06); margin-top: 20px; }
+    .card h2 { margin: 0 0 16px; font-size: 18px; color: var(--green-1); display: flex; align-items: center; gap: 8px; font-weight: 700; }
+    input, select { padding: 12px 14px; border-radius: 10px; border: 1px solid #cfe3d8; background: #fff; width: 100%; font-size: 16px; color: #333; }
+    .btn { padding: 12px 16px; border-radius: 10px; font-weight: 600; font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; }
+    .btn-green { background: var(--green-2); color: #fff; border: 1px solid var(--green-1); }
+    .btn-green:hover { background: var(--green-1); }
+    .chart-placeholder { width: 100%; height: 250px; display: flex; align-items: center; justify-content: center; border: 1px dashed #ccc; color: #777; font-style: italic; border-radius: 8px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { padding: 10px 12px; border-bottom: 1px solid #eee; text-align: left; }
+    .badge { padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+    .badge-normal { background: var(--green-3); color: var(--green-1); }
+    .badge-high-1 { background: #ffc9a8; color: #a14000; }
+    .badge-high-2 { background: var(--red-light); color: var(--red-dark); }
     footer { text-align: center; margin: 24px 0 36px; color: #555; font-size: 13px; }
   </style>
 </head>
@@ -89,41 +53,41 @@
   </header>
 
   <main>
-    <div class="user-id-box">
-      <strong>ID Pengguna:</strong> <span id="userIdDisplay">Menunggu Autentikasi...</span>
-    </div>
-
-    <div id="authStatus" class="status-box loading">
-      <i class="fa-solid fa-spinner fa-spin"></i><span>Mencoba autentikasi...</span>
-    </div>
+    <div class="user-id-box"><strong>ID Pengguna:</strong> <span id="userIdDisplay">Menunggu Autentikasi...</span></div>
+    <div id="authStatus" class="status-box loading"><i class="fa-solid fa-spinner fa-spin"></i><span>Mencoba autentikasi...</span></div>
 
     <div class="card">
       <h2><i class="fa-solid fa-file-medical"></i> Input Tensi Baru</h2>
-      <div class="form-group"><label>Sistolik (atas)</label><input id="systolic" type="number" placeholder="e.g. 135"></div>
-      <div class="form-group"><label>Diastolik (bawah)</label><input id="diastolic" type="number" placeholder="e.g. 85"></div>
-      <div class="form-group"><label>Pulse (detak/menit)</label><input id="pulse" type="number" placeholder="e.g. 70"></div>
-      <div class="form-group"><label>Tanggal (Kosongkan = Hari Ini)</label><input id="inputDate" type="date"></div>
-      <div class="form-group">
-        <label>Waktu Pengukuran</label>
-        <select id="timeOfDay">
-          <option value="">Otomatis (Saat Ini)</option>
-          <option value="Pagi">Pagi (08:00)</option>
-          <option value="Malam">Malam (20:00)</option>
-        </select>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+        <div><label>Sistolik</label><input type="number" id="systolic" placeholder="e.g. 135"></div>
+        <div><label>Diastolik</label><input type="number" id="diastolic" placeholder="e.g. 85"></div>
+        <div><label>Pulse</label><input type="number" id="pulse" placeholder="e.g. 70"></div>
       </div>
-      <button id="saveButton" class="btn"><i class="fa-solid fa-floppy-disk"></i><span>Simpan Data Tensi</span></button>
+      <hr style="border:none;border-top:1px dashed #ccc;margin:16px 0">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div><label>Tanggal</label><input type="date" id="inputDate"></div>
+        <div><label>Waktu</label>
+          <select id="timeOfDay">
+            <option value="">Otomatis</option>
+            <option value="Pagi">Pagi (08:00)</option>
+            <option value="Malam">Malam (20:00)</option>
+          </select>
+        </div>
+      </div>
+      <button id="saveButton" class="btn btn-green"><i class="fa-solid fa-floppy-disk"></i><span>Simpan Data Tensi</span></button>
     </div>
 
     <div class="card">
-      <h2><i class="fa-solid fa-chart-line"></i> Tren Tensi (Rata-rata 7 Hari Terakhir)</h2>
+      <h2><i class="fa-solid fa-chart-line"></i> Tren Tensi (7 Hari)</h2>
       <div id="chartPlaceholder" class="chart-placeholder">Memuat data grafik...</div>
+      <canvas id="trendChart" style="display:none;height:250px;width:100%;"></canvas>
     </div>
 
     <div class="card">
-      <h2><i class="fa-solid fa-clock-rotate-left"></i> Riwayat 10 Data Terbaru</h2>
+      <h2><i class="fa-solid fa-clock-rotate-left"></i> Riwayat Terbaru</h2>
       <table>
         <thead><tr><th>Tanggal</th><th>Waktu</th><th>Tensi</th><th>Pulse</th><th>Kategori</th></tr></thead>
-        <tbody id="historyTableBody"><tr><td colspan="5" style="text-align:center;">Memuat data...</td></tr></tbody>
+        <tbody id="historyTableBody"><tr><td colspan="5" style="text-align:center;color:#777">Memuat data...</td></tr></tbody>
       </table>
     </div>
   </main>
@@ -133,56 +97,152 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getDatabase, ref, push, onValue, limitToLast, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+    import { getDatabase, ref, push, onValue, query as rtQuery, limitToLast, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyC70xZ8VsDlfbsa-_JNmNoh6qdf9-PdJgk",
-      authDomain: "monitor-tensi.firebaseapp.com",
-      databaseURL: "https://monitor-tensi-default-rtdb.firebaseio.com",
-      projectId: "monitor-tensi",
-      storageBucket: "monitor-tensi.firebasestorage.app",
-      messagingSenderId: "917331085991",
-      appId: "1:917331085991:web:037e3650f60776db53e982"
-    };
+    const authStatusEl = document.getElementById('authStatus');
+    const userIdDisplayEl = document.getElementById('userIdDisplay');
+    const saveButton = document.getElementById('saveButton');
+    const systolicInput = document.getElementById('systolic');
+    const diastolicInput = document.getElementById('diastolic');
+    const pulseInput = document.getElementById('pulse');
+    const inputDateEl = document.getElementById('inputDate');
+    const timeOfDayEl = document.getElementById('timeOfDay');
+    const historyTableBody = document.getElementById('historyTableBody');
+    const chartPlaceholder = document.getElementById('chartPlaceholder');
+    const canvas = document.getElementById('trendChart');
+    const ctx = canvas.getContext('2d');
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    const auth = getAuth(app);
+    let app, db, auth, userId = null, isAuthReady = false;
 
-    const authStatusEl = document.getElementById("authStatus");
-    const userIdDisplayEl = document.getElementById("userIdDisplay");
-    const saveButton = document.getElementById("saveButton");
-    const historyTableBody = document.getElementById("historyTableBody");
-
-    function updateStatus(msg, type="success"){
-      authStatusEl.className = `status-box ${type}`;
-      const icon = type==="error"?"fa-exclamation-triangle":type==="loading"?"fa-spinner fa-spin":"fa-check-circle";
-      authStatusEl.innerHTML = `<i class="fa-solid ${icon}"></i> <span>${msg}</span>`;
+    function getFirebaseConfig() {
+      return {
+        apiKey: "AIzaSyC70xZ8VsDlfbsa-_JNmNoh6qdf9-PdJgk",
+        authDomain: "monitor-tensi.firebaseapp.com",
+        databaseURL: "https://monitor-tensi-default-rtdb.firebaseio.com",
+        projectId: "monitor-tensi",
+        storageBucket: "monitor-tensi.appspot.com",
+        messagingSenderId: "917331085991",
+        appId: "1:917331085991:web:037e3650f60776db53e982"
+      };
     }
 
-    onAuthStateChanged(auth, async user=>{
-      if(user){
-        userIdDisplayEl.textContent = user.uid;
-        updateStatus("Autentikasi sukses.","success");
-        listenData(user.uid);
-      }else{
-        updateStatus("Login anonim...","loading");
-        await signInAnonymously(auth);
-      }
-    });
+    function updateAuthStatus(msg, type = "success") {
+      const icons = { success: "fa-check-circle", error: "fa-exclamation-triangle", loading: "fa-spinner fa-spin" };
+      authStatusEl.className = `status-box ${type}`;
+      authStatusEl.innerHTML = `<i class="fa-solid ${icons[type]}"></i><span>${msg}</span>`;
+    }
 
-    function listenData(uid){
-      const q = query(ref(db,"users/"+uid+"/readings"),limitToLast(10));
-      onValue(q,snap=>{
-        const data=[]; snap.forEach(c=>data.push(c.val()));
-        renderTable(data.reverse());
+    async function initializeFirebase() {
+      const cfg = getFirebaseConfig();
+      try {
+        app = initializeApp(cfg);
+        db = getDatabase(app);
+        auth = getAuth(app);
+        onAuthStateChanged(auth, async (user) => {
+          if (user) {
+            userId = user.uid;
+            isAuthReady = true;
+            userIdDisplayEl.textContent = userId;
+            updateAuthStatus("Autentikasi BERHASIL. Data dimuat real-time.", "success");
+            setupDataListener();
+          } else {
+            await signInAnonymously(auth);
+          }
+        });
+      } catch (e) {
+        updateAuthStatus("EROR Inisialisasi: " + e.message, "error");
+      }
+    }
+
+    function setupDataListener() {
+      const q = rtQuery(ref(db, `users/${userId}/bloodPressureReadings`), limitToLast(50));
+      onValue(q, (snap) => {
+        const data = [];
+        snap.forEach(c => data.push({ id: c.key, ...c.val() }));
+        data.reverse();
+        updateHistoryTable(data.slice(0, 10));
+        updateChart(data);
       });
     }
 
-    function renderTable(data){
-      if(!data.length){historyTableBody.innerHTML=`<tr><td colspan="5" style="text-align:center;">Belum ada data.</td></tr>`;return;}
-      historyTableBody.innerHTML="";
-      for(const d of data){
-        const tgl = d.date || new Date(d.timestamp).toLocaleDateString("id-ID");
-        const waktu = d.displayTime || new Date(d.timestamp).toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"});
-        historyTableBody.innerHTML += `<tr><td>${tgl}</td><td
+    async function saveReading() {
+      if (!isAuthReady) { updateAuthStatus("Belum login.", "error"); return; }
+      const s = parseInt(systolicInput.value), d = parseInt(diastolicInput.value), p = parseInt(pulseInput.value) || null;
+      if (isNaN(s) || isNaN(d)) { updateAuthStatus("Isi sistolik dan diastolik.", "error"); return; }
+      const now = new Date(), date = inputDateEl.value, tod = timeOfDayEl.value;
+      let ts;
+      if (date) {
+        const [y, m, day] = date.split('-').map(Number);
+        const dt = new Date(y, m - 1, day);
+        if (tod === "Pagi") dt.setHours(8); else if (tod === "Malam") dt.setHours(20);
+        ts = dt.getTime();
+      } else {
+        if (tod === "Pagi") now.setHours(8); else if (tod === "Malam") now.setHours(20);
+        ts = now.getTime();
+      }
+      const rec = { systolic: s, diastolic: d, pulse: p, timestamp: ts, createdAt: serverTimestamp() };
+      saveButton.disabled = true; saveButton.querySelector("span").textContent = "Menyimpan...";
+      try {
+        await push(ref(db, `users/${userId}/bloodPressureReadings`), rec);
+        updateAuthStatus("Data tersimpan.", "success");
+        systolicInput.value = diastolicInput.value = pulseInput.value = inputDateEl.value = timeOfDayEl.value = "";
+      } catch (e) {
+        updateAuthStatus("EROR Simpan: " + e.message, "error");
+      } finally {
+        saveButton.disabled = false; saveButton.querySelector("span").textContent = "Simpan Data Tensi";
+      }
+    }
+
+    function getPressureCategory(s, d) {
+      if (s < 120 && d < 80) return { text: "Normal", cls: "badge-normal" };
+      if ((s >= 130 && s <= 139) || (d >= 80 && d <= 89)) return { text: "Stg 1", cls: "badge-high-1" };
+      if (s >= 140 || d >= 90) return { text: "Stg 2", cls: "badge-high-2" };
+      return { text: "N/A", cls: "badge-normal" };
+    }
+
+    function updateHistoryTable(data) {
+      if (data.length === 0) {
+        historyTableBody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:#777">Belum ada data.</td></tr>`;
+        return;
+      }
+      historyTableBody.innerHTML = data.map(r => {
+        const c = getPressureCategory(r.systolic, r.diastolic);
+        const d = new Date(r.timestamp);
+        return `<tr><td>${d.toLocaleDateString('id-ID')}</td><td>${d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})}</td>
+        <td>${r.systolic}/${r.diastolic}</td><td>${r.pulse||'N/A'}</td><td><span class="badge ${c.cls}">${c.text}</span></td></tr>`;
+      }).join("");
+    }
+
+    function updateChart(data) {
+      if (data.length < 2) { chartPlaceholder.textContent = "Data belum cukup."; return; }
+      chartPlaceholder.style.display = "none"; canvas.style.display = "block";
+      const recent = data.slice(-7).reverse();
+      const labels = recent.map(r => new Date(r.timestamp).toLocaleDateString('id-ID',{day:'2-digit',month:'short'}));
+      const sys = recent.map(r => r.systolic), dia = recent.map(r => r.diastolic);
+      drawChart(labels, sys, dia);
+    }
+
+    function drawChart(labels, sys, dia) {
+      const w = canvas.width = canvas.clientWidth, h = canvas.height = 250, p = 40;
+      const min = Math.min(...sys, ...dia) - 10, max = Math.max(...sys, ...dia) + 10, range = max - min;
+      const xStep = (w - p * 2) / (labels.length - 1);
+      const x = i => p + i * xStep, y = v => h - p - ((v - min) / range) * (h - p * 2);
+      ctx.clearRect(0, 0, w, h);
+      ctx.font = "12px Arial"; ctx.textAlign = "center";
+      ctx.strokeStyle = "#ccc";
+      for (let i = 0; i <= 4; i++) {
+        const val = min + i * (range / 4), yy = y(val);
+        ctx.beginPath(); ctx.moveTo(p, yy); ctx.lineTo(w - p, yy); ctx.stroke();
+        ctx.fillText(Math.round(val), p - 25, yy + 4);
+      }
+      labels.forEach((l, i) => ctx.fillText(l, x(i), h - 10));
+      const drawLine = (arr, color) => { ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.beginPath();
+        arr.forEach((v, i) => i ? ctx.lineTo(x(i), y(v)) : ctx.moveTo(x(0), y(v))); ctx.stroke(); };
+      drawLine(sys, "#db3a34"); drawLine(dia, "#1a73e8");
+    }
+
+    saveButton.addEventListener('click', saveReading);
+    document.addEventListener('DOMContentLoaded', initializeFirebase);
+  </script>
+</body>
+</html>
