@@ -1,27 +1,91 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Monitor Tensi Harian</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
   <style>
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0; background: #f6fdf8; }
-    header { background: linear-gradient(135deg, #198754, #0f5132); color: #fff; padding: 24px 16px; text-align: center; border-bottom: 4px solid #0f5132; }
-    main { max-width: 800px; margin: 20px auto; padding: 0 16px 32px 16px; }
-    .status-box { padding: 12px 16px; border-radius: 12px; margin-top: 16px; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 10px; border: 1px solid; }
-    .status-box.success { background: #d1e7dd; color: #0f5132; border-color: #198754; }
-    .status-box.error { background: #f8d7da; color: #842029; border-color: #842029; }
-    .status-box.loading { background: #fff3cd; color: #664d03; border-color: #664d03; }
-    .card { background: #fff; border-radius: 14px; padding: 16px 20px; border: 1px solid #e6f0ea; box-shadow: 0 2px 8px rgba(16, 94, 60, .06); margin-top: 20px; }
-    .btn { display: flex; align-items: center; justify-content: center; gap: 8px; border-radius: 10px; border: none; background: #198754; color: #fff; font-weight: 600; padding: 12px; cursor: pointer; }
+    :root {
+      --green-1: #0f5132;
+      --green-2: #198754;
+      --green-3: #d1e7dd;
+      --green-4: #e9f7f1;
+      --red-light: #f8d7da;
+      --red-dark: #842029;
+      --yellow-light: #fff3cd;
+      --yellow-dark: #664d03;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      margin: 0;
+      background: var(--green-4);
+      color: #123;
+    }
+    header {
+      background: linear-gradient(135deg, var(--green-2), var(--green-1));
+      color: #fff;
+      padding: 24px 16px;
+      text-align: center;
+      border-bottom: 4px solid var(--green-1);
+    }
+    main { max-width: 800px; margin: 20px auto; padding: 0 16px 32px; }
+    .user-id-box {
+      background: #fff;
+      border: 1px solid var(--green-3);
+      border-radius: 12px;
+      padding: 10px 14px;
+      text-align: center;
+      font-size: 13px;
+    }
+    .status-box {
+      padding: 12px 16px;
+      border-radius: 12px;
+      margin-top: 16px;
+      font-size: 14px;
+      font-weight: 500;
+      display: flex; align-items: center; gap: 10px;
+      border: 1px solid;
+    }
+    .status-box.success { background: var(--green-3); color: var(--green-1); border-color: var(--green-2); }
+    .status-box.error { background: var(--red-light); color: var(--red-dark); border-color: var(--red-dark); }
+    .status-box.loading { background: var(--yellow-light); color: var(--yellow-dark); border-color: var(--yellow-dark); }
+    .card {
+      background: #fff; border-radius: 14px; padding: 16px 20px; margin-top: 20px;
+      border: 1px solid #e6f0ea; box-shadow: 0 2px 8px rgba(16, 94, 60, .06);
+    }
+    .card h2 { margin: 0 0 16px; font-size: 18px; color: var(--green-1); display: flex; align-items: center; gap: 8px; }
+    .form-group { margin-bottom: 16px; }
+    label { display: block; font-weight: 600; font-size: 14px; margin-bottom: 6px; }
+    input, select {
+      padding: 10px 14px; border-radius: 10px; border: 1px solid #cfe3d8;
+      width: 100%; font-size: 16px;
+    }
+    input:focus, select:focus { outline: none; border-color: var(--green-2); box-shadow: 0 0 0 2px var(--green-3); }
+    .btn {
+      display: flex; justify-content: center; align-items: center; gap: 8px;
+      padding: 12px 16px; border-radius: 10px;
+      background: var(--green-2); color: #fff; border: 1px solid var(--green-1);
+      cursor: pointer; font-weight: 600;
+    }
+    .btn:hover { background: var(--green-1); }
+    .chart-placeholder {
+      height: 250px; display: flex; align-items: center; justify-content: center;
+      border: 1px dashed #ccc; border-radius: 8px; color: #777; font-style: italic;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 12px 14px; border-bottom: 1px solid #e6f0ea; text-align: left; font-size: 14px; }
+    th { background: var(--green-4); color: var(--green-1); font-weight: 600; }
+    tr:hover { background: #f9f9f9; }
     footer { text-align: center; margin: 24px 0 36px; color: #555; font-size: 13px; }
   </style>
 </head>
 <body>
   <header>
     <h1>Monitor Tensi Harian</h1>
-    <p>Aplikasi untuk penderita hipertensi: Catat Tensi Pagi &amp; Sore</p>
+    <p>Aplikasi untuk penderita hipertensi: Catat Tensi Pagi & Sore</p>
   </header>
 
   <main>
@@ -30,23 +94,37 @@
     </div>
 
     <div id="authStatus" class="status-box loading">
-      <i class="fa-solid fa-spinner fa-spin"></i>
-      <span>Mencoba autentikasi...</span>
+      <i class="fa-solid fa-spinner fa-spin"></i><span>Mencoba autentikasi...</span>
     </div>
 
     <div class="card">
       <h2><i class="fa-solid fa-file-medical"></i> Input Tensi Baru</h2>
-      <div class="input-grid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
-        <div><label>Sistolik</label><input type="number" id="systolic" placeholder="135"></div>
-        <div><label>Diastolik</label><input type="number" id="diastolic" placeholder="85"></div>
-        <div><label>Pulse</label><input type="number" id="pulse" placeholder="70"></div>
+      <div class="form-group"><label>Sistolik (atas)</label><input id="systolic" type="number" placeholder="e.g. 135"></div>
+      <div class="form-group"><label>Diastolik (bawah)</label><input id="diastolic" type="number" placeholder="e.g. 85"></div>
+      <div class="form-group"><label>Pulse (detak/menit)</label><input id="pulse" type="number" placeholder="e.g. 70"></div>
+      <div class="form-group"><label>Tanggal (Kosongkan = Hari Ini)</label><input id="inputDate" type="date"></div>
+      <div class="form-group">
+        <label>Waktu Pengukuran</label>
+        <select id="timeOfDay">
+          <option value="">Otomatis (Saat Ini)</option>
+          <option value="Pagi">Pagi (08:00)</option>
+          <option value="Malam">Malam (20:00)</option>
+        </select>
       </div>
-      <button id="saveButton" class="btn"><i class="fa-solid fa-floppy-disk"></i><span>Simpan Data</span></button>
+      <button id="saveButton" class="btn"><i class="fa-solid fa-floppy-disk"></i><span>Simpan Data Tensi</span></button>
     </div>
 
     <div class="card">
-      <h2><i class="fa-solid fa-clock-rotate-left"></i> Riwayat</h2>
-      <div id="history">Memuat data...</div>
+      <h2><i class="fa-solid fa-chart-line"></i> Tren Tensi (Rata-rata 7 Hari Terakhir)</h2>
+      <div id="chartPlaceholder" class="chart-placeholder">Memuat data grafik...</div>
+    </div>
+
+    <div class="card">
+      <h2><i class="fa-solid fa-clock-rotate-left"></i> Riwayat 10 Data Terbaru</h2>
+      <table>
+        <thead><tr><th>Tanggal</th><th>Waktu</th><th>Tensi</th><th>Pulse</th><th>Kategori</th></tr></thead>
+        <tbody id="historyTableBody"><tr><td colspan="5" style="text-align:center;">Memuat data...</td></tr></tbody>
+      </table>
     </div>
   </main>
 
@@ -55,9 +133,8 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getDatabase, ref, push, onValue, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+    import { getDatabase, ref, push, onValue, limitToLast, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
 
-    // --- Firebase Config Pakde (tinggal isi API key) ---
     const firebaseConfig = {
       apiKey: "AIzaSyC70xZ8VsDlfbsa-_JNmNoh6qdf9-PdJgk",
       authDomain: "monitor-tensi.firebaseapp.com",
@@ -72,47 +149,40 @@
     const db = getDatabase(app);
     const auth = getAuth(app);
 
-    const userIdDisplayEl = document.getElementById("userIdDisplay");
     const authStatusEl = document.getElementById("authStatus");
+    const userIdDisplayEl = document.getElementById("userIdDisplay");
     const saveButton = document.getElementById("saveButton");
-    const historyEl = document.getElementById("history");
+    const historyTableBody = document.getElementById("historyTableBody");
 
-    function updateStatus(msg, type="success") {
+    function updateStatus(msg, type="success"){
       authStatusEl.className = `status-box ${type}`;
-      authStatusEl.innerHTML = `<i class="fa-solid ${type==="error"?"fa-triangle-exclamation":type==="loading"?"fa-spinner fa-spin":"fa-check-circle"}"></i> <span>${msg}</span>`;
+      const icon = type==="error"?"fa-exclamation-triangle":type==="loading"?"fa-spinner fa-spin":"fa-check-circle";
+      authStatusEl.innerHTML = `<i class="fa-solid ${icon}"></i> <span>${msg}</span>`;
     }
 
-    function renderHistory(data){
-      if(!data || !data.length){historyEl.textContent="Belum ada data.";return;}
-      historyEl.innerHTML = data.map(r => `<div>${r.date} — ${r.sys}/${r.dia} (${r.pulse||'–'})</div>`).join("");
-    }
-
-    onAuthStateChanged(auth, async (user) => {
+    onAuthStateChanged(auth, async user=>{
       if(user){
-        updateStatus("Autentikasi sukses.","success");
         userIdDisplayEl.textContent = user.uid;
-        const readingsRef = ref(db, "users/"+user.uid+"/readings");
-        onValue(readingsRef,(snap)=>{
-          const vals=[]; snap.forEach(c=>vals.push(c.val()));
-          renderHistory(vals.reverse());
-        });
-      } else {
+        updateStatus("Autentikasi sukses.","success");
+        listenData(user.uid);
+      }else{
         updateStatus("Login anonim...","loading");
         await signInAnonymously(auth);
       }
     });
 
-    saveButton.onclick = async ()=>{
-      const sys=parseInt(document.getElementById("systolic").value);
-      const dia=parseInt(document.getElementById("diastolic").value);
-      const pulse=parseInt(document.getElementById("pulse").value);
-      if(!sys||!dia){updateStatus("Isi sistolik & diastolik!","error");return;}
-      const u=auth.currentUser;
-      if(!u){updateStatus("Belum login.","error");return;}
-      await push(ref(db,"users/"+u.uid+"/readings"),{sys,dia,pulse,date:new Date().toLocaleString('id-ID'),createdAt:serverTimestamp()});
-      updateStatus("Data tersimpan.","success");
-      document.getElementById("systolic").value=document.getElementById("diastolic").value=document.getElementById("pulse").value="";
-    };
-  </script>
-</body>
-</html>
+    function listenData(uid){
+      const q = query(ref(db,"users/"+uid+"/readings"),limitToLast(10));
+      onValue(q,snap=>{
+        const data=[]; snap.forEach(c=>data.push(c.val()));
+        renderTable(data.reverse());
+      });
+    }
+
+    function renderTable(data){
+      if(!data.length){historyTableBody.innerHTML=`<tr><td colspan="5" style="text-align:center;">Belum ada data.</td></tr>`;return;}
+      historyTableBody.innerHTML="";
+      for(const d of data){
+        const tgl = d.date || new Date(d.timestamp).toLocaleDateString("id-ID");
+        const waktu = d.displayTime || new Date(d.timestamp).toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"});
+        historyTableBody.innerHTML += `<tr><td>${tgl}</td><td
