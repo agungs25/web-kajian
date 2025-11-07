@@ -1,0 +1,577 @@
+<!doctype html>
+<html lang="id">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Monitor Tekanan Darah</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <style>
+    :root {
+      --green-1: #0f5132;
+      --green-2: #198754;
+      --green-3: #d1e7dd;
+      --green-4: #e9f7f1;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      margin: 0;
+      background: var(--green-4);
+      color: #123;
+      height: 100%;
+    }
+
+    html {
+      height: 100%;
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--green-2), var(--green-1));
+      color: #fff;
+      padding: 28px 16px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0 0 6px;
+      font-size: clamp(20px, 3vw, 28px);
+    }
+
+    header p {
+      margin: 0;
+      opacity: .95;
+    }
+
+    main {
+      max-width: 1100px;
+      margin: 20px auto;
+      padding: 16px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 14px;
+      border: 1px solid #e6f0ea;
+      box-shadow: 0 2px 8px rgba(16, 94, 60, .06);
+      margin-bottom: 14px;
+    }
+
+    .card h2 {
+      margin: 0 0 16px;
+      font-size: 18px;
+      color: var(--green-1);
+      font-weight: 600;
+    }
+
+    label {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 6px;
+      color: #345;
+      font-weight: 500;
+    }
+
+    input[type="date"],
+    input[type="number"],
+    select {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid #cfe3d8;
+      background: #fff;
+      box-shadow: 0 1px 0 #fff inset;
+      font-size: 14px;
+    }
+
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--green-2);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .form-grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    @media (max-width: 720px) {
+      .form-grid,
+      .form-grid-3 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .btn {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: none;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--green-2);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: var(--green-1);
+    }
+
+    .btn-danger {
+      background: #dc3545;
+      color: #fff;
+      padding: 6px 12px;
+      width: auto;
+      font-size: 13px;
+    }
+
+    .btn-danger:hover {
+      background: #bb2d3b;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      text-align: left;
+      padding: 10px 8px;
+      font-size: 14px;
+      color: var(--green-1);
+      border-bottom: 2px solid #e6f0ea;
+      font-weight: 600;
+    }
+
+    td {
+      padding: 10px 8px;
+      font-size: 14px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .overflow-x {
+      overflow-x: auto;
+    }
+
+    .chart-container {
+      position: relative;
+      height: 400px;
+    }
+
+    .chart-container svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .no-data {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #456;
+      font-size: 14px;
+    }
+
+    .text-center {
+      text-align: center;
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body>
+  <header>
+   <h1 id="app-title">Monitor Tekanan Darah</h1>
+   <p>Catat dan pantau tekanan darah Anda secara teratur</p>
+  </header>
+  <main><!-- Form Input -->
+   <div class="card">
+    <h2>Input Data Baru</h2>
+    <form id="bp-form">
+     <div class="form-grid">
+      <div><label for="date-input" id="date-label">Tanggal</label> <input type="date" id="date-input" required>
+      </div>
+      <div><label for="time-input" id="time-label">Waktu</label> <select id="time-input" required> <option value="Pagi">Pagi</option> <option value="Malam">Malam</option> </select>
+      </div>
+     </div>
+     <div class="form-grid">
+      <div><label for="systolic-input" id="systolic-label">Sistolik (mmHg)</label> <input type="number" id="systolic-input" required min="50" max="250">
+      </div>
+      <div><label for="diastolic-input" id="diastolic-label">Diastolik (mmHg)</label> <input type="number" id="diastolic-input" required min="30" max="150">
+      </div>
+     </div><button type="submit" id="submit-btn" class="btn btn-primary"> <span id="button-text">Simpan Data</span> </button>
+    </form>
+   </div><!-- Tabel Data -->
+   <div class="card">
+    <h2>Riwayat Pengukuran</h2>
+    <div class="overflow-x">
+     <table>
+      <thead>
+       <tr>
+        <th>Tanggal</th>
+        <th>Waktu</th>
+        <th>Sistolik</th>
+        <th>Diastolik</th>
+        <th>Kategori</th>
+        <th>Aksi</th>
+       </tr>
+      </thead>
+      <tbody id="data-table">
+       <tr>
+        <td colspan="6" class="text-center" style="padding: 32px 8px; color: #456;">Belum ada data. Silakan tambahkan pengukuran pertama Anda.</td>
+       </tr>
+      </tbody>
+     </table>
+    </div>
+   </div><!-- Grafik -->
+   <div class="card">
+    <h2>Grafik Monitoring Tekanan Darah</h2>
+    <div class="chart-container">
+     <svg id="chart"></svg>
+     <div id="no-data-message" class="no-data">
+      Grafik akan muncul setelah Anda menambahkan data
+     </div>
+    </div>
+   </div>
+  </main>
+  <script>
+    const defaultConfig = {
+      background_color: "#e9f7f1",
+      surface_color: "#ffffff",
+      text_color: "#112233",
+      primary_action_color: "#198754",
+      secondary_action_color: "#dc3545",
+      font_family: "system-ui",
+      font_size: 16,
+      app_title: "Monitor Tekanan Darah",
+      date_label: "Tanggal",
+      time_label: "Waktu",
+      systolic_label: "Sistolik (mmHg)",
+      diastolic_label: "Diastolik (mmHg)",
+      button_text: "Simpan Data"
+    };
+
+    const STORAGE_KEY = 'blood_pressure_data';
+    let allData = [];
+
+    function getBPCategory(systolic, diastolic) {
+      if (systolic < 120 && diastolic < 80) {
+        return { text: 'Normal', color: '#198754', bg: '#d1e7dd' };
+      } else if (systolic >= 120 && systolic <= 129 && diastolic < 80) {
+        return { text: 'Elevated', color: '#fd7e14', bg: '#ffe5d0' };
+      } else if ((systolic >= 130 && systolic <= 139) || (diastolic >= 80 && diastolic <= 89)) {
+        return { text: 'Hipertensi Stadium 1', color: '#fd7e14', bg: '#ffe5d0' };
+      } else if ((systolic >= 140 && systolic <= 179) || (diastolic >= 90 && diastolic <= 119)) {
+        return { text: 'Hipertensi Stadium 2', color: '#dc3545', bg: '#f8d7da' };
+      } else if (systolic >= 180 || diastolic >= 120) {
+        return { text: 'Krisis Hipertensi', color: '#842029', bg: '#f8d7da' };
+      } else {
+        return { text: 'Hipotensi', color: '#0dcaf0', bg: '#cff4fc' };
+      }
+    }
+
+    function loadData() {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        try {
+          allData = JSON.parse(stored);
+        } catch (e) {
+          allData = [];
+        }
+      }
+      allData.sort((a, b) => a.timestamp - b.timestamp);
+      renderTable();
+      renderChart();
+    }
+
+    function saveData() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(allData));
+    }
+
+    function addRecord(record) {
+      allData.push(record);
+      allData.sort((a, b) => a.timestamp - b.timestamp);
+      saveData();
+      renderTable();
+      renderChart();
+    }
+
+    function deleteRecord(id) {
+      allData = allData.filter(r => r.id !== id);
+      saveData();
+      renderTable();
+      renderChart();
+    }
+
+    async function onConfigChange(config) {
+      const backgroundColor = config.background_color || defaultConfig.background_color;
+      const textColor = config.text_color || defaultConfig.text_color;
+      const primaryColor = config.primary_action_color || defaultConfig.primary_action_color;
+      const fontFamily = config.font_family || defaultConfig.font_family;
+      const fontSize = config.font_size || defaultConfig.font_size;
+
+      document.body.style.backgroundColor = backgroundColor;
+      document.body.style.color = textColor;
+      document.body.style.fontFamily = `${fontFamily}, system-ui, sans-serif`;
+      document.body.style.fontSize = `${fontSize}px`;
+
+      document.getElementById('app-title').textContent = config.app_title || defaultConfig.app_title;
+      document.getElementById('date-label').textContent = config.date_label || defaultConfig.date_label;
+      document.getElementById('time-label').textContent = config.time_label || defaultConfig.time_label;
+      document.getElementById('systolic-label').textContent = config.systolic_label || defaultConfig.systolic_label;
+      document.getElementById('diastolic-label').textContent = config.diastolic_label || defaultConfig.diastolic_label;
+      document.getElementById('button-text').textContent = config.button_text || defaultConfig.button_text;
+
+      const submitBtn = document.getElementById('submit-btn');
+      submitBtn.style.backgroundColor = primaryColor;
+
+      renderChart();
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('data-table');
+      
+      if (allData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center" style="padding: 32px 8px; color: #456;">Belum ada data. Silakan tambahkan pengukuran pertama Anda.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = allData.map(record => {
+        const category = getBPCategory(record.systolic, record.diastolic);
+        return `
+          <tr data-id="${record.id}">
+            <td>${record.date}</td>
+            <td>${record.time_period}</td>
+            <td>${record.systolic}</td>
+            <td>${record.diastolic}</td>
+            <td><span style="display: inline-block; background: ${category.bg}; color: ${category.color}; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 600;">${category.text}</span></td>
+            <td>
+              <button onclick="handleDelete('${record.id}')" class="btn btn-danger">Hapus</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderChart() {
+      const svg = document.getElementById('chart');
+      const noDataMsg = document.getElementById('no-data-message');
+      
+      if (allData.length === 0) {
+        svg.innerHTML = '';
+        noDataMsg.style.display = 'flex';
+        return;
+      }
+
+      noDataMsg.style.display = 'none';
+
+      const config = window.elementSdk?.config || defaultConfig;
+      const primaryColor = config.primary_action_color || defaultConfig.primary_action_color;
+      const secondaryColor = config.secondary_action_color || defaultConfig.secondary_action_color;
+      const textColor = config.text_color || defaultConfig.text_color;
+      const fontSize = config.font_size || defaultConfig.font_size;
+
+      const width = svg.clientWidth;
+      const height = svg.clientHeight;
+      const padding = { top: 40, right: 80, bottom: 60, left: 60 };
+      const chartWidth = width - padding.left - padding.right;
+      const chartHeight = height - padding.top - padding.bottom;
+
+      const sortedData = [...allData].sort((a, b) => a.timestamp - b.timestamp);
+
+      const maxSystolic = Math.max(...sortedData.map(d => d.systolic));
+      const maxDiastolic = Math.max(...sortedData.map(d => d.diastolic));
+      const maxValue = Math.max(maxSystolic, maxDiastolic) + 20;
+      const minValue = Math.min(...sortedData.map(d => d.diastolic)) - 20;
+
+      const xScale = chartWidth / (sortedData.length - 1 || 1);
+      const yScale = chartHeight / (maxValue - minValue);
+
+      let svgContent = `
+        <line x1="${padding.left}" y1="${padding.top}" x2="${padding.left}" y2="${height - padding.bottom}" stroke="${textColor}" stroke-width="2"/>
+        <line x1="${padding.left}" y1="${height - padding.bottom}" x2="${width - padding.right}" y2="${height - padding.bottom}" stroke="${textColor}" stroke-width="2"/>
+      `;
+
+      for (let i = 0; i <= 5; i++) {
+        const value = minValue + (maxValue - minValue) * i / 5;
+        const y = height - padding.bottom - (value - minValue) * yScale;
+        svgContent += `
+          <line x1="${padding.left - 5}" y1="${y}" x2="${padding.left}" y2="${y}" stroke="${textColor}" stroke-width="1"/>
+          <text x="${padding.left - 10}" y="${y + 4}" text-anchor="end" fill="${textColor}" style="font-size: ${fontSize * 0.75}px">${Math.round(value)}</text>
+        `;
+      }
+
+      const systolicPoints = sortedData.map((d, i) => {
+        const x = padding.left + i * xScale;
+        const y = height - padding.bottom - (d.systolic - minValue) * yScale;
+        return `${x},${y}`;
+      }).join(' ');
+
+      const diastolicPoints = sortedData.map((d, i) => {
+        const x = padding.left + i * xScale;
+        const y = height - padding.bottom - (d.diastolic - minValue) * yScale;
+        return `${x},${y}`;
+      }).join(' ');
+
+      svgContent += `
+        <polyline points="${systolicPoints}" fill="none" stroke="${primaryColor}" stroke-width="3"/>
+        <polyline points="${diastolicPoints}" fill="none" stroke="${secondaryColor}" stroke-width="3"/>
+      `;
+
+      sortedData.forEach((d, i) => {
+        const x = padding.left + i * xScale;
+        const ySys = height - padding.bottom - (d.systolic - minValue) * yScale;
+        const yDia = height - padding.bottom - (d.diastolic - minValue) * yScale;
+        
+        svgContent += `
+          <circle cx="${x}" cy="${ySys}" r="4" fill="${primaryColor}"/>
+          <circle cx="${x}" cy="${yDia}" r="4" fill="${secondaryColor}"/>
+        `;
+
+        if (i % Math.ceil(sortedData.length / 8) === 0 || i === sortedData.length - 1) {
+          svgContent += `
+            <text x="${x}" y="${height - padding.bottom + 20}" text-anchor="middle" fill="${textColor}" style="font-size: ${fontSize * 0.75}px">${d.date.substring(5)}</text>
+            <text x="${x}" y="${height - padding.bottom + 35}" text-anchor="middle" fill="${textColor}" style="font-size: ${fontSize * 0.625}px">${d.time_period}</text>
+          `;
+        }
+      });
+
+      svgContent += `
+        <text x="${width - padding.right + 10}" y="${padding.top + 10}" fill="${primaryColor}" style="font-size: ${fontSize * 0.875}px; font-weight: bold">Sistolik</text>
+        <text x="${width - padding.right + 10}" y="${padding.top + 30}" fill="${secondaryColor}" style="font-size: ${fontSize * 0.875}px; font-weight: bold">Diastolik</text>
+      `;
+
+      svg.innerHTML = svgContent;
+    }
+
+    function handleDelete(id) {
+      deleteRecord(id);
+    }
+
+    window.handleDelete = handleDelete;
+
+    document.getElementById('bp-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const date = document.getElementById('date-input').value;
+      const timePeriod = document.getElementById('time-input').value;
+      const systolic = parseInt(document.getElementById('systolic-input').value);
+      const diastolic = parseInt(document.getElementById('diastolic-input').value);
+
+      const newRecord = {
+        id: Date.now().toString(),
+        date: date,
+        time_period: timePeriod,
+        systolic: systolic,
+        diastolic: diastolic,
+        timestamp: new Date(date).getTime()
+      };
+
+      addRecord(newRecord);
+      e.target.reset();
+      document.getElementById('date-input').value = new Date().toISOString().split('T')[0];
+    });
+
+    document.getElementById('date-input').value = new Date().toISOString().split('T')[0];
+
+    function init() {
+      loadData();
+
+      if (window.elementSdk) {
+        window.elementSdk.init({
+          defaultConfig,
+          onConfigChange,
+          mapToCapabilities: (config) => ({
+            recolorables: [
+              {
+                get: () => config.background_color || defaultConfig.background_color,
+                set: (value) => {
+                  config.background_color = value;
+                  window.elementSdk.setConfig({ background_color: value });
+                }
+              },
+              {
+                get: () => config.surface_color || defaultConfig.surface_color,
+                set: (value) => {
+                  config.surface_color = value;
+                  window.elementSdk.setConfig({ surface_color: value });
+                }
+              },
+              {
+                get: () => config.text_color || defaultConfig.text_color,
+                set: (value) => {
+                  config.text_color = value;
+                  window.elementSdk.setConfig({ text_color: value });
+                }
+              },
+              {
+                get: () => config.primary_action_color || defaultConfig.primary_action_color,
+                set: (value) => {
+                  config.primary_action_color = value;
+                  window.elementSdk.setConfig({ primary_action_color: value });
+                }
+              },
+              {
+                get: () => config.secondary_action_color || defaultConfig.secondary_action_color,
+                set: (value) => {
+                  config.secondary_action_color = value;
+                  window.elementSdk.setConfig({ secondary_action_color: value });
+                }
+              }
+            ],
+            borderables: [],
+            fontEditable: {
+              get: () => config.font_family || defaultConfig.font_family,
+              set: (value) => {
+                config.font_family = value;
+                window.elementSdk.setConfig({ font_family: value });
+              }
+            },
+            fontSizeable: {
+              get: () => config.font_size || defaultConfig.font_size,
+              set: (value) => {
+                config.font_size = value;
+                window.elementSdk.setConfig({ font_size: value });
+              }
+            }
+          }),
+          mapToEditPanelValues: (config) => new Map([
+            ["app_title", config.app_title || defaultConfig.app_title],
+            ["date_label", config.date_label || defaultConfig.date_label],
+            ["time_label", config.time_label || defaultConfig.time_label],
+            ["systolic_label", config.systolic_label || defaultConfig.systolic_label],
+            ["diastolic_label", config.diastolic_label || defaultConfig.diastolic_label],
+            ["button_text", config.button_text || defaultConfig.button_text]
+          ])
+        });
+      }
+    }
+
+    init();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99ac4dcf25ca97a7',t:'MTc2MjUxMjk4NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
