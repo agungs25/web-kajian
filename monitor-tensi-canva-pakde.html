@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="id">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Monitor Tekanan Darah</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  
+  
+  
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ <link rel="stylesheet" href="pakde.css">
+</head>
+ <body>
+<header>
+  <h1>Monitor Tekanan Darah</h1>
+  <p>Catat dan pantau tekanan darah Anda secara teratur</p>
+</header>
+<main>
+  <div id="app" class="min-h-full p-6"><!-- Header -->
+   <div class="mb-8">
+    <h1 id="app-title" class="text-3xl font-bold mb-2">Monitor Tekanan Darah</h1>
+    <p class="text-sm">Catat dan pantau tekanan darah Anda secara teratur</p>
+   </div><!-- Form Input -->
+   <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+    <h2 class="text-xl font-semibold mb-4">Input Data Baru</h2>
+    <form id="bp-form" class="space-y-4">
+     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div><label for="date-input" id="date-label" class="block text-sm font-medium mb-1">Tanggal</label> <input type="date" id="date-input" required class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2">
+      </div>
+      <div><label for="time-input" id="time-label" class="block text-sm font-medium mb-1">Waktu</label> <select id="time-input" required class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2"> <option value="Pagi">Pagi</option> <option value="Malam">Malam</option> </select>
+      </div>
+     </div>
+     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div><label for="systolic-input" id="systolic-label" class="block text-sm font-medium mb-1">Sistolik (mmHg)</label> <input type="number" id="systolic-input" required min="50" max="250" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2">
+      </div>
+      <div><label for="diastolic-input" id="diastolic-label" class="block text-sm font-medium mb-1">Diastolik (mmHg)</label> <input type="number" id="diastolic-input" required min="30" max="150" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2">
+      </div>
+      <div><label for="pulse-input" id="pulse-label" class="block text-sm font-medium mb-1">Pulse (bpm)</label> <input type="number" id="pulse-input" min="40" max="200" placeholder="Opsional" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2">
+      </div>
+     </div><button type="submit" id="submit-btn" class="w-full py-2 px-4 rounded-md font-medium transition-colors"> <span id="button-text">Simpan Data</span> </button>
+    </form>
+   </div><!-- Tabel Data -->
+   <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+    <h2 class="text-xl font-semibold mb-4">Riwayat Pengukuran</h2>
+    <div class="overflow-x-auto">
+     <table class="w-full">
+      <thead>
+       <tr class="border-b">
+        <th class="text-left py-2 px-3 text-sm font-semibold">Tanggal</th>
+        <th class="text-left py-2 px-3 text-sm font-semibold">Waktu</th>
+        <th class="text-left py-2 px-3 text-sm font-semibold">Sistolik</th>
+        <th class="text-left py-2 px-3 text-sm font-semibold">Diastolik</th>
+        <th class="text-left py-2 px-3 text-sm font-semibold">Pulse</th>
+        <th class="text-left py-2 px-3 text-sm font-semibold">Aksi</th>
+       </tr>
+      </thead>
+      <tbody id="data-table">
+       <tr>
+        <td colspan="6" class="text-center py-8 text-sm">Belum ada data. Silakan tambahkan pengukuran pertama Anda.</td>
+       </tr>
+      </tbody>
+     </table>
+    </div>
+   </div><!-- Grafik -->
+   <div class="bg-white rounded-lg shadow-md p-6">
+    <h2 class="text-xl font-semibold mb-4">Grafik Monitoring Tekanan Darah</h2>
+    <div id="chart-container" class="relative" style="height: 400px;">
+     <svg id="chart" class="w-full h-full"></svg>
+     <div id="no-data-message" class="absolute inset-0 flex items-center justify-center text-sm">
+      Grafik akan muncul setelah Anda menambahkan data
+     </div>
+    </div>
+   </div>
+  </div>
+  <script>
+    const defaultConfig = {
+      background_color: "#f0f4f8",
+      surface_color: "#ffffff",
+      text_color: "#1e293b",
+      primary_action_color: "#3b82f6",
+      secondary_action_color: "#ef4444",
+      font_family: "system-ui",
+      font_size: 16,
+      app_title: "Monitor Tekanan Darah",
+      date_label: "Tanggal",
+      time_label: "Waktu",
+      systolic_label: "Sistolik (mmHg)",
+      diastolic_label: "Diastolik (mmHg)",
+      pulse_label: "Pulse (bpm)",
+      button_text: "Simpan Data"
+    };
+
+    const STORAGE_KEY = 'blood_pressure_data';
+    let allData = [];
+
+    // LocalStorage functions
+    function loadData() {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        try {
+          allData = JSON.parse(stored);
+        } catch (e) {
+          allData = [];
+        }
+      }
+      allData.sort((a, b) => a.timestamp - b.timestamp);
+      renderTable();
+      renderChart();
+    }
+
+    function saveData() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(allData));
+    }
+
+    function addRecord(record) {
+      allData.push(record);
+      allData.sort((a, b) => a.timestamp - b.timestamp);
+      saveData();
+      renderTable();
+      renderChart();
+    }
+
+    function deleteRecord(id) {
+      allData = allData.filter(r => r.id !== id);
+      saveData();
+      renderTable();
+      renderChart();
+    }
+
+    async function onConfigChange(config) {
+      const backgroundColor = config.background_color || defaultConfig.background_color;
+      const surfaceColor = config.surface_color || defaultConfig.surface_color;
+      const textColor = config.text_color || defaultConfig.text_color;
+      const primaryColor = config.primary_action_color || defaultConfig.primary_action_color;
+      const secondaryColor = config.secondary_action_color || defaultConfig.secondary_action_color;
+      const fontFamily = config.font_family || defaultConfig.font_family;
+      const fontSize = config.font_size || defaultConfig.font_size;
+
+      document.body.style.backgroundColor = backgroundColor;
+      document.body.style.color = textColor;
+      document.body.style.fontFamily = `${fontFamily}, system-ui, sans-serif`;
+      document.body.style.fontSize = `${fontSize}px`;
+
+      document.getElementById('app-title').textContent = config.app_title || defaultConfig.app_title;
+      document.getElementById('app-title').style.fontSize = `${fontSize * 1.875}px`;
+      document.getElementById('app-title').style.color = textColor;
+
+      const surfaces = document.querySelectorAll('.bg-white');
+      surfaces.forEach(el => {
+        el.style.backgroundColor = surfaceColor;
+        el.style.color = textColor;
+      });
+
+      document.getElementById('date-label').textContent = config.date_label || defaultConfig.date_label;
+      document.getElementById('time-label').textContent = config.time_label || defaultConfig.time_label;
+      document.getElementById('systolic-label').textContent = config.systolic_label || defaultConfig.systolic_label;
+      document.getElementById('diastolic-label').textContent = config.diastolic_label || defaultConfig.diastolic_label;
+      document.getElementById('pulse-label').textContent = config.pulse_label || defaultConfig.pulse_label;
+      document.getElementById('button-text').textContent = config.button_text || defaultConfig.button_text;
+
+      const labels = document.querySelectorAll('label');
+      labels.forEach(label => {
+        label.style.color = textColor;
+        label.style.fontSize = `${fontSize * 0.875}px`;
+      });
+
+      const inputs = document.querySelectorAll('input, select');
+      inputs.forEach(input => {
+        input.style.borderColor = textColor;
+        input.style.color = textColor;
+        input.style.fontSize = `${fontSize}px`;
+      });
+
+      const submitBtn = document.getElementById('submit-btn');
+      submitBtn.style.backgroundColor = primaryColor;
+      submitBtn.style.color = '#ffffff';
+      submitBtn.style.fontSize = `${fontSize}px`;
+
+      const headings = document.querySelectorAll('h2');
+      headings.forEach(h => {
+        h.style.color = textColor;
+        h.style.fontSize = `${fontSize * 1.25}px`;
+      });
+
+      const tableHeaders = document.querySelectorAll('th');
+      tableHeaders.forEach(th => {
+        th.style.color = textColor;
+        th.style.fontSize = `${fontSize * 0.875}px`;
+      });
+
+      renderChart();
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('data-table');
+      
+      if (allData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-sm">Belum ada data. Silakan tambahkan pengukuran pertama Anda.</td></tr>';
+        return;
+      }
+
+      const config = window.elementSdk?.config || defaultConfig;
+      const textColor = config.text_color || defaultConfig.text_color;
+      const secondaryColor = config.secondary_action_color || defaultConfig.secondary_action_color;
+      const fontSize = config.font_size || defaultConfig.font_size;
+
+      tbody.innerHTML = allData.map(record => {
+        return `
+          <tr class="border-b" data-id="${record.id}">
+            <td class="py-2 px-3" style="color: ${textColor}; font-size: ${fontSize * 0.875}px">${record.date}</td>
+            <td class="py-2 px-3" style="color: ${textColor}; font-size: ${fontSize * 0.875}px">${record.time_period}</td>
+            <td class="py-2 px-3" style="color: ${textColor}; font-size: ${fontSize * 0.875}px">${record.systolic}</td>
+            <td class="py-2 px-3" style="color: ${textColor}; font-size: ${fontSize * 0.875}px">${record.diastolic}</td>
+            <td class="py-2 px-3" style="color: ${textColor}; font-size: ${fontSize * 0.875}px">${record.pulse || 'N/A'}</td>
+            <td class="py-2 px-3">
+              <button onclick="handleDelete('${record.id}')" class="px-3 py-1 rounded text-white text-sm" style="background-color: ${secondaryColor}; font-size: ${fontSize * 0.875}px">Hapus</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderChart() {
+      const svg = document.getElementById('chart');
+      const noDataMsg = document.getElementById('no-data-message');
+      
+      if (allData.length === 0) {
+        svg.innerHTML = '';
+        noDataMsg.style.display = 'flex';
+        return;
+      }
+
+      noDataMsg.style.display = 'none';
+
+      const config = window.elementSdk?.config || defaultConfig;
+      const primaryColor = config.primary_action_color || defaultConfig.primary_action_color;
+      const secondaryColor = config.secondary_action_color || defaultConfig.secondary_action_color;
+      const textColor = config.text_color || defaultConfig.text_color;
+      const fontSize = config.font_size || defaultConfig.font_size;
+
+      const width = svg.clientWidth;
+      const height = svg.clientHeight;
+      const padding = { top: 40, right: 80, bottom: 60, left: 60 };
+      const chartWidth = width - padding.left - padding.right;
+      const chartHeight = height - padding.top - padding.bottom;
+
+      const sortedData = [...allData].sort((a, b) => a.timestamp - b.timestamp);
+
+      const maxSystolic = Math.max(...sortedData.map(d => d.systolic));
+      const maxDiastolic = Math.max(...sortedData.map(d => d.diastolic));
+      const maxValue = Math.max(maxSystolic, maxDiastolic) + 20;
+      const minValue = Math.min(...sortedData.map(d => d.diastolic)) - 20;
+
+      const xScale = chartWidth / (sortedData.length - 1 || 1);
+      const yScale = chartHeight / (maxValue - minValue);
+
+      let svgContent = `
+        <line x1="${padding.left}" y1="${padding.top}" x2="${padding.left}" y2="${height - padding.bottom}" stroke="${textColor}" stroke-width="2"/>
+        <line x1="${padding.left}" y1="${height - padding.bottom}" x2="${width - padding.right}" y2="${height - padding.bottom}" stroke="${textColor}" stroke-width="2"/>
+      `;
+
+      for (let i = 0; i <= 5; i++) {
+        const value = minValue + (maxValue - minValue) * i / 5;
+        const y = height - padding.bottom - (value - minValue) * yScale;
+        svgContent += `
+          <line x1="${padding.left - 5}" y1="${y}" x2="${padding.left}" y2="${y}" stroke="${textColor}" stroke-width="1"/>
+          <text x="${padding.left - 10}" y="${y + 4}" text-anchor="end" fill="${textColor}" style="font-size: ${fontSize * 0.75}px">${Math.round(value)}</text>
+        `;
+      }
+
+      const systolicPoints = sortedData.map((d, i) => {
+        const x = padding.left + i * xScale;
+        const y = height - padding.bottom - (d.systolic - minValue) * yScale;
+        return `${x},${y}`;
+      }).join(' ');
+
+      const diastolicPoints = sortedData.map((d, i) => {
+        const x = padding.left + i * xScale;
+        const y = height - padding.bottom - (d.diastolic - minValue) * yScale;
+        return `${x},${y}`;
+      }).join(' ');
+
+      svgContent += `
+        <polyline points="${systolicPoints}" fill="none" stroke="${primaryColor}" stroke-width="3"/>
+        <polyline points="${diastolicPoints}" fill="none" stroke="${secondaryColor}" stroke-width="3"/>
+      `;
+
+      sortedData.forEach((d, i) => {
+        const x = padding.left + i * xScale;
+        const ySys = height - padding.bottom - (d.systolic - minValue) * yScale;
+        const yDia = height - padding.bottom - (d.diastolic - minValue) * yScale;
+        
+        svgContent += `
+          <circle cx="${x}" cy="${ySys}" r="4" fill="${primaryColor}"/>
+          <circle cx="${x}" cy="${yDia}" r="4" fill="${secondaryColor}"/>
+        `;
+
+        if (i % Math.ceil(sortedData.length / 8) === 0 || i === sortedData.length - 1) {
+          svgContent += `
+            <text x="${x}" y="${height - padding.bottom + 20}" text-anchor="middle" fill="${textColor}" style="font-size: ${fontSize * 0.75}px">${d.date.substring(5)}</text>
+            <text x="${x}" y="${height - padding.bottom + 35}" text-anchor="middle" fill="${textColor}" style="font-size: ${fontSize * 0.625}px">${d.time_period}</text>
+          `;
+        }
+      });
+
+      svgContent += `
+        <text x="${width - padding.right + 10}" y="${padding.top + 10}" fill="${primaryColor}" style="font-size: ${fontSize * 0.875}px; font-weight: bold">Sistolik</text>
+        <text x="${width - padding.right + 10}" y="${padding.top + 30}" fill="${secondaryColor}" style="font-size: ${fontSize * 0.875}px; font-weight: bold">Diastolik</text>
+      `;
+
+      svg.innerHTML = svgContent;
+    }
+
+    function handleDelete(id) {
+      deleteRecord(id);
+    }
+
+    window.handleDelete = handleDelete;
+
+    document.getElementById('bp-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const date = document.getElementById('date-input').value;
+      const timePeriod = document.getElementById('time-input').value;
+      const systolic = parseInt(document.getElementById('systolic-input').value);
+      const diastolic = parseInt(document.getElementById('diastolic-input').value);
+      const pulseValue = document.getElementById('pulse-input').value;
+      const pulse = pulseValue ? parseInt(pulseValue) : null;
+
+      const newRecord = {
+        id: Date.now().toString(),
+        date: date,
+        time_period: timePeriod,
+        systolic: systolic,
+        diastolic: diastolic,
+        pulse: pulse,
+        timestamp: new Date(date).getTime()
+      };
+
+      addRecord(newRecord);
+      e.target.reset();
+      document.getElementById('date-input').value = new Date().toISOString().split('T')[0];
+    });
+
+    document.getElementById('date-input').value = new Date().toISOString().split('T')[0];
+
+    function init() {
+      loadData();
+
+      if (window.elementSdk) {
+        window.elementSdk.init({
+          defaultConfig,
+          onConfigChange,
+          mapToCapabilities: (config) => ({
+            recolorables: [
+              {
+                get: () => config.background_color || defaultConfig.background_color,
+                set: (value) => {
+                  config.background_color = value;
+                  window.elementSdk.setConfig({ background_color: value });
+                }
+              },
+              {
+                get: () => config.surface_color || defaultConfig.surface_color,
+                set: (value) => {
+                  config.surface_color = value;
+                  window.elementSdk.setConfig({ surface_color: value });
+                }
+              },
+              {
+                get: () => config.text_color || defaultConfig.text_color,
+                set: (value) => {
+                  config.text_color = value;
+                  window.elementSdk.setConfig({ text_color: value });
+                }
+              },
+              {
+                get: () => config.primary_action_color || defaultConfig.primary_action_color,
+                set: (value) => {
+                  config.primary_action_color = value;
+                  window.elementSdk.setConfig({ primary_action_color: value });
+                }
+              },
+              {
+                get: () => config.secondary_action_color || defaultConfig.secondary_action_color,
+                set: (value) => {
+                  config.secondary_action_color = value;
+                  window.elementSdk.setConfig({ secondary_action_color: value });
+                }
+              }
+            ],
+            borderables: [],
+            fontEditable: {
+              get: () => config.font_family || defaultConfig.font_family,
+              set: (value) => {
+                config.font_family = value;
+                window.elementSdk.setConfig({ font_family: value });
+              }
+            },
+            fontSizeable: {
+              get: () => config.font_size || defaultConfig.font_size,
+              set: (value) => {
+                config.font_size = value;
+                window.elementSdk.setConfig({ font_size: value });
+              }
+            }
+          }),
+          mapToEditPanelValues: (config) => new Map([
+            ["app_title", config.app_title || defaultConfig.app_title],
+            ["date_label", config.date_label || defaultConfig.date_label],
+            ["time_label", config.time_label || defaultConfig.time_label],
+            ["systolic_label", config.systolic_label || defaultConfig.systolic_label],
+            ["diastolic_label", config.diastolic_label || defaultConfig.diastolic_label],
+            ["pulse_label", config.pulse_label || defaultConfig.pulse_label],
+            ["button_text", config.button_text || defaultConfig.button_text]
+          ])
+        });
+      }
+    }
+
+    init();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99abd674121ff88c',t:'MTc2MjUwODA5Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></main>
+</body>
+</html>
