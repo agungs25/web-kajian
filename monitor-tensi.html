@@ -6,7 +6,6 @@
   <title>Monitor Tensi Harian</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <style>
-    /* === CSS asli, tak diubah sama sekali === */
     :root {
       --green-1: #0f5132;
       --green-2: #198754;
@@ -19,31 +18,29 @@
       --blue-light: #cfe2ff;
       --blue-dark: #0a58ca;
     }
-    * { box-sizing: border-box; }
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0; background: var(--green-4); color: #123; }
-    header { background: linear-gradient(135deg, var(--green-2), var(--green-1)); color: #fff; padding: 24px 16px; text-align: center; border-bottom: 4px solid var(--green-1); }
-    header h1 { margin: 0 0 6px; font-size: clamp(20px, 4vw, 26px); font-weight: 700; }
-    header p { margin: 0; opacity: .95; font-size: 15px; }
-    main { max-width: 800px; margin: 20px auto; padding: 0 16px 32px 16px; }
-    .user-id-box { font-size: 13px; color: var(--green-1); background: #fff; border: 1px solid var(--green-3); padding: 10px 14px; border-radius: 12px; text-align: center; word-break: break-all; }
-    .status-box { padding: 12px 16px; border-radius: 12px; margin-top: 16px; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 10px; border: 1px solid; }
+    body { font-family: system-ui, sans-serif; margin: 0; background: var(--green-4); color: #123; }
+    header { background: linear-gradient(135deg, var(--green-2), var(--green-1)); color: #fff; padding: 24px 16px; text-align: center; }
+    main { max-width: 800px; margin: 20px auto; padding: 0 16px 32px; }
+    .user-id-box, .status-box, .card { background: #fff; border-radius: 14px; border: 1px solid #e6f0ea; padding: 16px 20px; box-shadow: 0 2px 8px rgba(16,94,60,.06); margin-top: 20px; }
+    .user-id-box { text-align: center; font-size: 13px; color: var(--green-1); }
+    .status-box { display: flex; align-items: center; gap: 10px; font-size: 14px; border: 1px solid; }
     .status-box.success { background: var(--green-3); color: var(--green-1); border-color: var(--green-2); }
     .status-box.error { background: var(--red-light); color: var(--red-dark); border-color: var(--red-dark); }
     .status-box.loading { background: var(--yellow-light); color: var(--yellow-dark); border-color: var(--yellow-dark); }
-    .card { background: #fff; border-radius: 14px; padding: 16px 20px; border: 1px solid #e6f0ea; box-shadow: 0 2px 8px rgba(16, 94, 60, .06); margin-top: 20px; }
-    .card h2 { margin: 0 0 16px; font-size: 18px; color: var(--green-1); display: flex; align-items: center; gap: 8px; font-weight: 700; }
-    input, select { padding: 12px 14px; border-radius: 10px; border: 1px solid #cfe3d8; background: #fff; width: 100%; font-size: 16px; color: #333; }
-    .btn { padding: 12px 16px; border-radius: 10px; font-weight: 600; font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; }
-    .btn-green { background: var(--green-2); color: #fff; border: 1px solid var(--green-1); }
-    .btn-green:hover { background: var(--green-1); }
-    .chart-placeholder { width: 100%; height: 250px; display: flex; align-items: center; justify-content: center; border: 1px dashed #ccc; color: #777; font-style: italic; border-radius: 8px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    th, td { padding: 10px 12px; border-bottom: 1px solid #eee; text-align: left; }
+    .card h2 { margin: 0 0 16px; color: var(--green-1); display: flex; align-items: center; gap: 8px; font-size: 18px; }
+    input, select { padding: 10px 14px; border-radius: 8px; border: 1px solid #cfe3d8; width: 100%; font-size: 15px; }
+    input:focus, select:focus { outline: none; border-color: var(--green-2); box-shadow: 0 0 0 2px var(--green-3); }
+    .btn { padding: 12px 16px; border-radius: 10px; border: 1px solid var(--green-1); background: var(--green-2); color: #fff; font-weight: 600; width: 100%; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .btn:hover { background: var(--green-1); }
+    .chart-placeholder { width: 100%; height: 250px; display: flex; align-items: center; justify-content: center; background: #f9f9f9; border-radius: 8px; border: 1px dashed #ccc; color: #777; font-style: italic; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 10px; border-bottom: 1px solid #e6f0ea; font-size: 14px; text-align: left; }
+    th { background: var(--green-4); color: var(--green-1); font-weight: 600; }
     .badge { padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; }
     .badge-normal { background: var(--green-3); color: var(--green-1); }
     .badge-high-1 { background: #ffc9a8; color: #a14000; }
     .badge-high-2 { background: var(--red-light); color: var(--red-dark); }
-    footer { text-align: center; margin: 24px 0 36px; color: #555; font-size: 13px; }
+    footer { text-align: center; color: #555; margin: 24px 0; font-size: 13px; }
   </style>
 </head>
 <body>
@@ -53,7 +50,9 @@
   </header>
 
   <main>
-    <div class="user-id-box"><strong>ID Pengguna:</strong> <span id="userIdDisplay">Menunggu Autentikasi...</span></div>
+    <div class="user-id-box">
+      <strong>ID Pengguna:</strong> <span id="userIdDisplay">Menunggu Autentikasi...</span>
+    </div>
     <div id="authStatus" class="status-box loading"><i class="fa-solid fa-spinner fa-spin"></i><span>Mencoba autentikasi...</span></div>
 
     <div class="card">
@@ -74,13 +73,13 @@
           </select>
         </div>
       </div>
-      <button id="saveButton" class="btn btn-green"><i class="fa-solid fa-floppy-disk"></i><span>Simpan Data Tensi</span></button>
+      <button id="saveButton" class="btn"><i class="fa-solid fa-floppy-disk"></i><span>Simpan Data Tensi</span></button>
     </div>
 
     <div class="card">
       <h2><i class="fa-solid fa-chart-line"></i> Tren Tensi (7 Hari)</h2>
       <div id="chartPlaceholder" class="chart-placeholder">Memuat data grafik...</div>
-      <canvas id="trendChart" style="display:none;height:250px;width:100%;"></canvas>
+      <canvas id="trendChart" style="display:none;width:100%;height:250px;"></canvas>
     </div>
 
     <div class="card">
@@ -111,7 +110,6 @@
     const chartPlaceholder = document.getElementById('chartPlaceholder');
     const canvas = document.getElementById('trendChart');
     const ctx = canvas.getContext('2d');
-
     let app, db, auth, userId = null, isAuthReady = false;
 
     function getFirebaseConfig() {
@@ -126,123 +124,94 @@
       };
     }
 
-    function updateAuthStatus(msg, type = "success") {
-      const icons = { success: "fa-check-circle", error: "fa-exclamation-triangle", loading: "fa-spinner fa-spin" };
-      authStatusEl.className = `status-box ${type}`;
-      authStatusEl.innerHTML = `<i class="fa-solid ${icons[type]}"></i><span>${msg}</span>`;
+    function updateAuthStatus(msg, type="success") {
+      const icons = {success:"fa-check-circle",error:"fa-exclamation-triangle",loading:"fa-spinner fa-spin"};
+      authStatusEl.className=`status-box ${type}`;
+      authStatusEl.innerHTML=`<i class="fa-solid ${icons[type]}"></i><span>${msg}</span>`;
     }
 
     async function initializeFirebase() {
       const cfg = getFirebaseConfig();
-      try {
-        app = initializeApp(cfg);
-        db = getDatabase(app);
-        auth = getAuth(app);
-        onAuthStateChanged(auth, async (user) => {
-          if (user) {
-            userId = user.uid;
-            isAuthReady = true;
-            userIdDisplayEl.textContent = userId;
-            updateAuthStatus("Autentikasi BERHASIL. Data dimuat real-time.", "success");
-            setupDataListener();
-          } else {
-            await signInAnonymously(auth);
-          }
-        });
-      } catch (e) {
-        updateAuthStatus("EROR Inisialisasi: " + e.message, "error");
-      }
+      app = initializeApp(cfg);
+      db = getDatabase(app);
+      auth = getAuth(app);
+      onAuthStateChanged(auth, async user=>{
+        if(user){ userId=user.uid; isAuthReady=true; userIdDisplayEl.textContent=userId; updateAuthStatus("Autentikasi BERHASIL.","success"); setupDataListener(); }
+        else await signInAnonymously(auth);
+      });
     }
 
-    function setupDataListener() {
-      const q = rtQuery(ref(db, `users/${userId}/bloodPressureReadings`), limitToLast(50));
-      onValue(q, (snap) => {
-        const data = [];
-        snap.forEach(c => data.push({ id: c.key, ...c.val() }));
-        data.reverse();
-        updateHistoryTable(data.slice(0, 10));
+    function setupDataListener(){
+      const q=rtQuery(ref(db,`users/${userId}/bloodPressureReadings`),limitToLast(50));
+      onValue(q,snap=>{
+        const data=[]; snap.forEach(c=>data.push({id:c.key,...c.val()}));
+        data.sort((a,b)=>a.timestamp-b.timestamp);
+        updateHistoryTable(data.slice(-10));
         updateChart(data);
       });
     }
 
-    async function saveReading() {
-      if (!isAuthReady) { updateAuthStatus("Belum login.", "error"); return; }
-      const s = parseInt(systolicInput.value), d = parseInt(diastolicInput.value), p = parseInt(pulseInput.value) || null;
-      if (isNaN(s) || isNaN(d)) { updateAuthStatus("Isi sistolik dan diastolik.", "error"); return; }
-      const now = new Date(), date = inputDateEl.value, tod = timeOfDayEl.value;
-      let ts;
-      if (date) {
-        const [y, m, day] = date.split('-').map(Number);
-        const dt = new Date(y, m - 1, day);
-        if (tod === "Pagi") dt.setHours(8); else if (tod === "Malam") dt.setHours(20);
-        ts = dt.getTime();
-      } else {
-        if (tod === "Pagi") now.setHours(8); else if (tod === "Malam") now.setHours(20);
-        ts = now.getTime();
-      }
-      const rec = { systolic: s, diastolic: d, pulse: p, timestamp: ts, createdAt: serverTimestamp() };
-      saveButton.disabled = true; saveButton.querySelector("span").textContent = "Menyimpan...";
-      try {
-        await push(ref(db, `users/${userId}/bloodPressureReadings`), rec);
-        updateAuthStatus("Data tersimpan.", "success");
-        systolicInput.value = diastolicInput.value = pulseInput.value = inputDateEl.value = timeOfDayEl.value = "";
-      } catch (e) {
-        updateAuthStatus("EROR Simpan: " + e.message, "error");
-      } finally {
-        saveButton.disabled = false; saveButton.querySelector("span").textContent = "Simpan Data Tensi";
-      }
+    async function saveReading(){
+      if(!isAuthReady)return updateAuthStatus("Belum login.","error");
+      const s=+systolicInput.value,d=+diastolicInput.value,p=+pulseInput.value||null;
+      if(!s||!d)return updateAuthStatus("Isi sistolik & diastolik.","error");
+      const now=new Date(),date=inputDateEl.value,tod=timeOfDayEl.value;
+      if(date){const [y,m,dy]=date.split('-').map(Number);now.setFullYear(y,m-1,dy);}
+      if(tod==="Pagi")now.setHours(8);else if(tod==="Malam")now.setHours(20);
+      const rec={systolic:s,diastolic:d,pulse:p,timestamp:now.getTime(),createdAt:serverTimestamp()};
+      saveButton.disabled=true;saveButton.querySelector("span").textContent="Menyimpan...";
+      try{
+        await push(ref(db,`users/${userId}/bloodPressureReadings`),rec);
+        updateAuthStatus("Data tersimpan!","success");
+        systolicInput.value=diastolicInput.value=pulseInput.value=inputDateEl.value=timeOfDayEl.value="";
+      }catch(e){updateAuthStatus("EROR Simpan: "+e.message,"error");}
+      finally{saveButton.disabled=false;saveButton.querySelector("span").textContent="Simpan Data Tensi";}
     }
 
-    function getPressureCategory(s, d) {
-      if (s < 120 && d < 80) return { text: "Normal", cls: "badge-normal" };
-      if ((s >= 130 && s <= 139) || (d >= 80 && d <= 89)) return { text: "Stg 1", cls: "badge-high-1" };
-      if (s >= 140 || d >= 90) return { text: "Stg 2", cls: "badge-high-2" };
-      return { text: "N/A", cls: "badge-normal" };
+    function getPressureCategory(s,d){
+      if(s<120&&d<80)return{text:"Normal",cls:"badge-normal"};
+      if((s>=130&&s<=139)||(d>=80&&d<=89))return{text:"Stg 1",cls:"badge-high-1"};
+      if(s>=140||d>=90)return{text:"Stg 2",cls:"badge-high-2"};
+      return{text:"N/A",cls:"badge-normal"};
     }
 
-    function updateHistoryTable(data) {
-      if (data.length === 0) {
-        historyTableBody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:#777">Belum ada data.</td></tr>`;
-        return;
-      }
-      historyTableBody.innerHTML = data.map(r => {
-        const c = getPressureCategory(r.systolic, r.diastolic);
-        const d = new Date(r.timestamp);
-        return `<tr><td>${d.toLocaleDateString('id-ID')}</td><td>${d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})}</td>
-        <td>${r.systolic}/${r.diastolic}</td><td>${r.pulse||'N/A'}</td><td><span class="badge ${c.cls}">${c.text}</span></td></tr>`;
+    function updateHistoryTable(data){
+      if(!data.length)return historyTableBody.innerHTML=`<tr><td colspan="5" style="text-align:center;color:#777">Belum ada data.</td></tr>`;
+      historyTableBody.innerHTML=data.map(r=>{
+        const c=getPressureCategory(r.systolic,r.diastolic);
+        const d=new Date(r.timestamp);
+        return `<tr><td>${d.toLocaleDateString('id-ID')}</td><td>${d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})}</td><td>${r.systolic}/${r.diastolic}</td><td>${r.pulse||'N/A'}</td><td><span class="badge ${c.cls}">${c.text}</span></td></tr>`;
       }).join("");
     }
 
-    function updateChart(data) {
-      if (data.length < 2) { chartPlaceholder.textContent = "Data belum cukup."; return; }
-      chartPlaceholder.style.display = "none"; canvas.style.display = "block";
-      const recent = data.slice(-7).reverse();
-      const labels = recent.map(r => new Date(r.timestamp).toLocaleDateString('id-ID',{day:'2-digit',month:'short'}));
-      const sys = recent.map(r => r.systolic), dia = recent.map(r => r.diastolic);
-      drawChart(labels, sys, dia);
+    function updateChart(all){
+      if(!all.length){chartPlaceholder.textContent="Belum ada data.";return;}
+      all.sort((a,b)=>a.timestamp-b.timestamp);
+      const now=Date.now(),weekAgo=now-7*24*60*60*1000;
+      const filtered=all.filter(r=>r.timestamp>=weekAgo);
+      const data=filtered.length?filtered:all;
+      const labels=data.map(r=>new Date(r.timestamp).toLocaleDateString('id-ID',{day:'2-digit',month:'short'}));
+      const sys=data.map(r=>r.systolic),dia=data.map(r=>r.diastolic);
+      chartPlaceholder.style.display="none";canvas.style.display="block";
+      drawChart(labels,sys,dia);
     }
 
-    function drawChart(labels, sys, dia) {
-      const w = canvas.width = canvas.clientWidth, h = canvas.height = 250, p = 40;
-      const min = Math.min(...sys, ...dia) - 10, max = Math.max(...sys, ...dia) + 10, range = max - min;
-      const xStep = (w - p * 2) / (labels.length - 1);
-      const x = i => p + i * xStep, y = v => h - p - ((v - min) / range) * (h - p * 2);
-      ctx.clearRect(0, 0, w, h);
-      ctx.font = "12px Arial"; ctx.textAlign = "center";
-      ctx.strokeStyle = "#ccc";
-      for (let i = 0; i <= 4; i++) {
-        const val = min + i * (range / 4), yy = y(val);
-        ctx.beginPath(); ctx.moveTo(p, yy); ctx.lineTo(w - p, yy); ctx.stroke();
-        ctx.fillText(Math.round(val), p - 25, yy + 4);
-      }
-      labels.forEach((l, i) => ctx.fillText(l, x(i), h - 10));
-      const drawLine = (arr, color) => { ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.beginPath();
-        arr.forEach((v, i) => i ? ctx.lineTo(x(i), y(v)) : ctx.moveTo(x(0), y(v))); ctx.stroke(); };
-      drawLine(sys, "#db3a34"); drawLine(dia, "#1a73e8");
+    function drawChart(labels,sys,dia){
+      const w=canvas.width=canvas.clientWidth,h=canvas.height=250,p=40;
+      const min=Math.min(...sys,...dia)-10,max=Math.max(...sys,...dia)+10,range=max-min;
+      const xStep=(w-p*2)/(labels.length-1);
+      const x=i=>p+i*xStep,y=v=>h-p-((v-min)/range)*(h-p*2);
+      ctx.clearRect(0,0,w,h);
+      ctx.font="12px Arial";ctx.textAlign="center";
+      ctx.strokeStyle="#ddd";
+      for(let i=0;i<=4;i++){const val=min+i*(range/4),yy=y(val);ctx.beginPath();ctx.moveTo(p,yy);ctx.lineTo(w-p,yy);ctx.stroke();ctx.fillText(Math.round(val),p-25,yy+4);}
+      labels.forEach((l,i)=>ctx.fillText(l,x(i),h-10));
+      const drawLine=(arr,color)=>{ctx.strokeStyle=color;ctx.lineWidth=2;ctx.beginPath();arr.forEach((v,i)=>i?ctx.lineTo(x(i),y(v)):ctx.moveTo(x(0),y(v)));ctx.stroke();};
+      drawLine(sys,"#db3a34");drawLine(dia,"#1a73e8");
     }
 
-    saveButton.addEventListener('click', saveReading);
-    document.addEventListener('DOMContentLoaded', initializeFirebase);
+    saveButton.addEventListener('click',saveReading);
+    document.addEventListener('DOMContentLoaded',initializeFirebase);
   </script>
 </body>
 </html>
