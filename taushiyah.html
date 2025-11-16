@@ -125,43 +125,44 @@
             border: 1px solid #e6f0ea;
             box-shadow: 0 2px 8px rgba(16, 94, 60, .06);
         }
+
+        /* Style untuk judul yang sudah disatukan */
         .keutamaan-card h4 {
-            font-size: 16px;
-            color: var(--green-2);
-            margin-bottom: 10px;
+            font-size: 18px; /* Ditingkatkan sedikit */
+            color: var(--green-1); /* Warna Dark Green */
+            margin-bottom: 15px;
+            margin-top: 5px;
+            font-weight: 600;
         }
+        
+        /* Menghapus atau mereset style untuk .number karena tidak lagi digunakan */
         .keutamaan-card .number {
-            font-size: 40px;
-            font-weight: 700;
-            color: var(--green-1);
-            line-height: 1;
-            margin-bottom: 10px;
+            display: none; 
         }
+
         .keutamaan-card p {
             font-size: 15px;
             line-height: 1.6;
-            text-align: justify; /* Atur teks di dalam kartu menjadi justify */
+            text-align: justify;
         }
         
         /* Penyesuaian untuk bagian penutup */
         .closing-note {
-            text-align: left; /* Mengatur kontainer menjadi rata kiri */
+            text-align: left; 
             margin-top: 20px; 
             padding-top: 0; 
             border-top: none; 
         }
-        /* Samakan ukuran font alinea penutup dengan alinea utama */
         .closing-note p {
             font-size: 16px; 
             line-height: 1.8; 
             color: #123; 
-            text-align: justify; /* Mengatur alinea penutup menjadi justify */
+            text-align: justify; 
             margin: 15px 0;
         }
-        /* Style khusus untuk teks Arab di penutup */
         .closing-note .arabic-text {
-             font-size: 24px; /* Disamakan dengan font Arab utama */
-             color: var(--green-1); /* Disamakan dengan font Arab utama */
+             font-size: 24px; 
+             color: var(--green-1); 
         }
     </style>
 </head>
@@ -218,8 +219,8 @@
             
             <!-- Keutamaan 1: Amalan yang Paling Utama -->
             <div class="keutamaan-card">
-                <div class="number">1.</div>
-                <h4>Amalan yang Paling Utama</h4>
+                <!-- Struktur diubah menjadi satu baris judul dengan angka -->
+                <h4>1. Amalan yang Paling Utama</h4>
                 <p>Rasulullah shallallahu alaihi wa sallam bersabda dalam hadis riwayat Abu Dawud:</p>
                 <p class="arabic-text" style="font-size: 18px; margin: 10px 0;">
                     أَفْضَلُ الْأَعْمَالِ : الْحُبُّ فِي اللَّهِ وَالْبُغْضُ فِي اللَّهِ
@@ -230,8 +231,8 @@
 
             <!-- Keutamaan 2: Mendapatkan Naungan 'Arsy Allah -->
             <div class="keutamaan-card">
-                <div class="number">2.</div>
-                <h4>Mendapatkan Naungan 'Arsy Allah</h4>
+                <!-- Struktur diubah menjadi satu baris judul dengan angka -->
+                <h4>2. Mendapatkan Naungan 'Arsy Allah</h4>
                 <p>Rasulullah shallallahu alaihi wa sallam mengabarkan (dalam hadits riwayat Bukhari dan Muslim):</p>
                 <p class="arabic-text" style="font-size: 18px; margin: 10px 0;">
                     سَبْعَةٌ يُظِلُّهُمُ اللَّهُ فِي ظِلِهِ، يَوْمَ لَا ظِلَّ إِلَّا ظِلُّهُ
@@ -251,8 +252,8 @@
 
             <!-- Keutamaan 3: Syafaat dari Teman yang Saleh -->
             <div class="keutamaan-card">
-                <div class="number">3.</div>
-                <h4>Syafaat dari Teman yang Saleh</h4>
+                <!-- Struktur diubah menjadi satu baris judul dengan angka -->
+                <h4>3. Syafaat dari Teman yang Saleh</h4>
                 <p>Bergaul dengan orang yang saleh bisa menjadi wasilah bagi kita yang mungkin banyak dosanya atau banyak maksiatnya, yang nanti di hari kiamat kita harus masuk ke dalam api neraka karena dosa kita lebih berat dari amal kebaikan, maka diselamatkan dengan wasilah teman-teman yang shalih.</p>
                 <p>Nabi shallallahu alaihi wa sallam mengabarkan dalam hadits riwayat Bukhari dan Muslim, bahwa ketika Ahli Surga masuk ke surga, mereka tidak mendapati teman-teman dekat mereka. Mereka akan bertanya kepada Allah, "Ya Rabb, mana teman-teman kami yang dahulu shalat, puasa, haji bareng kita? Kenapa Engkau masukkan mereka ke dalam neraka?"</p>
                 <p>Kata Allah Subhanahu wa Ta'ala, "Pergilah kalian ke neraka, cari sahabat-sahabat kalian di dunia yang punya keimanan." Maka, Ahli Surga pun mencari teman-temannya di neraka. Setiap orang yang mereka kenal yang dimasukkan ke dalam neraka, akan dikeluarkan oleh penduduk surga tersebut dengan izin Allah Subhanahu wa Ta'ala.</p>
@@ -278,7 +279,7 @@
             
             <p>Mudah-mudahan Allah Subhanahu wa Ta'ala memberikan kita taufik untuk bisa meluruskan hati-hati kita, niat-niat kita. Kita berkumpul karena Allah Subhanahu wa Ta'ala dan kita pun berpisah karena Allah Subhanahu wa Ta'ala.</p>
 
-            <!-- Kalimat penutup akhir. Kini rata kiri justify. -->
+            <!-- Kalimat penutup akhir. -->
             <div class="closing-note">
                  <p>Demikian, Ikhwani fillah a'azzakumullah, sedikit yang bisa saya sampaikan. Mudah-mudahan bermanfaat bagi kita semuanya. Apa-apa yang hak semata-mata taufik dari Allah Subhanahu wa Ta'ala, yang salah dan kurang karena kesalahan dan kekurangan ilmu yang saya miliki.</p>
                 <p class="arabic-text">
