@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laptop Second Berkualitas - Update 15 November 2025</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f8f8;
+        }
+        /* Custom scrollbar for better aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .text-shadow {
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8">
+
+    <!-- Main Content Container -->
+    <div class="max-w-4xl mx-auto bg-white shadow-2xl rounded-xl overflow-hidden">
+
+        <!-- Header -->
+        <header class="bg-blue-600 text-white p-6 rounded-t-xl">
+            <h1 class="text-3xl font-extrabold text-shadow mb-1">💻 Laptop Second Berkualitas</h1>
+            <p id="update-info" class="text-sm font-light opacity-90">📋 Update 15 November 2025</p> <!-- Perubahan tanggal -->
+        </header>
+
+        <!-- Laptop List Section -->
+        <main class="p-6 md:p-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b-2 pb-2">Daftar Stok Terbaru</h2>
+            <div id="laptop-list" class="space-y-6">
+                <!-- Laptop items will be injected here by JavaScript -->
+            </div>
+
+            <!-- Footer/Contact Section -->
+            <div class="mt-10 pt-6 border-t-2 border-gray-100">
+                <h3 class="text-sm font-semibold text-gray-800 mb-4">Informasi Tambahan</h3>
+                <div class="space-y-2 text-gray-700 text-sm">
+                    <p class="flex items-center">
+                        <span class="text-green-500 mr-3 text-xl">✅</span>
+                        Garansi 4 pekan | Tas & charger | Windows 11 + Office 2019 (langsung pakai)
+                    </p>
+                    <p class="flex items-center">
+                        <span class="text-blue-500 mr-3 text-xl">🛵</span>
+                        Gratis COD untuk area Jatiasih, Bojongkulur - Ciangsana
+                    </p>
+                    <a href="https://wa.me/62816100301" target="_blank" class="inline-flex items-center justify-center w-full sm:w-auto px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-bold rounded-lg shadow-md transition duration-300 transform hover:scale-[1.02] mt-4">
+                        <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M12.036 12.035a3.674 3.674 0 0 0 3.67 3.674c.41 0 .807-.061 1.177-.184l3.415 1.157-1.16-3.385a3.67 3.67 0 0 0 3.67-3.674 3.674 3.674 0 0 0-3.674-3.673 3.674 3.674 0 0 0-3.673 3.673zm4.551-3.673c-.022-.246-.113-.388-.228-.484-.13-.105-.285-.157-.492-.157-.168 0-.31.025-.407.086s-.13.125-.13.256c0 .193.076.353.228.484.09.076.223.113.398.113.284 0 .46-.098.536-.29.076-.192.113-.377.113-.564 0-.12-.025-.224-.076-.328zM12.036 0c-6.634 0-12 5.365-12 12s5.366 12 12 12 12-5.365 12-12-5.366-12-12-12zm.001 21.082c-4.981 0-9.043-4.062-9.043-9.043 0-4.981 4.062-9.043 9.043-9.043s9.043 4.062 9.043 9.043c0 4.98-4.062 9.042-9.043 9.042zm-2.093-7.558c-.14-.236-.345-.353-.615-.353-.298 0-.585.12-.862.361l-.01.006c-.57.48-.992 1.18-.992 1.76 0 .58.422 1.28 1.002 1.761.268.225.567.337.896.337.334 0 .633-.112.896-.337.58-.48.72-1.18.72-1.76 0-.58-.14-1.28-.72-1.76l-.01-.006z"/></svg>
+                        Order via WA : 0816-100-301
+                    </a>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal for Image Gallery (Pop-up) -->
+    <div id="image-modal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-80 flex items-center justify-center p-4" onclick="closeModal(event)">
+        <div class="relative w-full max-w-4xl max-h-full" onclick="event.stopPropagation()">
+            <!-- Close Button -->
+            <button onclick="hideModal()" class="absolute top-4 right-4 text-white hover:text-red-400 transition z-20 p-2 rounded-full bg-black bg-opacity-50">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+
+            <!-- Image Container -->
+            <div id="modal-image-container" class="relative overflow-hidden rounded-lg shadow-xl" style="max-height: 90vh;">
+                <img id="modal-image" src="" alt="Foto Laptop" class="w-full h-full object-contain mx-auto transition-opacity duration-300">
+            </div>
+
+            <!-- Navigation Buttons (for multiple photos) -->
+            <div id="nav-buttons" class="absolute inset-y-0 w-full flex items-center justify-between opacity-100 transition-opacity duration-300">
+                <button onclick="prevImage(event)" class="text-white text-4xl p-4 bg-black bg-opacity-40 hover:bg-opacity-60 rounded-r-xl transition ml-[-1rem] md:ml-0">
+                    &#10094; <!-- Left Arrow -->
+                </button>
+                <button onclick="nextImage(event)" class="text-white text-4xl p-4 bg-black bg-opacity-40 hover:bg-opacity-60 rounded-l-xl transition mr-[-1rem] md:ml-0">
+                    &#10095; <!-- Right Arrow -->
+                </button>
+            </div>
+            
+            <!-- Indicator Dots -->
+            <div id="image-dots" class="absolute bottom-4 left-0 right-0 flex justify-center space-x-2 z-10">
+                <!-- Dots will be injected here -->
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        // Data laptop dari file TXT
+        const LAPTOP_DATA = [
+            // Item 1: Toshiba Dynabook Portege X40J (NOMOR BARU)
+            {
+                id: 1, // ID diperbarui
+                name: "Toshiba Dynabook Portege X40J",
+                specs: "Intel Core i5-1135G7 Gen 11 | RAM 8 GB | SSD 256 GB | Layar 14\" Full HD Touchscreen | Keyboard Backlit | Intel Iris Xe | Seri Bisnis",
+                price: "Rp 4.650.000",
+                photos: [
+                    "https://i.postimg.cc/dQxhFXGF/Whats-App-Image-2025-11-01-at-4-02-27-PM-5.jpg",
+                    "https://i.postimg.cc/1Rj8STD5/Whats-App-Image-2025-11-01-at-4-02-27-PM.jpg",
+                    "https://i.postimg.cc/WpHdVK0c/Whats-App-Image-2025-11-01-at-4-02-27-PM-2.jpg",
+                    "https://i.postimg.cc/tRMsbfFy/Whats-App-Image-2025-11-01-at-4-02-27-PM-3.jpg",
+                    "https://i.postimg.cc/1Rj8STDy/Whats-App-Image-2025-11-01-at-4-02-27-PM-4.jpg"
+                ] 
+            }
+            // Item 1 (Lenovo ThinkPad X280) dan Item 3 (Asus TUF Gaming F15) dihapus
+        ];
+
+        let currentPhotos = [];
+        let currentIndex = 0;
+        const modal = document.getElementById('image-modal');
+        const modalImage = document.getElementById('modal-image');
+        const navButtons = document.getElementById('nav-buttons');
+        const imageDots = document.getElementById('image-dots');
+
+        // Function to render the laptop list
+        function renderLaptopList() {
+            const listContainer = document.getElementById('laptop-list');
+            
+            const listHtml = LAPTOP_DATA.map((laptop, index) => {
+                const hasPhotos = laptop.photos && laptop.photos.length > 0;
+                
+                // Format specs for better readability
+                // CATATAN: Spek kini ditampilkan di bawah nama dan ukurannya sedikit diperbesar
+                const specsHtml = laptop.specs
+                    .split(' | ')
+                    .map(spec => `<span class="bg-blue-50 text-blue-700 text-xs font-medium px-2 py-0.5 rounded-full">${spec.trim()}</span>`)
+                    .join('');
+
+                return `
+                    <div class="laptop-card p-5 bg-gray-50 rounded-xl shadow-lg hover:shadow-xl transition duration-300 border border-gray-100">
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-start">
+                            <div class="mb-4 md:mb-0 w-full">
+                                <h3 class="text-xl font-bold text-gray-900 mb-1">
+                                    <span class="text-blue-600 mr-2 font-extrabold">${index + 1}.</span> ${laptop.name}
+                                </h3>
+                                
+                                <!-- Spek di bawah nama, font sedikit besar -->
+                                <p class="text-base font-medium text-gray-700 mb-3">${laptop.specs}</p>
+                                
+                                <!-- Harga di bawah spek, font kecil (seukuran update) -->
+                                <p class="text-lg font-bold text-red-600 mb-4">${laptop.price}</p>
+                            </div>
+
+                            <!-- Tombol Lihat Foto tetap di samping/bawah harga -->
+                            ${hasPhotos 
+                                ? `<button 
+                                     onclick="showModal(${index})" 
+                                     class="flex-shrink-0 w-full md:w-auto px-6 py-2 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-green-600 transition duration-300 transform hover:scale-[1.05]"
+                                   >
+                                     Lihat Foto (${laptop.photos.length})
+                                   </button>`
+                                : `<span class="text-sm text-gray-500 px-4 py-2 bg-gray-200 rounded-lg flex-shrink-0 w-full md:w-auto text-center">Foto belum tersedia</span>`
+                            }
+                        </div>
+                        
+                        <!-- Badge/Chip Spek dihilangkan karena spek utama sudah di atas -->
+                        <!-- <div class="mt-4 flex flex-wrap gap-2"> ${specsHtml} </div> -->
+                    </div>
+                `;
+            }).join('');
+
+            listContainer.innerHTML = listHtml;
+        }
+
+        // --- Modal/Gallery Logic ---
+
+        // Show the modal with images for a specific laptop
+        function showModal(laptopIndex) {
+            currentPhotos = LAPTOP_DATA[laptopIndex].photos;
+            if (currentPhotos.length === 0) return; // Should not happen if button is disabled
+
+            currentIndex = 0;
+            updateModalImage();
+            
+            modal.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden'); // Prevent background scrolling
+        }
+
+        // Hide the modal
+        function hideModal() {
+            modal.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+            modalImage.src = ''; // Clear image source
+            currentPhotos = [];
+            currentIndex = 0;
+        }
+
+        // Close modal when clicking outside the content
+        function closeModal(event) {
+            if (event.target.id === 'image-modal') {
+                hideModal();
+            }
+        }
+
+        // Navigate to the previous image
+        function prevImage(event) {
+            event.stopPropagation();
+            if (currentPhotos.length <= 1) return;
+            currentIndex = (currentIndex > 0) ? currentIndex - 1 : currentPhotos.length - 1;
+            updateModalImage();
+        }
+
+        // Navigate to the next image
+        function nextImage(event) {
+            event.stopPropagation();
+            if (currentPhotos.length <= 1) return;
+            currentIndex = (currentIndex < currentPhotos.length - 1) ? currentIndex + 1 : 0;
+            updateModalImage();
+        }
+
+        // Update the displayed image and navigation state
+        function updateModalImage() {
+            // Add fade out class
+            modalImage.classList.add('opacity-0');
+            
+            setTimeout(() => {
+                modalImage.src = currentPhotos[currentIndex];
+                // Remove fade out and add fade in class
+                modalImage.onload = () => {
+                    modalImage.classList.remove('opacity-0');
+                    modalImage.classList.add('opacity-100');
+                };
+                
+                // Fallback for image loading error
+                modalImage.onerror = () => {
+                    modalImage.src = 'https://placehold.co/600x400/FF0000/FFFFFF?text=Foto+Gagal+Dimuat';
+                    modalImage.classList.remove('opacity-0');
+                    modalImage.classList.add('opacity-100');
+                };
+
+            }, 150); // Match transition duration
+
+            // Handle navigation buttons visibility
+            if (currentPhotos.length > 1) {
+                navButtons.classList.remove('opacity-0', 'hidden');
+                updateDots();
+            } else {
+                navButtons.classList.add('opacity-0', 'hidden');
+                imageDots.innerHTML = '';
+            }
+        }
+
+        // Update indicator dots
+        function updateDots() {
+            imageDots.innerHTML = currentPhotos.map((_, index) => `
+                <span 
+                    class="block w-3 h-3 rounded-full cursor-pointer transition-all duration-300 ${index === currentIndex ? 'bg-white scale-125' : 'bg-gray-400 bg-opacity-75'}"
+                    onclick="goToImage(${index}, event)"
+                ></span>
+            `).join('');
+        }
+
+        // Jump to a specific image via dot
+        function goToImage(index, event) {
+            event.stopPropagation();
+            currentIndex = index;
+            updateModalImage();
+        }
+
+        // Initialize application on page load
+        window.onload = function() {
+            renderLaptopList();
+
+            // Optional: Keyboard navigation for modal
+            document.addEventListener('keydown', (e) => {
+                if (!modal.classList.contains('hidden')) {
+                    if (e.key === 'Escape') {
+                        hideModal();
+                    } else if (e.key === 'ArrowLeft') {
+                        prevImage(e);
+                    } else if (e.key === 'ArrowRight') {
+                        nextImage(e);
+                    }
+                }
+            });
+        };
+    </script>
+</body>
+</html>
