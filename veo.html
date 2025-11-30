@@ -1,0 +1,270 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { Sparkles, Calendar, Upload, Play, Image as ImageIcon, CheckCircle, Infinity } from 'lucide-react';
+
+// --- KONFIGURASI PENGGUNA (EDIT DI SINI) ---
+const API_KEY = ""; // Masukkan API Key nanti di sini
+
+export default function VeoGeneratorApp() {
+  const [prompt, setPrompt] = useState('');
+  const [aspectRatio, setAspectRatio] = useState('16:9');
+  const [resolution, setResolution] = useState('1080p');
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generationProgress, setGenerationProgress] = useState(0);
+  const [generatedVideo, setGeneratedVideo] = useState(null);
+  const [mode, setMode] = useState('single');
+  const videoRef = useRef(null);
+
+  // Tanggal kedaluwarsa (1 tahun ke depan)
+  const expiryDate = new Date();
+  expiryDate.setFullYear(expiryDate.getFullYear() + 1);
+  const formattedDate = expiryDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) + " 21:34";
+
+  const handleGenerate = () => {
+    if (!prompt.trim()) {
+      // Menggunakan custom alert visual, bukan window.alert
+      return; 
+    }
+
+    setIsGenerating(true);
+    setGeneratedVideo(null);
+    setGenerationProgress(0);
+
+    // --- SIMULASI PROSES GENERATE (DIPERBAIKI) ---
+    // Total waktu sekitar 6-7 detik agar terasa seperti proses AI
+    const duration = 6000; 
+    const intervalTime = 100;
+    const steps = duration / intervalTime;
+    let currentStep = 0;
+
+    const interval = setInterval(() => {
+      currentStep++;
+      const progress = Math.min((currentStep / steps) * 100, 100);
+      setGenerationProgress(Math.floor(progress));
+
+      if (currentStep >= steps) {
+        clearInterval(interval);
+        setIsGenerating(false);
+        // Menggunakan link video Google Storage yang stabil & cepat
+        setGeneratedVideo("https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4");
+      }
+    }, intervalTime);
+  };
+
+  // Auto-play saat video muncul
+  useEffect(() => {
+    if (generatedVideo && videoRef.current) {
+        videoRef.current.load();
+        videoRef.current.play().catch(e => console.log("Autoplay dicegah browser, perlu interaksi user"));
+    }
+  }, [generatedVideo]);
+
+  return (
+    <div className="min-h-screen bg-[#0a0a0f] text-gray-200 font-sans flex justify-center py-6 px-4 pb-20">
+      
+      {/* Container Utama */}
+      <div className="w-full max-w-md space-y-6">
+
+        {/* Header Section */}
+        <div className="bg-[#16161a] rounded-3xl p-6 border border-gray-800 shadow-2xl relative overflow-hidden">
+            {/* Background Glow */}
+            <div className="absolute top-0 right-0 w-32 h-32 bg-red-600/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div className="text-center space-y-3 relative z-10">
+                <h1 className="text-2xl font-bold text-red-500 flex items-center justify-center gap-2">
+                    <Sparkles className="w-6 h-6" />
+                    VEO 3.1 Video Generator
+                </h1>
+                
+                <div className="flex justify-center gap-2 flex-wrap">
+                    <div className="bg-green-900/30 border border-green-800 text-green-400 px-4 py-1.5 rounded-full text-xs font-bold flex items-center gap-1">
+                        <CheckCircle className="w-3 h-3" />
+                        Unlimited / <Infinity className="w-3 h-3" />
+                    </div>
+                </div>
+
+                <div className="inline-flex items-center gap-2 bg-[#0f1216] px-4 py-2 rounded-xl border border-gray-800 text-xs text-green-500/80">
+                    <Calendar className="w-3 h-3" />
+                    <span>Aktif sampai {formattedDate}</span>
+                </div>
+            </div>
+        </div>
+
+        {/* Generation Mode */}
+        <div className="bg-[#16161a] rounded-3xl p-5 border border-gray-800 shadow-lg">
+            <h2 className="text-xs font-bold text-gray-500 mb-4 tracking-widest">GENERATION MODE</h2>
+            <div className="flex flex-col gap-3">
+                <button 
+                    onClick={() => setMode('single')}
+                    className={`w-full py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 text-sm font-medium transition-all ${mode === 'single' ? 'bg-[#25252b] text-white border border-gray-600' : 'bg-[#1c1c21] text-gray-500 border border-transparent'}`}
+                >
+                   📄 Single Prompt
+                </button>
+                <button 
+                    onClick={() => setMode('multi')}
+                    className={`w-full py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 text-sm font-medium transition-all ${mode === 'multi' ? 'bg-[#25252b] text-white border border-gray-600' : 'bg-[#1c1c21] text-gray-500 border border-transparent'}`}
+                >
+                   🗃️ Multi Prompt
+                </button>
+            </div>
+        </div>
+
+        {/* Prompt Input */}
+        <div>
+            <div className="flex justify-between items-end mb-2 px-1">
+                <h2 className="text-xs font-bold text-gray-500 tracking-widest">PROMPT</h2>
+                <span className="text-xs text-gray-600">{prompt.length}/6500</span>
+            </div>
+            <textarea
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                placeholder='Contoh: "Mobil balap futuristik melaju di jalanan neon kota Tokyo saat hujan deras..."'
+                className="w-full h-32 bg-[#16161a] border border-gray-800 rounded-3xl p-5 text-sm text-gray-300 placeholder-gray-600 focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/50 transition-all resize-none"
+            ></textarea>
+             {!prompt.trim() && (
+                <p className="text-xs text-red-500/50 mt-2 px-2">* Prompt wajib diisi</p>
+            )}
+        </div>
+
+        {/* Reference Image */}
+        <div>
+            <h2 className="text-xs font-bold text-gray-500 tracking-widest mb-2 px-1">REFERENCE IMAGE (OPTIONAL)</h2>
+            <div className="w-full h-24 bg-[#16161a] border-2 border-dashed border-red-900/30 rounded-3xl flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-[#1c1c22] transition-colors group">
+                <div className="w-8 h-8 rounded-full bg-red-900/20 flex items-center justify-center text-red-500 group-hover:scale-110 transition-transform">
+                    <Upload className="w-4 h-4" />
+                </div>
+            </div>
+        </div>
+
+        {/* Settings Panel */}
+        <div className="bg-[#16161a] rounded-3xl p-6 border border-gray-800 shadow-lg space-y-6">
+            
+            {/* Aspect Ratio */}
+            <div>
+                <h2 className="text-xs font-bold text-gray-500 tracking-widest mb-3">ASPECT RATIO</h2>
+                <div className="grid grid-cols-2 gap-4">
+                    {['16:9', '9:16'].map((ratio) => (
+                        <button
+                            key={ratio}
+                            onClick={() => setAspectRatio(ratio)}
+                            className={`py-3 rounded-xl text-sm font-bold transition-all ${
+                                aspectRatio === ratio 
+                                ? 'bg-gradient-to-r from-red-500 to-red-600 text-white shadow-lg shadow-red-900/20' 
+                                : 'bg-[#25252b] text-gray-500 hover:bg-[#2a2a30]'
+                            }`}
+                        >
+                            {ratio}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            {/* Resolution */}
+            <div>
+                <h2 className="text-xs font-bold text-gray-500 tracking-widest mb-3">RESOLUTION</h2>
+                <div className="grid grid-cols-2 gap-4">
+                    {['720p', '1080p'].map((res) => (
+                        <button
+                            key={res}
+                            onClick={() => setResolution(res)}
+                            className={`py-3 rounded-xl text-sm font-bold transition-all ${
+                                resolution === res 
+                                ? 'bg-gradient-to-r from-red-500 to-red-600 text-white shadow-lg shadow-red-900/20' 
+                                : 'bg-[#25252b] text-gray-500 hover:bg-[#2a2a30]'
+                            }`}
+                        >
+                            {res}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            {/* Main Action Button */}
+            <button
+                onClick={handleGenerate}
+                disabled={isGenerating || !prompt.trim()}
+                className={`w-full py-4 rounded-xl font-bold text-white shadow-xl flex items-center justify-center gap-3 transition-all active:scale-95 ${
+                    isGenerating || !prompt.trim()
+                    ? 'bg-gray-800 text-gray-500 cursor-not-allowed shadow-none' 
+                    : 'bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-400 hover:to-rose-500 shadow-red-900/30'
+                }`}
+            >
+                {isGenerating ? (
+                    <>
+                       <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                       <span>GENERATING...</span>
+                    </>
+                ) : (
+                    <>
+                        <Play className="w-5 h-5 fill-current" />
+                        GENERATE VIDEO
+                    </>
+                )}
+            </button>
+        </div>
+
+        {/* Result Area */}
+        <div className="relative w-full rounded-3xl overflow-hidden bg-[#16161a] border border-gray-800 min-h-[250px] flex items-center justify-center">
+            
+            {!generatedVideo && !isGenerating && (
+                <div className="text-center p-8 space-y-3 opacity-50">
+                    <div className="w-14 h-14 bg-[#25252b] rounded-full flex items-center justify-center mx-auto mb-2">
+                        <ImageIcon className="w-7 h-7 text-gray-500" />
+                    </div>
+                    <h3 className="text-gray-300 font-medium text-sm">Preview Video</h3>
+                    <p className="text-[10px] text-gray-500 max-w-[200px] mx-auto">Hasil video akan muncul di sini.</p>
+                </div>
+            )}
+
+            {isGenerating && (
+                <div className="w-full px-10 text-center space-y-4">
+                     <div className="relative w-full">
+                         {/* Loading Text */}
+                         <div className="flex justify-between text-xs font-bold mb-2">
+                             <span className="text-red-400 animate-pulse">RENDERING...</span>
+                             <span className="text-gray-500">{generationProgress}%</span>
+                         </div>
+                         {/* Progress Bar Container */}
+                         <div className="w-full h-2 bg-gray-800 rounded-full overflow-hidden">
+                            <div 
+                                className="h-full bg-gradient-to-r from-red-600 to-rose-500 transition-all duration-300 ease-out shadow-[0_0_10px_rgba(220,38,38,0.5)]"
+                                style={{ width: `${generationProgress}%` }}
+                            ></div>
+                         </div>
+                     </div>
+                     <p className="text-[10px] text-gray-500 mt-2">Sedang memproses prompt kamu...</p>
+                </div>
+            )}
+
+            {generatedVideo && !isGenerating && (
+                <div className="w-full h-full relative group bg-black">
+                    <video 
+                        ref={videoRef}
+                        src={generatedVideo} 
+                        className="w-full h-full object-contain max-h-[400px]" 
+                        controls 
+                        playsInline
+                        loop 
+                    >
+                        Browser kamu tidak mendukung tag video.
+                    </video>
+                    
+                    {/* Badge Selesai */}
+                    <div className="absolute top-4 left-4 bg-green-900/80 backdrop-blur-md px-3 py-1 rounded-full text-[10px] text-green-200 border border-green-500/30 flex items-center gap-2 shadow-lg z-10 pointer-events-none">
+                        <CheckCircle className="w-3 h-3 text-green-400" />
+                        Completed in 6.2s
+                    </div>
+                </div>
+            )}
+
+        </div>
+
+        <div className="text-center text-[10px] text-gray-700 pb-4">
+            Veo 3.1 Core Engine • Private Build v1.2
+        </div>
+
+      </div>
+    </div>
+  );
+}
+
+
