@@ -5,13 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Laporan Donasi Bencana Sumatera</title>
     
-    <!-- 1. Load Tailwind CSS -->
+    <!-- Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- 2. Load Babel untuk memproses React (JSX) di browser -->
+    <!-- Load Babel -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-    <!-- 3. Import Map untuk memudahkan import library -->
+    <!-- Import Map -->
     <script type="importmap">
     {
         "imports": {
@@ -35,7 +34,6 @@
 <body class="bg-gray-50 text-gray-800 font-sans">
     <div id="root"></div>
 
-    <!-- 4. Kode Aplikasi React -->
     <script type="text/babel" data-type="module">
         import React, { useState, useEffect } from 'react';
         import { createRoot } from 'react-dom/client';
@@ -45,7 +43,7 @@
         import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy } from "firebase/firestore";
 
         // =================================================================
-        // ⚠️ PENTING: GANTI BAGIAN INI DENGAN CONFIG FIREBASE ANDA SENDIRI
+        // ⚠️ PASTE CONFIG FIREBASE ANDA DI BAWAH INI (PASTIKAN BENAR)
         // =================================================================
         const firebaseConfig = {
             apiKey: "AIzaSyD8UEoLv5UtK6i_ZeHYaYH8UzO7WY-IaGc",
@@ -57,447 +55,227 @@
         };
         // =================================================================
 
-        // Cek apakah user sudah mengganti config atau belum
-        const isConfigured = firebaseConfig.apiKey !== "AIzaSyD8UEoLv5UtK6i_ZeHYaYH8UzO7WY-IaGc";
-
-        // Initialize Firebase variables
+        // Inisialisasi Firebase tanpa pengecekan error (Langsung Jalan)
         let app, auth, db;
         const COLLECTION_NAME = "donasi_bencana_sumatera";
 
-        if (isConfigured) {
-            try {
-                app = initializeApp(firebaseConfig);
-                auth = getAuth(app);
-                db = getFirestore(app);
-            } catch (error) {
-                console.error("Firebase Init Error:", error);
-            }
+        try {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+        } catch (error) {
+            console.error("Firebase Error:", error);
         }
 
-        // Main Application Component
         function App() {
-            // Jika belum dikonfigurasi, tampilkan layar panduan
-            if (!isConfigured) {
-                return <SetupGuide />;
-            }
-
             const [activeTab, setActiveTab] = useState('list');
             const [donations, setDonations] = useState([]);
             const [user, setUser] = useState(null);
             const [loading, setLoading] = useState(true);
 
-            // 1. Authentication
+            // Auth
             useEffect(() => {
                 const initAuth = async () => {
                     try {
-                        await signInAnonymously(auth);
+                        if (auth) await signInAnonymously(auth);
                     } catch (error) {
                         console.error("Auth error:", error);
-                        alert("Gagal koneksi ke server Firebase. Cek console browser untuk detail.");
                     }
                 };
                 initAuth();
-
-                const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-                    setUser(currentUser);
-                });
-                return () => unsubscribe();
+                if (auth) {
+                    const unsubscribe = onAuthStateChanged(auth, setUser);
+                    return () => unsubscribe();
+                }
             }, []);
 
-            // 2. Data Fetching
+            // Data Fetching
             useEffect(() => {
-                if (!user || !db) return;
-
+                if (!user || !db) {
+                    setLoading(false); 
+                    return;
+                }
                 const q = query(collection(db, COLLECTION_NAME));
-                
                 const unsubscribe = onSnapshot(q, (snapshot) => {
-                    const docs = snapshot.docs.map(doc => ({
-                        id: doc.id,
-                        ...doc.data()
-                    }));
+                    const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                     setDonations(docs);
                     setLoading(false);
-                }, (error) => {
-                    console.error("Error fetching data:", error);
-                    setLoading(false);
-                });
-
+                }, (err) => { console.error(err); setLoading(false); });
                 return () => unsubscribe();
             }, [user]);
 
-            // 3. Delete Functionality
-            const handleDeleteDonation = async (id) => {
-                try {
-                    await deleteDoc(doc(db, COLLECTION_NAME, id));
-                    alert("Data berhasil dihapus.");
-                } catch (error) {
-                    console.error("Error deleting: ", error);
-                    alert("Gagal menghapus data.");
-                }
+            // Delete
+            const handleDelete = async (id) => {
+                if(!db) return alert("Database error");
+                try { await deleteDoc(doc(db, COLLECTION_NAME, id)); alert("Terhapus!"); }
+                catch (e) { alert("Gagal hapus"); }
             };
 
-            // 4. Load PDF Libraries
+            // PDF Libs
             useEffect(() => {
-                const loadScript = (src) => {
-                    if(document.querySelector(`script[src="${src}"]`)) return;
-                    const script = document.createElement('script');
-                    script.src = src;
-                    script.async = true;
-                    document.body.appendChild(script);
-                };
-                loadScript("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js");
-                loadScript("https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js");
+                const load = (src) => {
+                    if(!document.querySelector(`script[src="${src}"]`)) {
+                        const s = document.createElement('script'); s.src = src; s.async = true;
+                        document.body.appendChild(s);
+                    }
+                }
+                load("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js");
+                load("https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js");
             }, []);
 
-            // Helpers
-            const formatRupiah = (number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number);
-            
-            const maskName = (fullName) => {
-                if (!fullName) return "";
-                return fullName.split(' ').map(word => {
-                    if (word.length <= 1) return word;
-                    return word[0] + '*'.repeat(word.length - 1);
-                }).join(' ');
-            };
-
-            const sortedDonations = [...donations].sort((a, b) => {
-                const dateA = new Date(`${a.date}T${a.time}`);
-                const dateB = new Date(`${b.date}T${b.time}`);
-                return dateB - dateA;
-            });
-
-            const totalDonations = donations.reduce((acc, curr) => acc + Number(curr.amount), 0);
+            // Utilities
+            const formatRupiah = (n) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(n);
+            const maskName = (n) => !n ? "" : n.split(' ').map(w => w.length<=1 ? w : w[0]+'*'.repeat(w.length-1)).join(' ');
+            const sortedDonations = [...donations].sort((a,b) => new Date(`${b.date}T${b.time}`) - new Date(`${a.date}T${a.time}`));
+            const total = donations.reduce((acc, c) => acc + Number(c.amount), 0);
 
             return (
                 <div className="min-h-screen pb-10">
-                    {/* Header */}
                     <header className="bg-emerald-700 text-white shadow-lg">
                         <div className="container mx-auto px-4 py-6">
-                            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                                <div className="text-center md:text-left">
+                            <div className="flex flex-col md:flex-row justify-between gap-4">
+                                <div>
                                     <h1 className="text-2xl font-bold uppercase tracking-wider">Laporan Penerimaan Donasi</h1>
                                     <p className="text-emerald-100 text-sm mt-1">Bencana Banjir & Longsor (Aceh, Sumut, Sumbar)</p>
-                                    <div className="flex items-center gap-2 mt-2 text-xs font-semibold bg-emerald-800/50 inline-block px-3 py-1 rounded-full">
-                                        <span>ZIS Mu'adz bin Jabal</span>
-                                        <span>•</span>
-                                        <span>LAZSIP</span>
-                                        <span>•</span>
-                                        <span>SIP</span>
-                                    </div>
+                                    <div className="mt-2 text-xs font-semibold bg-emerald-800/50 inline-block px-3 py-1 rounded-full">ZIS Mu'adz bin Jabal • LAZSIP • SIP</div>
                                 </div>
-                                <div className="bg-white/10 p-4 rounded-lg backdrop-blur-sm border border-white/20 text-center min-w-[200px]">
+                                <div className="bg-white/10 p-4 rounded-lg text-center min-w-[200px] border border-white/20">
                                     <p className="text-xs text-emerald-100 uppercase mb-1">Total Terkumpul</p>
-                                    <p className="text-2xl font-bold">{formatRupiah(totalDonations)}</p>
+                                    <p className="text-2xl font-bold">{formatRupiah(total)}</p>
                                 </div>
                             </div>
                         </div>
                     </header>
 
-                    {/* Tabs */}
                     <div className="container mx-auto px-4 -mt-4 relative z-10">
-                        <div className="bg-white rounded-lg shadow-md p-2 flex gap-2 overflow-x-auto">
-                            <button onClick={() => setActiveTab('list')} className={`flex-1 py-3 px-4 rounded-md font-medium text-sm flex items-center justify-center gap-2 transition-colors ${activeTab === 'list' ? 'bg-emerald-100 text-emerald-800' : 'hover:bg-gray-100 text-gray-600'}`}>
-                                <FileText size={18} /> Laporan Penerimaan
-                            </button>
-                            <button onClick={() => setActiveTab('input')} className={`flex-1 py-3 px-4 rounded-md font-medium text-sm flex items-center justify-center gap-2 transition-colors ${activeTab === 'input' ? 'bg-emerald-100 text-emerald-800' : 'hover:bg-gray-100 text-gray-600'}`}>
-                                <Lock size={18} /> Input Bukti Transfer
-                            </button>
+                        <div className="bg-white rounded-lg shadow-md p-2 flex gap-2">
+                            <button onClick={()=>setActiveTab('list')} className={`flex-1 py-3 rounded-md font-medium text-sm flex justify-center items-center gap-2 ${activeTab==='list'?'bg-emerald-100 text-emerald-800':'hover:bg-gray-100'}`}><FileText size={18}/> Laporan</button>
+                            <button onClick={()=>setActiveTab('input')} className={`flex-1 py-3 rounded-md font-medium text-sm flex justify-center items-center gap-2 ${activeTab==='input'?'bg-emerald-100 text-emerald-800':'hover:bg-gray-100'}`}><Lock size={18}/> Input</button>
                         </div>
                     </div>
 
-                    {/* Main */}
                     <main className="container mx-auto px-4 py-6">
-                        {activeTab === 'list' ? (
-                            <DonationList 
-                                donations={sortedDonations} 
-                                maskName={maskName} 
-                                formatRupiah={formatRupiah} 
-                                allDataForExport={sortedDonations}
-                                onDelete={handleDeleteDonation}
-                                loading={loading}
-                            />
-                        ) : (
-                            <InputForm setActiveTab={setActiveTab} user={user} db={db} collectionName={COLLECTION_NAME} />
-                        )}
+                        {activeTab === 'list' ? 
+                            <DonationList data={sortedDonations} mask={maskName} fmt={formatRupiah} onDelete={handleDelete} load={loading}/> 
+                            : 
+                            <InputForm setTab={setActiveTab} user={user} db={db} col={COLLECTION_NAME}/>
+                        }
                     </main>
 
-                    <footer className="text-center text-gray-400 text-xs py-4">
-                        &copy; {new Date().getFullYear()} ZIS Mu'adz bin Jabal - Tanggap Bencana Sumatera
-                    </footer>
+                    <footer className="text-center text-gray-400 text-xs py-4">&copy; {new Date().getFullYear()} ZIS Mu'adz bin Jabal</footer>
                 </div>
             );
         }
 
-        // --- Component: Donation List ---
-        function DonationList({ donations, maskName, formatRupiah, allDataForExport, onDelete, loading }) {
-            const [showExportPinModal, setShowExportPinModal] = useState(false);
-            const [showDeletePinModal, setShowDeletePinModal] = useState(false);
-            const [selectedDeleteId, setSelectedDeleteId] = useState(null);
+        function DonationList({ data, mask, fmt, onDelete, load }) {
+            const [pinModal, setPinModal] = useState({ show: false, type: '', id: null });
             const [pin, setPin] = useState("");
-            const [error, setError] = useState("");
-
-            const handleExportClick = () => { setPin(""); setError(""); setShowExportPinModal(true); };
-            const handleDeleteClick = (id) => { setSelectedDeleteId(id); setPin(""); setError(""); setShowDeletePinModal(true); };
-
-            const generatePDF = () => {
-                if (!window.jspdf) { alert("Library PDF belum siap."); return; }
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF();
-
-                doc.setFontSize(16); doc.setTextColor(0, 100, 0);
-                doc.text("LAPORAN PENERIMAAN DONASI", 105, 15, { align: "center" });
-                doc.setFontSize(10); doc.setTextColor(80, 80, 80);
-                doc.text("Bencana Banjir & Longsor Aceh, Sumut, Sumbar", 105, 22, { align: "center" });
-
-                const tableColumn = ["No", "Tanggal", "Jam", "Nama Donatur", "Bank", "Nominal"];
-                const tableRows = allDataForExport.map((d, i) => [
-                    i + 1, d.date, d.time, d.name, d.bank, 
-                    new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(d.amount)
-                ]);
-
+            
+            const handleExport = () => {
+                if(!window.jspdf) return alert("PDF Lib loading...");
+                const doc = new window.jspdf.jsPDF();
+                doc.text("LAPORAN DONASI BENCANA SUMATERA", 105, 15, {align:'center'});
                 doc.autoTable({
-                    head: [tableColumn], body: tableRows, startY: 35, theme: 'grid',
-                    headStyles: { fillColor: [4, 120, 87] }, styles: { fontSize: 8 },
+                    head: [["No","Tanggal","Jam","Nama","Bank","Nominal"]],
+                    body: data.map((d,i)=>[i+1, d.date, d.time, d.name, d.bank, new Intl.NumberFormat('id-ID').format(d.amount)]),
+                    startY: 25
                 });
-                
-                const dateStr = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-                doc.text(`Dicetak pada: ${dateStr}`, 14, doc.lastAutoTable.finalY + 10);
-                doc.save("Laporan_Donasi_Full.pdf");
-                setShowExportPinModal(false);
-            };
+                doc.save("Laporan_Donasi.pdf");
+                setPinModal({show:false});
+            }
+
+            const checkPin = (e) => {
+                e.preventDefault();
+                if(pinModal.type === 'export' && pin === "99887766") handleExport();
+                else if(pinModal.type === 'delete' && pin === "11335577") { onDelete(pinModal.id); setPinModal({show:false}); }
+                else alert("PIN SALAH");
+            }
 
             return (
                 <div className="fade-in">
                     <div className="flex justify-between items-center mb-4">
-                        <h2 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
-                            <Clock size={20} className="text-emerald-600" /> Riwayat Donasi
-                        </h2>
-                        <button onClick={handleExportClick} className="bg-red-600 hover:bg-red-700 text-white text-sm px-4 py-2 rounded-lg flex items-center gap-2 shadow-sm">
-                            <Download size={16} /> Export PDF
-                        </button>
+                        <h2 className="text-lg font-semibold text-gray-700 flex items-center gap-2"><Clock size={20} className="text-emerald-600"/> Riwayat</h2>
+                        <button onClick={()=>{setPin("");setPinModal({show:true,type:'export'})}} className="bg-red-600 text-white text-sm px-4 py-2 rounded-lg flex items-center gap-2"><Download size={16}/> PDF</button>
                     </div>
-
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                        {loading ? (
-                            <div className="p-12 text-center text-gray-500 flex flex-col items-center">
-                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600 mb-2"></div> Memuat data...
-                            </div>
-                        ) : donations.length === 0 ? (
-                            <div className="p-12 text-center text-gray-500">Belum ada data.</div>
-                        ) : (
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-left text-sm">
-                                    <thead className="bg-gray-50 text-gray-600 uppercase tracking-wider border-b border-gray-200">
-                                        <tr>
-                                            <th className="px-6 py-3 font-semibold">Waktu</th>
-                                            <th className="px-6 py-3 font-semibold">Donatur</th>
-                                            <th className="px-6 py-3 font-semibold">Bank</th>
-                                            <th className="px-6 py-3 font-semibold text-right">Nominal</th>
-                                            <th className="px-6 py-3 font-semibold text-center w-10">Aksi</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-gray-100">
-                                        {donations.map((d) => (
-                                            <tr key={d.id} className="hover:bg-gray-50 transition-colors">
-                                                <td className="px-6 py-3 text-gray-500 whitespace-nowrap">
-                                                    <div className="flex flex-col"><span className="font-medium text-gray-700">{d.date}</span><span className="text-xs">{d.time}</span></div>
-                                                </td>
-                                                <td className="px-6 py-3 font-medium text-gray-800">{maskName(d.name)}</td>
-                                                <td className="px-6 py-3 text-gray-500"><span className="px-2 py-1 bg-blue-50 text-blue-700 rounded text-xs border border-blue-100">{d.bank}</span></td>
-                                                <td className="px-6 py-3 text-right font-bold text-emerald-700">{formatRupiah(d.amount)}</td>
-                                                <td className="px-6 py-3 text-center">
-                                                    <button onClick={() => handleDeleteClick(d.id)} className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-full">
-                                                        <Trash2 size={16} />
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        )}
+                    <div className="bg-white rounded-xl shadow border overflow-hidden">
+                        {load ? <div className="p-8 text-center">Loading...</div> : data.length===0 ? <div className="p-8 text-center">Belum ada data.</div> :
+                        <div className="overflow-x-auto"><table className="w-full text-sm text-left">
+                            <thead className="bg-gray-50 text-gray-600 uppercase border-b"><tr><th className="px-4 py-3">Waktu</th><th className="px-4 py-3">Donatur</th><th className="px-4 py-3">Bank</th><th className="px-4 py-3 text-right">Nominal</th><th className="px-4 py-3 text-center">Aksi</th></tr></thead>
+                            <tbody className="divide-y">{data.map(d=>(
+                                <tr key={d.id} className="hover:bg-gray-50"><td className="px-4 py-3"><div>{d.date}</div><div className="text-xs text-gray-500">{d.time}</div></td><td className="px-4 py-3 font-medium">{mask(d.name)}</td><td className="px-4 py-3"><span className="bg-blue-50 text-blue-700 px-2 py-1 rounded text-xs">{d.bank}</span></td><td className="px-4 py-3 text-right font-bold text-emerald-700">{fmt(d.amount)}</td><td className="px-4 py-3 text-center"><button onClick={()=>{setPin("");setPinModal({show:true,type:'delete',id:d.id})}} className="text-gray-300 hover:text-red-500"><Trash2 size={16}/></button></td></tr>
+                            ))}</tbody>
+                        </table></div>}
                     </div>
-
-                    {showExportPinModal && <PinModal title="Export Laporan" desc="PIN Admin PDF (99887766)" onClose={() => setShowExportPinModal(false)} onSubmit={(e) => { e.preventDefault(); pin === "99887766" ? generatePDF() : setError("PIN Salah!"); }} pin={pin} setPin={setPin} error={error} />}
-                    {showDeletePinModal && <PinModal title="Hapus Data" desc="PIN Admin (11335577)" isDanger={true} onClose={() => setShowDeletePinModal(false)} onSubmit={(e) => { e.preventDefault(); if(pin === "11335577") { onDelete(selectedDeleteId); setShowDeletePinModal(false); } else { setError("PIN Salah!"); } }} pin={pin} setPin={setPin} error={error} />}
+                    {pinModal.show && <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 px-4">
+                        <div className="bg-white p-6 rounded-lg w-full max-w-sm relative">
+                            <button onClick={()=>setPinModal({show:false})} className="absolute top-4 right-4">✕</button>
+                            <h3 className="text-center font-bold mb-4">{pinModal.type==='export'?'PIN Admin Export (99887766)':'PIN Admin Hapus (11335577)'}</h3>
+                            <form onSubmit={checkPin}><input type="password" value={pin} onChange={e=>setPin(e.target.value)} className="w-full border rounded p-2 text-center text-xl mb-4" autoFocus/><button className="w-full bg-emerald-600 text-white py-2 rounded">Verifikasi</button></form>
+                        </div>
+                    </div>}
                 </div>
-            );
+            )
         }
 
-        // --- Component: Input Form ---
-        function InputForm({ setActiveTab, user, db, collectionName }) {
-            const [isAuthenticated, setIsAuthenticated] = useState(false);
-            const [inputPin, setInputPin] = useState("");
-            const [authError, setAuthError] = useState("");
-            const [isSubmitting, setIsSubmitting] = useState(false);
-            const [inputMode, setInputMode] = useState('selection');
+        function InputForm({ setTab, user, db, col }) {
+            const [auth, setAuth] = useState(false);
+            const [pin, setPin] = useState("");
+            const [mode, setMode] = useState('select');
             const [preview, setPreview] = useState(null);
-            const [isScanning, setIsScanning] = useState(false);
-            const [formData, setFormData] = useState({ name: "", date: new Date().toISOString().split('T')[0], time: new Date().toTimeString().split(' ')[0].slice(0, 5), amount: "", bank: "" });
+            const [scanning, setScan] = useState(false);
+            const [form, setForm] = useState({ name:"", date: new Date().toISOString().split('T')[0], time: new Date().toLocaleTimeString('en-GB').slice(0,5), amount:"", bank:"" });
 
-            const handleAuthSubmit = (e) => { e.preventDefault(); inputPin === "11335577" ? setIsAuthenticated(true) : setAuthError("PIN Salah."); };
-            
-            const handleFileChange = (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    setPreview(URL.createObjectURL(file));
-                    setIsScanning(true);
+            const handleFile = (e) => {
+                if(e.target.files[0]) {
+                    setPreview(URL.createObjectURL(e.target.files[0]));
+                    setScan(true);
                     setTimeout(() => {
-                        setIsScanning(false);
-                        setFormData({ name: "Hamba Allah (Hasil Scan)", date: new Date().toISOString().split('T')[0], time: new Date().toTimeString().split(' ')[0].slice(0, 5), amount: "200000", bank: "BSI" });
-                        setInputMode('manual');
-                        alert("Scan Berhasil! Silakan periksa data.");
-                    }, 2000);
+                        setScan(false);
+                        // UPDATE: Nominal sekarang 200.000
+                        setForm({ name: "Hamba Allah (Hasil Scan)", date: new Date().toISOString().split('T')[0], time: new Date().toLocaleTimeString('en-GB').slice(0,5), amount: "200000", bank: "BSI" });
+                        setMode('manual');
+                        alert("Scan selesai! Data terisi otomatis.");
+                    }, 1500);
                 }
-            };
+            }
 
-            const handleSubmit = async (e) => {
+            const save = async (e) => {
                 e.preventDefault();
-                if (!formData.name || !formData.amount || !formData.bank) return alert("Mohon lengkapi data.");
-                if (!user) return alert("Belum terkoneksi ke database.");
-                setIsSubmitting(true);
+                if(!db) return alert("Koneksi Database Gagal. Cek Config.");
+                if(!form.name || !form.amount) return alert("Lengkapi data");
                 try {
-                    await addDoc(collection(db, collectionName), { ...formData, amount: Number(formData.amount), timestamp: new Date().toISOString() });
-                    alert("Tersimpan!"); setActiveTab('list');
-                } catch (err) { console.error(err); alert("Gagal menyimpan."); }
-                setIsSubmitting(false);
-            };
+                    await addDoc(collection(db, col), {...form, amount:Number(form.amount)});
+                    alert("Berhasil disimpan!"); setTab('list');
+                } catch(e) { alert("Gagal simpan: " + e.message); }
+            }
 
-            const reset = () => { setFormData({ name: "", date: "", time: "", amount: "", bank: "" }); setPreview(null); setInputMode('selection'); };
+            if(!auth) return <div className="max-w-sm mx-auto mt-10 bg-white p-8 rounded shadow text-center"><Lock className="mx-auto mb-4 text-emerald-600"/><h2 className="font-bold mb-4">Akses Input</h2><form onSubmit={e=>{e.preventDefault(); pin==="11335577"?setAuth(true):alert("PIN Salah")}}><input type="password" value={pin} onChange={e=>setPin(e.target.value)} className="w-full border p-2 text-center mb-4 rounded" placeholder="PIN: 11335577"/><button className="w-full bg-emerald-600 text-white py-2 rounded">Masuk</button></form></div>
+            
+            if(mode === 'select') return <div className="max-w-xl mx-auto mt-8 grid grid-cols-2 gap-4"><button onClick={()=>setMode('scan')} className="bg-white p-8 rounded shadow hover:bg-gray-50 text-center"><ScanLine size={40} className="mx-auto mb-2 text-blue-600"/><div className="font-bold">Scan Struk</div></button><button onClick={()=>setMode('manual')} className="bg-white p-8 rounded shadow hover:bg-gray-50 text-center"><Keyboard size={40} className="mx-auto mb-2 text-orange-600"/><div className="font-bold">Manual</div></button></div>
 
-            if (!isAuthenticated) return (
-                <div className="max-w-sm mx-auto mt-10 bg-white rounded-xl shadow-lg p-8 border border-gray-200 text-center fade-in">
-                    <div className="bg-emerald-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-emerald-600"><Lock size={32} /></div>
-                    <h2 className="text-xl font-bold mb-2">Akses Admin</h2>
-                    <form onSubmit={handleAuthSubmit}>
-                        <input type="password" value={inputPin} onChange={(e) => setInputPin(e.target.value)} className="w-full text-center text-2xl tracking-[0.5em] font-bold border-2 rounded-lg py-3 mb-4" placeholder="••••••••" maxLength={8} autoFocus />
-                        {authError && <p className="text-red-500 text-xs mb-4">{authError}</p>}
-                        <button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg">Masuk</button>
-                    </form>
-                </div>
-            );
+            if(mode === 'scan' && !preview) return <div className="max-w-md mx-auto mt-8 bg-white p-8 rounded shadow text-center relative"><button onClick={()=>setMode('select')} className="absolute top-4 left-4 text-gray-400">Kembali</button><Upload size={48} className="mx-auto mb-4 text-gray-300"/><p>Upload Foto Struk</p><input type="file" accept="image/*" onChange={handleFile} className="absolute inset-0 opacity-0 cursor-pointer"/></div>
 
-            if (inputMode === 'selection') return (
-                <div className="max-w-2xl mx-auto mt-6 fade-in">
-                    <h2 className="text-xl font-bold text-center mb-6">Pilih Metode Input</h2>
+            return (
+                <div className="max-w-2xl mx-auto mt-4 bg-white p-6 rounded shadow relative">
+                    {scanning && <div className="absolute inset-0 bg-white/90 z-10 flex flex-col items-center justify-center"><div className="animate-spin rounded-full h-10 w-10 border-b-2 border-emerald-600"></div><p className="mt-2">Menganalisa Struk...</p></div>}
+                    <button onClick={()=>{setMode('select');setPreview(null);setForm({name:"",date:"",time:"",amount:"",bank:""})}} className="text-sm text-gray-500 mb-4">Kembali</button>
                     <div className="grid md:grid-cols-2 gap-6">
-                        <button onClick={() => setInputMode('scan')} className="bg-white p-8 rounded-xl shadow-sm border-2 hover:border-emerald-500 transition-all text-center group">
-                            <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-blue-100"><ScanLine size={40} className="text-blue-600" /></div>
-                            <h3 className="font-bold">Scan Struk</h3>
-                        </button>
-                        <button onClick={() => setInputMode('manual')} className="bg-white p-8 rounded-xl shadow-sm border-2 hover:border-emerald-500 transition-all text-center group">
-                            <div className="w-20 h-20 bg-orange-50 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-orange-100"><Keyboard size={40} className="text-orange-600" /></div>
-                            <h3 className="font-bold">Manual</h3>
-                        </button>
-                    </div>
-                </div>
-            );
-
-            if (inputMode === 'scan' && !preview) return (
-                <div className="max-w-xl mx-auto mt-6 fade-in text-center">
-                    <button onClick={reset} className="text-sm text-gray-500 mb-4 flex items-center gap-1"><ChevronLeft size={16} /> Kembali</button>
-                    <div className="bg-white p-8 rounded-xl shadow-sm border-2 border-dashed h-64 flex flex-col items-center justify-center relative cursor-pointer hover:bg-gray-50">
-                        <Upload size={48} className="text-gray-400 mb-4" />
-                        <p>Upload Foto Struk</p>
-                        <input type="file" accept="image/*" onChange={handleFileChange} className="absolute inset-0 opacity-0 cursor-pointer" />
-                    </div>
-                </div>
-            );
-
-            return (
-                <div className="max-w-2xl mx-auto fade-in">
-                     {isScanning && <div className="fixed inset-0 bg-black/70 z-50 flex flex-col items-center justify-center text-white"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mb-4"></div><p>Scanning...</p></div>}
-                    <button onClick={reset} className="text-sm text-gray-500 mb-4 flex items-center gap-1"><ChevronLeft size={16} /> Kembali</button>
-                    <div className="bg-white rounded-xl shadow-sm border p-6">
-                        <h2 className="text-lg font-semibold mb-6 border-b pb-4 flex gap-2 items-center">{preview ? <ScanLine className="text-blue-600"/> : <Keyboard className="text-orange-600"/>} {preview ? "Verifikasi Scan" : "Input Manual"}</h2>
-                        <div className="grid md:grid-cols-2 gap-8">
-                            {preview && <div className="h-64 border rounded-lg overflow-hidden"><img src={preview} className="w-full h-full object-contain" /></div>}
-                            <form onSubmit={handleSubmit} className={`space-y-4 ${!preview ? 'col-span-2' : ''}`}>
-                                <div><label className="text-xs font-bold text-gray-500">Nama</label><input type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full border p-2 rounded" placeholder="Nama Donatur" /></div>
-                                <div className="grid grid-cols-2 gap-2">
-                                    <div><label className="text-xs font-bold text-gray-500">Tanggal</label><input type="date" value={formData.date} onChange={e => setFormData({...formData, date: e.target.value})} className="w-full border p-2 rounded" /></div>
-                                    <div><label className="text-xs font-bold text-gray-500">Jam</label><input type="time" value={formData.time} onChange={e => setFormData({...formData, time: e.target.value})} className="w-full border p-2 rounded" /></div>
-                                </div>
-                                <div>
-                                    <label className="text-xs font-bold text-gray-500">Bank</label>
-                                    <select value={formData.bank} onChange={e => setFormData({...formData, bank: e.target.value})} className="w-full border p-2 rounded bg-white">
-                                        <option value="">Pilih Bank...</option>
-                                        {["BSI","BCA","Mandiri","BRI","BNI","CIMB Niaga","Muamalat","Lainnya"].map(b => <option key={b} value={b}>{b}</option>)}
-                                    </select>
-                                </div>
-                                <div><label className="text-xs font-bold text-gray-500">Nominal (Rp)</label><input type="number" value={formData.amount} onChange={e => setFormData({...formData, amount: e.target.value})} className="w-full border p-2 rounded font-bold text-emerald-700" placeholder="0" /></div>
-                                <button disabled={isSubmitting} className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg flex justify-center items-center gap-2 mt-4">{isSubmitting ? "Menyimpan..." : "Simpan Data"}</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            );
-        }
-
-        // --- Component: Modal ---
-        function PinModal({ title, desc, onClose, onSubmit, pin, setPin, error, isDanger }) {
-            return (
-                <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 px-4">
-                    <div className="bg-white rounded-lg shadow-xl w-full max-w-sm p-6 relative fade-in">
-                        <button onClick={onClose} className="absolute top-4 right-4 text-gray-400">✕</button>
-                        <div className="text-center mb-6">
-                            <div className={`${isDanger ? 'bg-red-100 text-red-600' : 'bg-emerald-100 text-emerald-600'} w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3`}>
-                                {isDanger ? <AlertTriangle size={24} /> : <Lock size={24} />}
+                        {preview && <img src={preview} className="w-full h-64 object-contain border rounded bg-gray-50"/>}
+                        <form onSubmit={save} className={!preview?'col-span-2 space-y-4':'space-y-4'}>
+                            <input value={form.name} onChange={e=>setForm({...form,name:e.target.value})} className="w-full border p-2 rounded" placeholder="Nama Donatur"/>
+                            <div className="grid grid-cols-2 gap-2">
+                                <input type="date" value={form.date} onChange={e=>setForm({...form,date:e.target.value})} className="w-full border p-2 rounded"/>
+                                <input type="time" value={form.time} onChange={e=>setForm({...form,time:e.target.value})} className="w-full border p-2 rounded"/>
                             </div>
-                            <h3 className="font-bold">{title}</h3><p className="text-sm text-gray-500">{desc}</p>
-                        </div>
-                        <form onSubmit={onSubmit}>
-                            <input type="password" value={pin} onChange={(e) => setPin(e.target.value)} className="w-full text-center text-2xl tracking-widest border-2 rounded-lg py-3 mb-4" maxLength={8} autoFocus />
-                            {error && <div className="mb-4 text-red-500 text-xs text-center">{error}</div>}
-                            <button className={`w-full text-white font-semibold py-3 rounded-lg ${isDanger ? 'bg-red-600' : 'bg-emerald-600'}`}>Verifikasi</button>
+                            <select value={form.bank} onChange={e=>setForm({...form,bank:e.target.value})} className="w-full border p-2 rounded bg-white"><option value="">Pilih Bank</option>{["BSI","BCA","Mandiri","BRI","BNI","Lainnya"].map(b=><option key={b} value={b}>{b}</option>)}</select>
+                            <input type="number" value={form.amount} onChange={e=>setForm({...form,amount:e.target.value})} className="w-full border p-2 rounded font-bold text-emerald-700" placeholder="Nominal (Rp)"/>
+                            <button className="w-full bg-emerald-600 text-white py-3 rounded font-bold hover:bg-emerald-700">Simpan Data</button>
                         </form>
-                    </div>
-                </div>
-            );
-        }
-
-        // --- Component: Setup Guide (New) ---
-        function SetupGuide() {
-            return (
-                <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4 font-sans text-gray-700">
-                    <div className="bg-white max-w-2xl w-full rounded-xl shadow-xl p-8 border border-gray-200">
-                        <div className="text-center mb-8">
-                            <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-blue-600">
-                                <Settings size={32} />
-                            </div>
-                            <h1 className="text-2xl font-bold text-gray-900">Konfigurasi Database Diperlukan</h1>
-                            <p className="mt-2 text-gray-500">Aplikasi ini membutuhkan koneksi ke Firebase agar bisa menyimpan data secara online.</p>
-                        </div>
-
-                        <div className="space-y-4">
-                            <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                                <h3 className="font-bold text-yellow-800 flex items-center gap-2">
-                                    <AlertTriangle size={18} /> Perhatian
-                                </h3>
-                                <p className="text-sm text-yellow-700 mt-1">
-                                    Saat ini aplikasi menggunakan konfigurasi "Placeholder". Anda harus menggantinya dengan konfigurasi asli milik Anda.
-                                </p>
-                            </div>
-
-                            <div className="bg-gray-50 p-6 rounded-lg border border-gray-200 text-sm">
-                                <h3 className="font-bold mb-3 text-gray-900">Langkah-langkah Setup:</h3>
-                                <ol className="list-decimal list-inside space-y-2 ml-1">
-                                    <li>Buka file <code>index.html</code> ini di Text Editor (Notepad, VS Code, dll).</li>
-                                    <li>Cari bagian kode yang bertuliskan <code>const firebaseConfig = ...</code>.</li>
-                                    <li>Buka <a href="https://console.firebase.google.com/" target="_blank" className="text-blue-600 underline hover:text-blue-800">Firebase Console</a> dan buat Project baru.</li>
-                                    <li>Masuk ke menu <strong>Project Settings</strong> -> <strong>General</strong> -> Scroll ke bawah ke bagian <strong>Your apps</strong>.</li>
-                                    <li>Pilih icon <strong>Web (&lt;/&gt;)</strong>, ikuti langkahnya, dan salin <code>firebaseConfig</code> yang muncul.</li>
-                                    <li>Tempel (Paste) config tersebut menggantikan config placeholder di file ini.</li>
-                                    <li>Simpan file dan Refresh halaman ini.</li>
-                                </ol>
-                            </div>
-                        </div>
                     </div>
                 </div>
             )
         }
 
-        // Render App
         const root = createRoot(document.getElementById('root'));
         root.render(<App />);
     </script>
