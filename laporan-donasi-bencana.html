@@ -37,13 +37,13 @@
     <script type="text/babel" data-type="module">
         import React, { useState, useEffect } from 'react';
         import { createRoot } from 'react-dom/client';
-        import { Camera, Upload, FileText, Lock, Download, Calendar, Clock, CreditCard, User, CheckCircle, ChevronLeft, ScanLine, Keyboard, Trash2, AlertTriangle, Settings } from 'lucide-react';
+        import { Camera, Upload, FileText, Lock, Download, Calendar, Clock, CreditCard, User, CheckCircle, ChevronLeft, ScanLine, Keyboard, Trash2, AlertTriangle, Settings, Wifi, WifiOff } from 'lucide-react';
         import { initializeApp } from "firebase/app";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "firebase/auth";
         import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy } from "firebase/firestore";
 
         // =================================================================
-        // ⚠️ PASTE CONFIG FIREBASE ANDA DI BAWAH INI (PASTIKAN BENAR)
+        // ⚠️ PASTE CONFIG FIREBASE ANDA DI SINI
         // =================================================================
         const firebaseConfig = {
             apiKey: "AIzaSyD8UEoLv5UtK6i_ZeHYaYH8UzO7WY-IaGc",
@@ -55,7 +55,6 @@
         };
         // =================================================================
 
-        // Inisialisasi Firebase tanpa pengecekan error (Langsung Jalan)
         let app, auth, db;
         const COLLECTION_NAME = "donasi_bencana_sumatera";
 
@@ -64,7 +63,7 @@
             auth = getAuth(app);
             db = getFirestore(app);
         } catch (error) {
-            console.error("Firebase Error:", error);
+            console.error("Firebase Init Error:", error);
         }
 
         function App() {
@@ -72,43 +71,77 @@
             const [donations, setDonations] = useState([]);
             const [user, setUser] = useState(null);
             const [loading, setLoading] = useState(true);
+            const [connectionStatus, setConnectionStatus] = useState("Menghubungkan...");
+            const [statusColor, setStatusColor] = useState("bg-yellow-500");
 
-            // Auth
+            // 1. Auth & Connection Check
             useEffect(() => {
                 const initAuth = async () => {
+                    if (!auth) {
+                        setConnectionStatus("Config Error: Cek Firebase Config");
+                        setStatusColor("bg-red-600");
+                        return;
+                    }
                     try {
-                        if (auth) await signInAnonymously(auth);
+                        await signInAnonymously(auth);
                     } catch (error) {
                         console.error("Auth error:", error);
+                        setConnectionStatus(`Auth Gagal: ${error.code}. Aktifkan Anonymous Auth di Console.`);
+                        setStatusColor("bg-red-600");
                     }
                 };
                 initAuth();
+
                 if (auth) {
-                    const unsubscribe = onAuthStateChanged(auth, setUser);
+                    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+                        setUser(currentUser);
+                        if (currentUser) {
+                            setConnectionStatus("Terhubung ke Server");
+                            setStatusColor("bg-emerald-600");
+                        } else {
+                            setConnectionStatus("Tidak Terhubung (User Null)");
+                            setStatusColor("bg-gray-500");
+                        }
+                    });
                     return () => unsubscribe();
                 }
             }, []);
 
-            // Data Fetching
+            // 2. Data Fetching
             useEffect(() => {
                 if (!user || !db) {
                     setLoading(false); 
                     return;
                 }
-                const q = query(collection(db, COLLECTION_NAME));
-                const unsubscribe = onSnapshot(q, (snapshot) => {
-                    const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    setDonations(docs);
-                    setLoading(false);
-                }, (err) => { console.error(err); setLoading(false); });
-                return () => unsubscribe();
+                
+                try {
+                    const q = query(collection(db, COLLECTION_NAME));
+                    const unsubscribe = onSnapshot(q, (snapshot) => {
+                        const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        setDonations(docs);
+                        setLoading(false);
+                    }, (err) => { 
+                        console.error(err); 
+                        setLoading(false);
+                        if (err.code === 'permission-denied') {
+                            setConnectionStatus("Izin Ditolak: Cek Firestore Rules");
+                            setStatusColor("bg-red-600");
+                        } else {
+                            setConnectionStatus(`Error Database: ${err.code}`);
+                            setStatusColor("bg-red-600");
+                        }
+                    });
+                    return () => unsubscribe();
+                } catch (e) {
+                    console.error("Query Error", e);
+                }
             }, [user]);
 
             // Delete
             const handleDelete = async (id) => {
-                if(!db) return alert("Database error");
-                try { await deleteDoc(doc(db, COLLECTION_NAME, id)); alert("Terhapus!"); }
-                catch (e) { alert("Gagal hapus"); }
+                if(!db) return alert("Database belum siap.");
+                try { await deleteDoc(doc(db, COLLECTION_NAME, id)); alert("Data terhapus!"); }
+                catch (e) { alert("Gagal hapus: " + e.message); }
             };
 
             // PDF Libs
@@ -130,7 +163,7 @@
             const total = donations.reduce((acc, c) => acc + Number(c.amount), 0);
 
             return (
-                <div className="min-h-screen pb-10">
+                <div className="min-h-screen pb-10 relative">
                     <header className="bg-emerald-700 text-white shadow-lg">
                         <div className="container mx-auto px-4 py-6">
                             <div className="flex flex-col md:flex-row justify-between gap-4">
@@ -154,7 +187,7 @@
                         </div>
                     </div>
 
-                    <main className="container mx-auto px-4 py-6">
+                    <main className="container mx-auto px-4 py-6 mb-10">
                         {activeTab === 'list' ? 
                             <DonationList data={sortedDonations} mask={maskName} fmt={formatRupiah} onDelete={handleDelete} load={loading}/> 
                             : 
@@ -162,7 +195,11 @@
                         }
                     </main>
 
-                    <footer className="text-center text-gray-400 text-xs py-4">&copy; {new Date().getFullYear()} ZIS Mu'adz bin Jabal</footer>
+                    {/* Status Bar */}
+                    <div className={`fixed bottom-0 left-0 right-0 ${statusColor} text-white text-xs py-2 px-4 text-center font-bold shadow-lg z-50 flex items-center justify-center gap-2`}>
+                        {statusColor === 'bg-emerald-600' ? <Wifi size={14}/> : <WifiOff size={14}/>}
+                        Status: {connectionStatus}
+                    </div>
                 </div>
             );
         }
@@ -198,7 +235,7 @@
                         <button onClick={()=>{setPin("");setPinModal({show:true,type:'export'})}} className="bg-red-600 text-white text-sm px-4 py-2 rounded-lg flex items-center gap-2"><Download size={16}/> PDF</button>
                     </div>
                     <div className="bg-white rounded-xl shadow border overflow-hidden">
-                        {load ? <div className="p-8 text-center">Loading...</div> : data.length===0 ? <div className="p-8 text-center">Belum ada data.</div> :
+                        {load ? <div className="p-8 text-center">Loading...</div> : data.length===0 ? <div className="p-8 text-center text-gray-500">Belum ada data.<br/><span className="text-xs">Jika Anda sudah input tapi data tidak muncul, cek Status Bar di bawah.</span></div> :
                         <div className="overflow-x-auto"><table className="w-full text-sm text-left">
                             <thead className="bg-gray-50 text-gray-600 uppercase border-b"><tr><th className="px-4 py-3">Waktu</th><th className="px-4 py-3">Donatur</th><th className="px-4 py-3">Bank</th><th className="px-4 py-3 text-right">Nominal</th><th className="px-4 py-3 text-center">Aksi</th></tr></thead>
                             <tbody className="divide-y">{data.map(d=>(
@@ -209,8 +246,12 @@
                     {pinModal.show && <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 px-4">
                         <div className="bg-white p-6 rounded-lg w-full max-w-sm relative">
                             <button onClick={()=>setPinModal({show:false})} className="absolute top-4 right-4">✕</button>
-                            <h3 className="text-center font-bold mb-4">{pinModal.type==='export'?'PIN Admin Export (99887766)':'PIN Admin Hapus (11335577)'}</h3>
-                            <form onSubmit={checkPin}><input type="password" value={pin} onChange={e=>setPin(e.target.value)} className="w-full border rounded p-2 text-center text-xl mb-4" autoFocus/><button className="w-full bg-emerald-600 text-white py-2 rounded">Verifikasi</button></form>
+                            <h3 className="text-center font-bold mb-4">{pinModal.type==='export'?'PIN Admin Export':'PIN Admin Hapus'}</h3>
+                            <form onSubmit={checkPin}>
+                                <input type="password" value={pin} onChange={e=>setPin(e.target.value)} className="w-full border rounded p-2 text-center text-xl mb-4" placeholder="Masukkan PIN" autoFocus/>
+                                <button className="w-full bg-emerald-600 text-white py-2 rounded">Verifikasi</button>
+                                <p className="text-xs text-gray-400 text-center mt-2">PIN hubungi admin</p>
+                            </form>
                         </div>
                     </div>}
                 </div>
@@ -231,10 +272,9 @@
                     setScan(true);
                     setTimeout(() => {
                         setScan(false);
-                        // UPDATE: Nominal sekarang 200.000
                         setForm({ name: "Hamba Allah (Hasil Scan)", date: new Date().toISOString().split('T')[0], time: new Date().toLocaleTimeString('en-GB').slice(0,5), amount: "200000", bank: "BSI" });
                         setMode('manual');
-                        alert("Scan selesai! Data terisi otomatis.");
+                        alert("Scan selesai! Data terisi otomatis. Silakan klik Simpan.");
                     }, 1500);
                 }
             }
@@ -242,14 +282,23 @@
             const save = async (e) => {
                 e.preventDefault();
                 if(!db) return alert("Koneksi Database Gagal. Cek Config.");
+                if(!user) return alert("Gagal Simpan: Anda belum login ke sistem (Auth Error).");
                 if(!form.name || !form.amount) return alert("Lengkapi data");
+                
                 try {
                     await addDoc(collection(db, col), {...form, amount:Number(form.amount)});
                     alert("Berhasil disimpan!"); setTab('list');
-                } catch(e) { alert("Gagal simpan: " + e.message); }
+                } catch(e) { 
+                    console.error("Save Error:", e);
+                    if(e.code === 'permission-denied') {
+                        alert("GAGAL SIMPAN: Izin Ditolak.\n\nSolusi: Buka Firebase Console -> Firestore Database -> Rules -> Ubah 'allow read, write: if false;' menjadi 'allow read, write: if true;' (Untuk Test Mode).");
+                    } else {
+                        alert("Gagal simpan: " + e.message); 
+                    }
+                }
             }
 
-            if(!auth) return <div className="max-w-sm mx-auto mt-10 bg-white p-8 rounded shadow text-center"><Lock className="mx-auto mb-4 text-emerald-600"/><h2 className="font-bold mb-4">Akses Input</h2><form onSubmit={e=>{e.preventDefault(); pin==="11335577"?setAuth(true):alert("PIN Salah")}}><input type="password" value={pin} onChange={e=>setPin(e.target.value)} className="w-full border p-2 text-center mb-4 rounded" placeholder="PIN: 11335577"/><button className="w-full bg-emerald-600 text-white py-2 rounded">Masuk</button></form></div>
+            if(!auth) return <div className="max-w-sm mx-auto mt-10 bg-white p-8 rounded shadow text-center"><Lock className="mx-auto mb-4 text-emerald-600"/><h2 className="font-bold mb-4">Akses Input</h2><form onSubmit={e=>{e.preventDefault(); pin==="11335577"?setAuth(true):alert("PIN Salah")}}><input type="password" value={pin} onChange={e=>setPin(e.target.value)} className="w-full border p-2 text-center mb-4 rounded" placeholder="Masukkan PIN Admin"/><button className="w-full bg-emerald-600 text-white py-2 rounded">Masuk</button><p className="text-xs text-gray-400 text-center mt-2">PIN hubungi admin</p></form></div>
             
             if(mode === 'select') return <div className="max-w-xl mx-auto mt-8 grid grid-cols-2 gap-4"><button onClick={()=>setMode('scan')} className="bg-white p-8 rounded shadow hover:bg-gray-50 text-center"><ScanLine size={40} className="mx-auto mb-2 text-blue-600"/><div className="font-bold">Scan Struk</div></button><button onClick={()=>setMode('manual')} className="bg-white p-8 rounded shadow hover:bg-gray-50 text-center"><Keyboard size={40} className="mx-auto mb-2 text-orange-600"/><div className="font-bold">Manual</div></button></div>
 
