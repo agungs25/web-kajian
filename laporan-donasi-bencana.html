@@ -34,6 +34,10 @@
 <body class="bg-gray-50 text-gray-800 font-sans">
     <div id="root"></div>
 
+    <!-- 1. LOAD LIBRARY PDF DI SINI (Supaya Urutan Pasti Benar & Stabil) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+
     <script type="text/babel" data-type="module">
         import React, { useState, useEffect } from 'react';
         import { createRoot } from 'react-dom/client';
@@ -144,18 +148,6 @@
                 catch (e) { alert("Gagal hapus: " + e.message); }
             };
 
-            // PDF Libs
-            useEffect(() => {
-                const load = (src) => {
-                    if(!document.querySelector(`script[src="${src}"]`)) {
-                        const s = document.createElement('script'); s.src = src; s.async = true;
-                        document.body.appendChild(s);
-                    }
-                }
-                load("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js");
-                load("https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js");
-            }, []);
-
             // Utilities
             const formatRupiah = (n) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(n);
             const maskName = (n) => !n ? "" : n.split(' ').map(w => w.length<=1 ? w : w[0]+'*'.repeat(w.length-1)).join(' ');
@@ -209,16 +201,37 @@
             const [pin, setPin] = useState("");
             
             const handleExport = () => {
-                if(!window.jspdf) return alert("PDF Lib loading...");
-                const doc = new window.jspdf.jsPDF();
-                doc.text("LAPORAN DONASI BENCANA SUMATERA", 105, 15, {align:'center'});
-                doc.autoTable({
-                    head: [["No","Tanggal","Jam","Nama","Bank","Nominal"]],
-                    body: data.map((d,i)=>[i+1, d.date, d.time, d.name, d.bank, new Intl.NumberFormat('id-ID').format(d.amount)]),
-                    startY: 25
-                });
-                doc.save("Laporan_Donasi.pdf");
-                setPinModal({show:false});
+                // Pengecekan Library agar tidak crash silent
+                if(!window.jspdf) return alert("Library PDF belum termuat sempurna. Mohon refresh halaman.");
+                
+                try {
+                    const doc = new window.jspdf.jsPDF();
+                    
+                    // Cek apakah Plugin AutoTable sudah siap
+                    if (typeof doc.autoTable !== 'function') {
+                        throw new Error("Plugin Tabel belum siap. Mohon refresh halaman.");
+                    }
+
+                    doc.text("LAPORAN DONASI BENCANA SUMATERA", 105, 15, {align:'center'});
+                    doc.autoTable({
+                        head: [["No","Tanggal","Jam","Nama","Bank","Nominal"]],
+                        body: data.map((d,i)=>[
+                            i+1, 
+                            d.date, 
+                            d.time, 
+                            d.name, 
+                            d.bank, 
+                            new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(d.amount)
+                        ]),
+                        startY: 25
+                    });
+                    doc.save("Laporan_Donasi.pdf");
+                    setPinModal({show:false});
+                    alert("PDF berhasil diunduh!");
+                } catch (error) {
+                    console.error("Export Error:", error);
+                    alert("Gagal Export PDF: " + error.message);
+                }
             }
 
             const checkPin = (e) => {
