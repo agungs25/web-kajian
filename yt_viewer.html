@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full bg-zinc-950 text-zinc-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YT Video Viewer - Lihat Daftar Video Channel YouTube</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome untuk Icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #09090b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #27272a;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3f3f46;
+        }
+    </style>
+</head>
+<body class="h-full flex flex-col selection:bg-red-600 selection:text-white">
+
+    <!-- Header / Navigasi -->
+    <header class="border-b border-zinc-800 bg-zinc-900/80 backdrop-blur-md sticky top-0 z-40 px-4 lg:px-8 py-4">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <!-- Logo -->
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-red-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-red-600/20">
+                    <i class="fa-solid fa-play text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold tracking-tight text-white flex items-center gap-2">
+                        YT Channel Viewer
+                        <span id="badgeMode" class="text-[10px] font-semibold bg-amber-500/10 text-amber-500 border border-amber-500/20 px-2 py-0.5 rounded-full">MODE DEMO</span>
+                    </h1>
+                    <p class="text-xs text-zinc-400">Jelajahi & putar video dari channel YouTube pilihan Anda</p>
+                </div>
+            </div>
+
+            <!-- Aksi Global -->
+            <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
+                <button onclick="toggleSettingsModal()" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-sm font-medium transition duration-200">
+                    <i class="fa-solid fa-gear text-zinc-400"></i>
+                    <span>Pengaturan API</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Area Konten Utama -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 lg:px-8 py-8 flex flex-col gap-8">
+        
+        <!-- Panel Pencarian & Kontrol -->
+        <section class="bg-zinc-900 border border-zinc-800/80 rounded-2xl p-6 shadow-xl">
+            <h2 class="text-xl font-bold mb-4 flex items-center gap-2 text-white">
+                <i class="fa-solid fa-magnifying-glass text-red-500"></i>
+                Cari Channel YouTube
+            </h2>
+            <form id="searchForm" onsubmit="handleSearch(event)" class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <!-- Selektor Jenis Input -->
+                    <div class="md:col-span-1">
+                        <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Jenis Input</label>
+                        <select id="inputType" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-zinc-200 focus:outline-none focus:ring-2 focus:ring-red-500 transition">
+                            <option value="handle">Username / Handle (@username)</option>
+                            <option value="id">Channel ID (UC...)</option>
+                        </select>
+                    </div>
+
+                    <!-- Input Utama Pencarian -->
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Username atau ID Channel</label>
+                        <div class="relative">
+                            <input type="text" id="searchInput" required placeholder="Contoh: @GadgetIn atau UC0094bS_CgZ50K9" 
+                                   class="w-full bg-zinc-950 border border-zinc-800 rounded-xl pl-11 pr-4 py-3 text-zinc-200 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-red-500 transition">
+                            <div class="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500">
+                                <i class="fa-solid fa-at text-lg" id="inputIcon"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tombol Cari -->
+                    <div class="md:col-span-1 flex items-end">
+                        <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-xl transition duration-200 shadow-lg shadow-red-600/10 hover:shadow-red-600/20 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <span>Cari Channel</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Akses Cepat Mode Demo -->
+            <div class="mt-4 pt-4 border-t border-zinc-800/60" id="quickAccessContainer">
+                <p class="text-xs text-zinc-400 mb-2">Coba Channel Demo Cepat:</p>
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="loadQuickDemo('@GadgetIn')" class="px-3 py-1.5 rounded-lg bg-zinc-800/50 hover:bg-zinc-800 border border-zinc-700/50 hover:border-zinc-600 text-xs font-medium text-zinc-300 transition flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                        @GadgetIn (Indonesia)
+                    </button>
+                    <button onclick="loadQuickDemo('@mkbhd')" class="px-3 py-1.5 rounded-lg bg-zinc-800/50 hover:bg-zinc-800 border border-zinc-700/50 hover:border-zinc-600 text-xs font-medium text-zinc-300 transition flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                        @mkbhd (Tech)
+                    </button>
+                    <button onclick="loadQuickDemo('@MrBeast')" class="px-3 py-1.5 rounded-lg bg-zinc-800/50 hover:bg-zinc-800 border border-zinc-700/50 hover:border-zinc-600 text-xs font-medium text-zinc-300 transition flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-sky-500"></span>
+                        @MrBeast (Hiburan)
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Banner Info Mode Demo -->
+        <div id="demoBanner" class="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div class="flex items-start gap-3">
+                <div class="p-2 bg-amber-500/20 text-amber-500 rounded-lg mt-0.5 sm:mt-0">
+                    <i class="fa-solid fa-triangle-exclamation text-lg"></i>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-amber-500 text-sm">Berjalan dalam Mode Demo</h4>
+                    <p class="text-xs text-zinc-400 mt-0.5">Aplikasi saat ini mensimulasikan pencarian channel menggunakan data statis. Masukkan YouTube API Key asli Anda di menu pengaturan untuk mengambil data real-time langsung dari YouTube.</p>
+                </div>
+            </div>
+            <button onclick="toggleSettingsModal()" class="text-xs bg-amber-500 hover:bg-amber-600 text-zinc-950 font-bold px-4 py-2 rounded-lg transition shrink-0">
+                Hubungkan API Key
+            </button>
+        </div>
+
+        <!-- Tampilan Header Info Channel -->
+        <section id="channelHeader" class="hidden bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden shadow-xl">
+            <!-- Banner Placeholder -->
+            <div class="h-32 sm:h-48 bg-gradient-to-r from-zinc-800 via-zinc-900 to-zinc-800 relative">
+                <div class="absolute inset-0 bg-black/40"></div>
+            </div>
+            <!-- Info Profil -->
+            <div class="p-6 relative flex flex-col md:flex-row items-center md:items-end gap-6 -mt-16 md:-mt-10">
+                <!-- Avatar -->
+                <img id="channelAvatar" src="" alt="Avatar Channel" class="w-24 h-24 sm:w-32 sm:h-32 rounded-2xl border-4 border-zinc-900 bg-zinc-800 shadow-2xl relative z-10 object-cover">
+                
+                <!-- Teks Info -->
+                <div class="flex-1 text-center md:text-left pt-2 md:pt-0">
+                    <h3 id="channelTitle" class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Channel Title</h3>
+                    <p id="channelHandle" class="text-red-500 text-sm font-semibold mt-1">@handle</p>
+                    <p id="channelDesc" class="text-zinc-400 text-xs sm:text-sm mt-2 max-w-2xl line-clamp-2">Deskripsi channel akan muncul di sini.</p>
+                </div>
+
+                <!-- Konter Statistik -->
+                <div class="flex gap-4 p-4 bg-zinc-950/50 rounded-xl border border-zinc-800/50 backdrop-blur-sm self-stretch md:self-auto justify-around">
+                    <div class="text-center px-2">
+                        <span id="statSubscribers" class="block text-lg font-bold text-white">0</span>
+                        <span class="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold">Subscriber</span>
+                    </div>
+                    <div class="w-[1px] bg-zinc-800"></div>
+                    <div class="text-center px-2">
+                        <span id="statVideos" class="block text-lg font-bold text-white">0</span>
+                        <span class="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold">Video</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Daftar Video & Filter -->
+        <section id="videoSection" class="hidden flex flex-col gap-6">
+            <!-- Filter, Sort & Toggles Layout Bar -->
+            <div class="flex flex-col lg:flex-row items-center justify-between gap-4 bg-zinc-900 border border-zinc-800 px-5 py-4 rounded-xl">
+                <h4 class="text-base font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-clapperboard text-red-500"></i>
+                    Daftar Video Terbaru
+                </h4>
+                
+                <!-- Filter Kontrol -->
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
+                    <!-- Saring Judul -->
+                    <div class="relative w-full sm:w-64">
+                        <input type="text" id="filterInput" oninput="filterVideos()" placeholder="Saring judul video..."
+                               class="w-full bg-zinc-950 border border-zinc-800 rounded-lg pl-9 pr-4 py-2 text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-red-500 transition">
+                        <div class="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 text-xs">
+                            <i class="fa-solid fa-filter"></i>
+                        </div>
+                    </div>
+                    <!-- Urutan -->
+                    <select id="sortBy" onchange="sortVideos()" class="bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:ring-1 focus:ring-red-500 transition">
+                        <option value="newest">Terbaru</option>
+                        <option value="oldest">Terlama</option>
+                        <option value="views">Paling Banyak Ditonton</option>
+                    </select>
+
+                    <!-- Tombol Pengubah Layout (List / Grid) -->
+                    <div class="flex items-center gap-1 bg-zinc-950 border border-zinc-800 p-1 rounded-lg self-center sm:self-auto">
+                        <button onclick="changeLayout('list')" id="layoutListBtn" class="px-2.5 py-1.5 rounded text-xs transition duration-150 flex items-center gap-1.5 bg-red-600 text-white font-medium" title="Tampilan List">
+                            <i class="fa-solid fa-list"></i>
+                            <span class="hidden sm:inline">List</span>
+                        </button>
+                        <button onclick="changeLayout('grid')" id="layoutGridBtn" class="px-2.5 py-1.5 rounded text-xs transition duration-150 flex items-center gap-1.5 text-zinc-400 hover:text-white hover:bg-zinc-800" title="Tampilan Grid">
+                            <i class="fa-solid fa-grip"></i>
+                            <span class="hidden sm:inline">Grid</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Animasi Loading -->
+            <div id="videoLoader" class="hidden py-20 text-center">
+                <div class="inline-block w-8 h-8 border-4 border-red-500 border-t-transparent rounded-full animate-spin"></div>
+                <p class="text-zinc-400 text-sm mt-4">Mengambil daftar video terbaik...</p>
+            </div>
+
+            <!-- Peringatan Video Kosong -->
+            <div id="noVideosAlert" class="hidden bg-zinc-900 border border-zinc-800 p-12 text-center rounded-2xl">
+                <i class="fa-solid fa-circle-exclamation text-4xl text-zinc-600 mb-3"></i>
+                <h4 class="text-white font-bold">Tidak ada video ditemukan</h4>
+                <p class="text-xs text-zinc-400 mt-1">Coba saring dengan kata kunci lain atau periksa kembali channel Anda.</p>
+            </div>
+
+            <!-- Wadah Penampung Video (Bisa berubah kelas CSS secara dinamis) -->
+            <div id="videoContainer" class="flex flex-col gap-4">
+                <!-- Video Cards akan disuntikkan secara dinamis ke sini -->
+            </div>
+
+            <!-- Tombol Muat Lebih Banyak -->
+            <div id="loadMoreContainer" class="hidden text-center pt-4">
+                <button id="btnLoadMore" onclick="loadMoreVideos()" class="px-6 py-3 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 text-zinc-300 hover:text-white font-semibold text-sm rounded-xl transition duration-200 flex items-center gap-2 mx-auto">
+                    <span>Muat Lebih Banyak</span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- Tampilan Awal Sebelum Pencarian -->
+        <section id="blankState" class="bg-zinc-900 border border-zinc-800 rounded-2xl p-12 text-center shadow-xl">
+            <div class="w-16 h-16 bg-zinc-800 text-zinc-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                <i class="fa-solid fa-tv"></i>
+            </div>
+            <h3 class="text-lg font-bold text-white">Belum Ada Channel yang Dimuat</h3>
+            <p class="text-sm text-zinc-400 mt-1 max-w-md mx-auto">Gunakan kolom pencarian di atas untuk memasukkan username atau ID channel YouTube, atau gunakan tombol akses cepat untuk melihat simulasi.</p>
+        </section>
+
+    </main>
+
+    <!-- Kaki Halaman (Footer) -->
+    <footer class="border-t border-zinc-900 bg-zinc-950 py-6 px-4 text-center text-xs text-zinc-500">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p>© 2026 YT Channel Video Viewer. Seluruh hak cipta dilindungi.</p>
+            <p>Dibuat secara aman tanpa penyimpanan server luar.</p>
+        </div>
+    </footer>
+
+    <!-- Video Player Modal -->
+    <div id="playerModal" class="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-4xl w-full overflow-hidden shadow-2xl flex flex-col">
+            <!-- Header Modal -->
+            <div class="flex items-center justify-between p-4 border-b border-zinc-800">
+                <h4 id="modalVideoTitle" class="font-bold text-sm sm:text-base text-white truncate max-w-[80%]">Judul Video</h4>
+                <button onclick="closePlayer()" class="text-zinc-400 hover:text-white bg-zinc-800 hover:bg-zinc-700 p-2 rounded-lg transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <!-- Video Frame (Rasio 16:9) -->
+            <div class="relative pt-[56.25%] bg-black">
+                <iframe id="youtubePlayer" class="absolute inset-0 w-full h-full" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+            <!-- Detail Informasi Video -->
+            <div class="p-5 flex flex-col gap-2">
+                <p id="modalVideoPub" class="text-xs text-zinc-400">Dipublikasikan pada: -</p>
+                <p id="modalVideoDesc" class="text-xs sm:text-sm text-zinc-300 line-clamp-3 mt-1 leading-relaxed">Deskripsi video singkat...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- API Settings Modal -->
+    <div id="settingsModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-md w-full overflow-hidden shadow-2xl p-6">
+            <div class="flex items-center justify-between pb-4 border-b border-zinc-800">
+                <h3 class="font-bold text-lg text-white flex items-center gap-2">
+                    <i class="fa-solid fa-key text-yellow-500"></i>
+                    Pengaturan API Key
+                </h3>
+                <button onclick="toggleSettingsModal()" class="text-zinc-400 hover:text-white bg-zinc-800 hover:bg-zinc-700 w-8 h-8 flex items-center justify-center rounded-lg transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <div class="py-4 space-y-4">
+                <p class="text-xs text-zinc-400 leading-relaxed">
+                    Untuk melakukan panggilan langsung ke API YouTube, Anda membutuhkan YouTube Data API v3 Key. Kunci ini disimpan secara lokal di browser Anda.
+                </p>
+                
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-300 uppercase tracking-wider mb-2">Google Developer API Key</label>
+                    <input type="password" id="apiKeyInput" placeholder="Masukkan API Key AIzaSy..." 
+                           class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-zinc-200 placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-red-500 transition">
+                </div>
+
+                <div class="bg-zinc-950 border border-zinc-800/80 rounded-xl p-3 flex items-start gap-3">
+                    <i class="fa-solid fa-circle-info text-sky-400 mt-0.5 text-xs"></i>
+                    <p class="text-[11px] text-zinc-400">
+                        <strong>Bagaimana mendapatkan API Key?</strong><br>
+                        Masuk ke <a href="https://console.cloud.google.com/" target="_blank" class="text-red-400 underline">Google Cloud Console</a>, buat project baru, aktifkan "YouTube Data API v3", lalu buat Credentials API Key baru.
+                    </p>
+                </div>
+            </div>
+
+            <div class="flex gap-3 justify-end pt-4 border-t border-zinc-800">
+                <button onclick="clearApiKey()" class="px-4 py-2 bg-zinc-950 hover:bg-zinc-800 border border-zinc-800 text-xs font-medium rounded-lg text-zinc-400 hover:text-white transition">
+                    Hapus Key
+                </button>
+                <button onclick="saveApiKey()" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-xs font-semibold rounded-lg text-white transition">
+                    Simpan Perubahan
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert / Toast Notification -->
+    <div id="toastNotification" class="fixed bottom-6 right-6 z-50 bg-zinc-900 border border-zinc-800 shadow-2xl px-5 py-3.5 rounded-xl hidden items-center gap-3 animate-bounce">
+        <div id="toastIcon" class="w-8 h-8 rounded-lg flex items-center justify-center"></div>
+        <div>
+            <h5 id="toastTitle" class="font-bold text-xs text-white">Notifikasi</h5>
+            <p id="toastMessage" class="text-[10px] text-zinc-400 mt-0.5">Pesan terkirim.</p>
+        </div>
+    </div>
+
+    <!-- Scripts / Logika Aplikasi -->
+    <script>
+        // State management global
+        const state = {
+            apiKey: '',
+            isDemoMode: true,
+            currentChannel: null,
+            videos: [],
+            filteredVideos: [],
+            nextPageToken: '',
+            currentSearchQuery: '',
+            viewMode: 'list' // Layout bawaan diatur ke 'list' sesuai permintaan
+        };
+
+        // Mock data untuk Mode Demo
+        const demoData = {
+            '@GadgetIn': {
+                channel: {
+                    title: 'GadgetIn',
+                    handle: '@GadgetIn',
+                    avatar: 'https://images.unsplash.com/photo-1546776310-eef45dd6d63c?w=150&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
+                    description: 'Membahas gadget dengan jujur dan detail. Dipersembahkan oleh David Brendi.',
+                    subscribers: '12.4M',
+                    videoCount: '1,420'
+                },
+                videos: [
+                    { id: 'v1', title: 'Review Jujur HP Layar Lipat Termurah Tahun Ini!', duration: '14:25', views: '2.4M', publishedAt: '2026-07-10T09:00:00Z', thumbnail: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=500&auto=format&fit=crop&q=80', desc: 'HP lipat kali ini beneran murah atau murah karena dipotong fiturnya? Yuk kita bedah tuntas di video kali ini.' },
+                    { id: 'v2', title: 'Unboxing Laptop Gaming yang Tebalnya Cuma 1 Cm!', duration: '12:10', views: '1.2M', publishedAt: '2026-07-08T10:30:00Z', thumbnail: 'https://images.unsplash.com/photo-1603302576837-37561b2fe536?w=500&auto=format&fit=crop&q=80', desc: 'Tipis banget tapi speknya ngeri. Apakah suhunya bakal bikin tangan kepanasan? Mari kita tes gaming 2 jam nonstop.' },
+                    { id: 'v3', title: 'Setup Kamar Pintar (Smart Room) 2026 - Semua Serba Otomatis', duration: '18:45', views: '980K', publishedAt: '2026-07-01T12:00:00Z', thumbnail: 'https://images.unsplash.com/photo-1558002038-1055907df827?w=500&auto=format&fit=crop&q=80', desc: 'Mulai dari lampu, gorden, sampai dispenser semuanya bisa diperintah lewat suara. Berapa habisnya ya?' },
+                    { id: 'v4', title: 'Apakah iPhone Masih Layak Dibeli di Tahun 2026?', duration: '10:50', views: '3.1M', publishedAt: '2026-06-25T08:00:00Z', thumbnail: 'https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?w=500&auto=format&fit=crop&q=80', desc: 'Mari kita analisis performa, baterai, dan dukungan update iOS terbarunya untuk membantu Anda memutuskan.' }
+                ]
+            },
+            '@mkbhd': {
+                channel: {
+                    title: 'Marques Brownlee',
+                    handle: '@mkbhd',
+                    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
+                    description: 'MKBHD: Quality Tech Videos | Reviews | News | Podcasts',
+                    subscribers: '19.2M',
+                    videoCount: '1,650'
+                },
+                videos: [
+                    { id: 'v5', title: 'The Ultimate Smart Glass Review: Are They Ready?', duration: '15:12', views: '4.8M', publishedAt: '2026-07-12T16:00:00Z', thumbnail: 'https://images.unsplash.com/photo-1591076482161-42ce6da69f67?w=500&auto=format&fit=crop&q=80', desc: 'I wore these AI smart glasses for a full week. Here is what they are actually good at.' },
+                    { id: 'v6', title: 'The Future of EV Batteries: 1000 Mile Range!', duration: '11:40', views: '2.9M', publishedAt: '2026-07-05T15:30:00Z', thumbnail: 'https://images.unsplash.com/photo-1563720223185-11003d516935?w=500&auto=format&fit=crop&q=80', desc: 'Solid state batteries are finally entering testing phases. Let\'s explore what changed.' },
+                    { id: 'v7', title: 'Smartphone Awards 2026 - Who Wins the Crown?', duration: '22:15', views: '8.4M', publishedAt: '2026-06-29T17:00:00Z', thumbnail: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=500&auto=format&fit=crop&q=80', desc: 'The biggest event of the channel. The MVP, Best Camera, Best Design, and Worst of the Year.' }
+                ]
+            },
+            '@MrBeast': {
+                channel: {
+                    title: 'MrBeast',
+                    handle: '@MrBeast',
+                    avatar: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
+                    description: 'I want to make the world a better place before I die.',
+                    subscribers: '310M',
+                    videoCount: '800'
+                },
+                videos: [
+                    { id: 'v8', title: 'Surviving 100 Days In An Inflatable City!', duration: '25:40', views: '112M', publishedAt: '2026-07-11T14:00:00Z', thumbnail: 'https://images.unsplash.com/photo-1572508589584-94d778209dd9?w=500&auto=format&fit=crop&q=80', desc: 'We built a giant bouncy city over the ocean and challenged 100 people to survive. Last one standing gets $1,000,000.' },
+                    { id: 'v9', title: 'I Bought An Entire Island and Gave It Away!', duration: '18:12', views: '145M', publishedAt: '2026-06-18T14:00:00Z', thumbnail: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500&auto=format&fit=crop&q=80', desc: 'Several physical challenges later, one lucky subscriber goes home with a deed to their brand new tropical island!' }
+                ]
+            }
+        };
+
+        // Inisialisasi Aplikasi Saat DOM Selesai Dimuat
+        window.addEventListener('DOMContentLoaded', () => {
+            loadStoredApiKey();
+            updateModeUI();
+
+            // Ubah dynamic input icon
+            document.getElementById('inputType').addEventListener('change', (e) => {
+                const icon = document.getElementById('inputIcon');
+                if (e.target.value === 'id') {
+                    icon.className = 'fa-solid fa-id-card text-lg';
+                    document.getElementById('searchInput').placeholder = 'Contoh: UC0094bS_CgZ50K9';
+                } else {
+                    icon.className = 'fa-solid fa-at text-lg';
+                    document.getElementById('searchInput').placeholder = 'Contoh: @GadgetIn';
+                }
+            });
+        });
+
+        // Ambil API Key dari LocalStorage
+        function loadStoredApiKey() {
+            const savedKey = localStorage.getItem('yt_channel_viewer_key');
+            if (savedKey) {
+                state.apiKey = savedKey;
+                state.isDemoMode = false;
+                document.getElementById('apiKeyInput').value = savedKey;
+            } else {
+                state.apiKey = '';
+                state.isDemoMode = true;
+            }
+        }
+
+        // Simpan API Key ke Storage lokal
+        function saveApiKey() {
+            const val = document.getElementById('apiKeyInput').value.trim();
+            if (val) {
+                localStorage.setItem('yt_channel_viewer_key', val);
+                state.apiKey = val;
+                state.isDemoMode = false;
+                showToast('API Key Disimpan', 'Sekarang Anda terhubung langsung dengan YouTube API!', 'success');
+            } else {
+                clearApiKey();
+            }
+            toggleSettingsModal();
+            updateModeUI();
+        }
+
+        // Hapus API Key dari Storage lokal
+        function clearApiKey() {
+            localStorage.removeItem('yt_channel_viewer_key');
+            document.getElementById('apiKeyInput').value = '';
+            state.apiKey = '';
+            state.isDemoMode = true;
+            showToast('API Key Dihapus', 'Kembali menggunakan Mode Demo.', 'info');
+            updateModeUI();
+        }
+
+        // Ganti Layout (List / Grid)
+        function changeLayout(mode) {
+            state.viewMode = mode;
+            
+            const listBtn = document.getElementById('layoutListBtn');
+            const gridBtn = document.getElementById('layoutGridBtn');
+            const container = document.getElementById('videoContainer');
+
+            if (mode === 'list') {
+                // Atur tombol list aktif
+                listBtn.className = "px-2.5 py-1.5 rounded text-xs transition duration-150 flex items-center gap-1.5 bg-red-600 text-white font-medium";
+                gridBtn.className = "px-2.5 py-1.5 rounded text-xs transition duration-150 flex items-center gap-1.5 text-zinc-400 hover:text-white hover:bg-zinc-800";
+                
+                // Set container kelas bertumpuk ke bawah (Flex Col)
+                container.className = "flex flex-col gap-4";
+            } else {
+                // Atur tombol grid aktif
+                gridBtn.className = "px-2.5 py-1.5 rounded text-xs transition duration-150 flex items-center gap-1.5 bg-red-600 text-white font-medium";
+                listBtn.className = "px-2.5 py-1.5 rounded text-xs transition duration-150 flex items-center gap-1.5 text-zinc-400 hover:text-white hover:bg-zinc-800";
+                
+                // Set container kelas petak grid
+                container.className = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6";
+            }
+
+            renderVideos();
+        }
+
+        // Sinkronisasi badge Mode Demo / Real API
+        function updateModeUI() {
+            const badge = document.getElementById('badgeMode');
+            const banner = document.getElementById('demoBanner');
+            if (state.isDemoMode) {
+                badge.textContent = 'MODE DEMO';
+                badge.className = 'text-[10px] font-semibold bg-amber-500/10 text-amber-500 border border-amber-500/20 px-2 py-0.5 rounded-full';
+                banner.classList.remove('hidden');
+            } else {
+                badge.textContent = 'API AKTIF';
+                badge.className = 'text-[10px] font-semibold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 px-2 py-0.5 rounded-full';
+                banner.classList.add('hidden');
+            }
+        }
+
+        // Submit form pencarian
+        async function handleSearch(e) {
+            e.preventDefault();
+            const input = document.getElementById('searchInput').value.trim();
+            const type = document.getElementById('inputType').value;
+
+            if (!input) return;
+
+            if (state.isDemoMode) {
+                processDemoSearch(input);
+            } else {
+                await fetchRealYouTubeData(input, type);
+            }
+        }
+
+        // Akses demo cepat
+        function loadQuickDemo(handle) {
+            document.getElementById('inputType').value = 'handle';
+            document.getElementById('searchInput').value = handle;
+            const icon = document.getElementById('inputIcon');
+            icon.className = 'fa-solid fa-at text-lg';
+            processDemoSearch(handle);
+        }
+
+        // Simulasi Pencarian Demo
+        function processDemoSearch(input) {
+            let lookupKey = input;
+            if (!input.startsWith('@') && document.getElementById('inputType').value === 'handle') {
+                lookupKey = '@' + input;
+            }
+
+            const match = demoData[lookupKey];
+            
+            document.getElementById('blankState').classList.add('hidden');
+            document.getElementById('channelHeader').classList.add('hidden');
+            document.getElementById('videoSection').classList.remove('hidden');
+            document.getElementById('videoLoader').classList.remove('hidden');
+            document.getElementById('videoContainer').innerHTML = '';
+            document.getElementById('loadMoreContainer').classList.add('hidden');
+
+            setTimeout(() => {
+                document.getElementById('videoLoader').classList.add('hidden');
+
+                if (match) {
+                    state.currentChannel = match.channel;
+                    state.videos = [...match.videos];
+                    state.filteredVideos = [...match.videos];
+                    
+                    renderChannelHeader(match.channel);
+                    renderVideos();
+                    showToast('Sukses', `Data demo ${match.channel.title} berhasil dimuat.`, 'success');
+                } else {
+                    const fallbackChannel = {
+                        title: input.replace('@', ''),
+                        handle: input.startsWith('@') ? input : '@' + input,
+                        avatar: `https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&auto=format&fit=crop&q=60`,
+                        description: `Channel simulasi dinamis untuk pencarian "${input}". Tambahkan API Key di pengaturan untuk melihat data asli dari YouTube.`,
+                        subscribers: '120K',
+                        videoCount: '45'
+                    };
+
+                    const fallbackVideos = [
+                        { id: 'vf1', title: `Cara Sukses Memulai Karir Sebagai Pembuat Konten ${input}`, duration: '10:15', views: '25K', publishedAt: new Date().toISOString(), thumbnail: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=500&auto=format&fit=crop&q=80', desc: 'Tutorial lengkap bagi pemula di bidang pembuatan konten video berkualitas tinggi.' },
+                        { id: 'vf2', title: `Setup Studio Kreatif Minimalis - Hemat Budget`, duration: '12:45', views: '12K', publishedAt: new Date(Date.now() - 86400000 * 3).toISOString(), thumbnail: 'https://images.unsplash.com/photo-1585776245991-cf89dd7fc73a?w=500&auto=format&fit=crop&q=80', desc: 'Membangun workstation idaman dengan dana terbatas namun memiliki fungsionalitas dan estetika tinggi.' }
+                    ];
+
+                    state.currentChannel = fallbackChannel;
+                    state.videos = fallbackVideos;
+                    state.filteredVideos = fallbackVideos;
+
+                    renderChannelHeader(fallbackChannel);
+                    renderVideos();
+                    showToast('Info', 'Menggunakan fallback data simulasi random.', 'info');
+                }
+            }, 800);
+        }
+
+        // Tampilkan info profil channel
+        function renderChannelHeader(channel) {
+            document.getElementById('channelHeader').classList.remove('hidden');
+            document.getElementById('channelTitle').textContent = channel.title;
+            document.getElementById('channelHandle').textContent = channel.handle;
+            document.getElementById('channelDesc').textContent = channel.description || 'Tidak ada deskripsi.';
+            document.getElementById('channelAvatar').src = channel.avatar;
+            document.getElementById('statSubscribers').textContent = channel.subscribers;
+            document.getElementById('statVideos').textContent = channel.videoCount;
+        }
+
+        // Tampilkan List/Grid Video secara Dinamis
+        function renderVideos() {
+            const container = document.getElementById('videoContainer');
+            const alertNoVid = document.getElementById('noVideosAlert');
+            container.innerHTML = '';
+
+            if (state.filteredVideos.length === 0) {
+                alertNoVid.classList.remove('hidden');
+                return;
+            } else {
+                alertNoVid.classList.add('hidden');
+            }
+
+            state.filteredVideos.forEach(vid => {
+                const relativeTime = formatRelativeDate(vid.publishedAt);
+                const item = document.createElement('div');
+                item.setAttribute('onclick', `playVideo('${vid.id}', '${encodeURIComponent(vid.title)}', '${encodeURIComponent(vid.desc)}', '${relativeTime}')`);
+
+                if (state.viewMode === 'list') {
+                    // DESAIN TAMPILAN LIST (Daftar berbaris kesamping ke bawah)
+                    item.className = 'group bg-zinc-900 border border-zinc-800/80 hover:border-zinc-700/80 rounded-xl overflow-hidden shadow-md hover:shadow-lg transition duration-200 cursor-pointer p-3 sm:p-4 flex flex-col sm:flex-row gap-4 items-start sm:items-center w-full';
+                    item.innerHTML = `
+                        <!-- Thumbnail (Kiri) -->
+                        <div class="relative w-full sm:w-48 md:w-56 shrink-0 aspect-video bg-zinc-950 overflow-hidden rounded-lg">
+                            <img src="${vid.thumbnail}" alt="${vid.title}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-102 transition duration-300">
+                            <!-- Overlay Play -->
+                            <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                                <div class="w-10 h-10 bg-red-600 rounded-full flex items-center justify-center text-white">
+                                    <i class="fa-solid fa-play text-sm"></i>
+                                </div>
+                            </div>
+                            <!-- Durasi -->
+                            <span class="absolute bottom-2 right-2 bg-black/85 px-2 py-0.5 rounded text-[10px] font-bold text-white tracking-wider">
+                                ${vid.duration}
+                            </span>
+                        </div>
+
+                        <!-- Info Detil Video (Kanan) -->
+                        <div class="flex-1 flex flex-col justify-between py-1 h-full w-full">
+                            <div>
+                                <h5 class="text-zinc-100 font-bold text-sm sm:text-base md:text-lg line-clamp-2 leading-snug group-hover:text-red-500 transition duration-200" title="${vid.title}">
+                                    ${vid.title}
+                                </h5>
+                                <p class="text-xs text-zinc-400 line-clamp-2 mt-1.5 sm:mt-2 leading-relaxed">
+                                    ${vid.desc || 'Tonton detail video selengkapnya di aplikasi.'}
+                                </p>
+                            </div>
+                            
+                            <!-- Informasi Metadata -->
+                            <div class="flex flex-wrap items-center gap-4 mt-3 pt-3 border-t border-zinc-800/50 text-[10px] sm:text-xs text-zinc-500 font-semibold">
+                                <span class="flex items-center gap-1.5">
+                                    <i class="fa-solid fa-eye text-zinc-600"></i>
+                                    ${vid.views} ditonton
+                                </span>
+                                <span class="hidden sm:inline text-zinc-700">•</span>
+                                <span class="flex items-center gap-1.5">
+                                    <i class="fa-solid fa-calendar text-zinc-600"></i>
+                                    ${relativeTime}
+                                </span>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    // DESAIN TAMPILAN GRID (Kotak berjejer)
+                    item.className = 'group bg-zinc-900 border border-zinc-800/80 hover:border-zinc-700/80 rounded-xl overflow-hidden shadow-md hover:shadow-lg transition duration-200 cursor-pointer flex flex-col h-full w-full';
+                    item.innerHTML = `
+                        <!-- Thumbnail -->
+                        <div class="relative pt-[56.25%] bg-zinc-950 overflow-hidden shrink-0">
+                            <img src="${vid.thumbnail}" alt="${vid.title}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                            <!-- Overlay Play -->
+                            <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                                <div class="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center text-white scale-90 group-hover:scale-100 transition duration-300">
+                                    <i class="fa-solid fa-play text-lg"></i>
+                                </div>
+                            </div>
+                            <!-- Durasi -->
+                            <span class="absolute bottom-2 right-2 bg-black/80 px-2 py-0.5 rounded text-[10px] font-bold text-white tracking-wider">
+                                ${vid.duration}
+                            </span>
+                        </div>
+
+                        <!-- Rincian -->
+                        <div class="p-4 flex flex-col justify-between flex-1 gap-3">
+                            <div>
+                                <h5 class="text-zinc-100 font-bold text-xs sm:text-sm line-clamp-2 leading-snug group-hover:text-red-500 transition duration-200" title="${vid.title}">
+                                    ${vid.title}
+                                </h5>
+                                <p class="text-[11px] text-zinc-400 line-clamp-2 mt-2 leading-relaxed">
+                                    ${vid.desc || 'Tonton detail video selengkapnya di aplikasi.'}
+                                </p>
+                            </div>
+                            
+                            <!-- Metadata -->
+                            <div class="flex items-center justify-between border-t border-zinc-800/50 pt-3 text-[10px] text-zinc-500 font-semibold">
+                                <span class="flex items-center gap-1">
+                                    <i class="fa-solid fa-eye"></i>
+                                    ${vid.views} ditonton
+                                </span>
+                                <span class="flex items-center gap-1">
+                                    <i class="fa-solid fa-calendar"></i>
+                                    ${relativeTime}
+                                </span>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                container.appendChild(item);
+            });
+        }
+
+        // Cari penyaringan lokal saat pengguna mengetik
+        function filterVideos() {
+            const query = document.getElementById('filterInput').value.toLowerCase().trim();
+            if (!query) {
+                state.filteredVideos = [...state.videos];
+            } else {
+                state.filteredVideos = state.videos.filter(v => v.title.toLowerCase().includes(query));
+            }
+            sortVideos(false);
+            renderVideos();
+        }
+
+        // Urutkan video (Berdasarkan Terbaru, Terlama, Populer)
+        function sortVideos(shouldRender = true) {
+            const val = document.getElementById('sortBy').value;
+            if (val === 'newest') {
+                state.filteredVideos.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
+            } else if (val === 'oldest') {
+                state.filteredVideos.sort((a, b) => new Date(a.publishedAt) - new Date(b.publishedAt));
+            } else if (val === 'views') {
+                const parseViews = (vStr) => {
+                    let num = parseFloat(vStr.replace(/[^\d.]/g, ''));
+                    if (vStr.includes('M')) return num * 1000000;
+                    if (vStr.includes('K')) return num * 1000;
+                    return num;
+                };
+                state.filteredVideos.sort((a, b) => parseViews(b.views) - parseViews(a.views));
+            }
+
+            if (shouldRender) renderVideos();
+        }
+
+        // Format tanggal rilis ramah dibaca
+        function formatRelativeDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+            if (diffDays === 0) return 'Hari ini';
+            if (diffDays === 1) return 'Kemarin';
+            if (diffDays < 30) return `${diffDays} hari lalu`;
+            
+            const diffMonths = Math.floor(diffDays / 30);
+            if (diffMonths < 12) return `${diffMonths} bulan lalu`;
+
+            return `${Math.floor(diffMonths / 12)} tahun lalu`;
+        }
+
+        // Membuka player video modal
+        function playVideo(id, encTitle, encDesc, relativeTime) {
+            const title = decodeURIComponent(encTitle);
+            const desc = decodeURIComponent(encDesc);
+            
+            document.getElementById('modalVideoTitle').textContent = title;
+            document.getElementById('modalVideoDesc').textContent = desc || 'Tanpa deskripsi.';
+            document.getElementById('modalVideoPub').textContent = `Diupload: ${relativeTime}`;
+            
+            const videoEmbedId = id.startsWith('vf') || id.startsWith('v') ? 'dQw4w9WgXcQ' : id;
+            document.getElementById('youtubePlayer').src = `https://www.youtube.com/embed/${videoEmbedId}?autoplay=1`;
+            
+            const modal = document.getElementById('playerModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.classList.add('overflow-hidden');
+        }
+
+        // Tutup player
+        function closePlayer() {
+            document.getElementById('youtubePlayer').src = '';
+            const modal = document.getElementById('playerModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            document.body.classList.remove('overflow-hidden');
+        }
+
+        // Toggle modal Pengaturan
+        function toggleSettingsModal() {
+            const modal = document.getElementById('settingsModal');
+            if (modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            } else {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        }
+
+        // Toast Alert
+        function showToast(title, message, type = 'info') {
+            const toast = document.getElementById('toastNotification');
+            const iconBox = document.getElementById('toastIcon');
+            
+            document.getElementById('toastTitle').textContent = title;
+            document.getElementById('toastMessage').textContent = message;
+
+            if (type === 'success') {
+                iconBox.className = 'w-8 h-8 rounded-lg flex items-center justify-center bg-emerald-500/20 text-emerald-500';
+                iconBox.innerHTML = '<i class="fa-solid fa-circle-check"></i>';
+            } else if (type === 'error') {
+                iconBox.className = 'w-8 h-8 rounded-lg flex items-center justify-center bg-red-500/20 text-red-500';
+                iconBox.innerHTML = '<i class="fa-solid fa-circle-xmark"></i>';
+            } else {
+                iconBox.className = 'w-8 h-8 rounded-lg flex items-center justify-center bg-sky-500/20 text-sky-500';
+                iconBox.innerHTML = '<i class="fa-solid fa-circle-info"></i>';
+            }
+
+            toast.classList.remove('hidden');
+            toast.classList.add('flex');
+
+            setTimeout(() => {
+                toast.classList.add('hidden');
+                toast.classList.remove('flex');
+            }, 4000);
+        }
+
+        // --- SISTEM PEMANGGILAN REAL-TIME YOUTUBE API (V3) ---
+        async function fetchRealYouTubeData(input, type) {
+            const apiKey = state.apiKey;
+            if (!apiKey) return;
+
+            document.getElementById('blankState').classList.add('hidden');
+            document.getElementById('channelHeader').classList.add('hidden');
+            document.getElementById('videoSection').classList.remove('hidden');
+            document.getElementById('videoLoader').classList.remove('hidden');
+            document.getElementById('videoContainer').innerHTML = '';
+            document.getElementById('loadMoreContainer').classList.add('hidden');
+
+            try {
+                let channelId = '';
+
+                if (type === 'handle') {
+                    const query = input.startsWith('@') ? input : '@' + input;
+                    const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&q=${encodeURIComponent(query)}&key=${apiKey}`;
+                    
+                    const res = await makeApiCallWithRetry(url);
+                    const data = await res.json();
+
+                    if (!data.items || data.items.length === 0) {
+                        throw new Error('Channel tidak ditemukan menggunakan nama tersebut.');
+                    }
+                    channelId = data.items[0].id.channelId;
+                } else {
+                    channelId = input;
+                }
+
+                const channelUrl = `https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics,contentDetails&id=${channelId}&key=${apiKey}`;
+                const chanRes = await makeApiCallWithRetry(channelUrl);
+                const chanData = await chanRes.json();
+
+                if (!chanData.items || chanData.items.length === 0) {
+                    throw new Error('ID Channel YouTube salah atau tidak valid.');
+                }
+
+                const channelInfo = chanData.items[0];
+                const uploadsPlaylistId = channelInfo.contentDetails.relatedPlaylists.uploads;
+
+                state.currentChannel = {
+                    title: channelInfo.snippet.title,
+                    handle: channelInfo.snippet.customUrl || '@unknown',
+                    avatar: channelInfo.snippet.thumbnails.medium.url,
+                    description: channelInfo.snippet.description,
+                    subscribers: formatCount(channelInfo.statistics.subscriberCount),
+                    videoCount: formatCount(channelInfo.statistics.videoCount)
+                };
+
+                renderChannelHeader(state.currentChannel);
+                await fetchPlaylistVideos(uploadsPlaylistId, true);
+
+            } catch (err) {
+                console.error(err);
+                document.getElementById('videoLoader').classList.add('hidden');
+                document.getElementById('blankState').classList.remove('hidden');
+                showToast('Koneksi Gagal', err.message || 'Gagal memuat data dari YouTube. Pastikan API Key Anda aktif.', 'error');
+            }
+        }
+
+        // Ambil data video playlist uploads
+        async function fetchPlaylistVideos(playlistId, isNewQuery = false) {
+            const apiKey = state.apiKey;
+            const nextPageTokenParam = !isNewQuery && state.nextPageToken ? `&pageToken=${state.nextPageToken}` : '';
+            const playlistUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet,contentDetails&playlistId=${playlistId}&maxResults=16&key=${apiKey}${nextPageTokenParam}`;
+
+            try {
+                const res = await makeApiCallWithRetry(playlistUrl);
+                const data = await res.json();
+
+                if (!data.items || data.items.length === 0) {
+                    document.getElementById('videoLoader').classList.add('hidden');
+                    document.getElementById('noVideosAlert').classList.remove('hidden');
+                    return;
+                }
+
+                state.nextPageToken = data.nextPageToken || '';
+                const videoIds = data.items.map(item => item.contentDetails.videoId);
+
+                const videosDetailUrl = `https://www.googleapis.com/youtube/v3/videos?part=contentDetails,statistics&id=${videoIds.join(',')}&key=${apiKey}`;
+                const detailRes = await makeApiCallWithRetry(videosDetailUrl);
+                const detailData = await detailRes.json();
+
+                const videoDetailsMap = {};
+                detailData.items.forEach(v => {
+                    videoDetailsMap[v.id] = {
+                        views: formatCount(v.statistics?.viewCount || 0),
+                        duration: formatDuration(v.contentDetails?.duration || 'PT0S')
+                    };
+                });
+
+                const fetchedVideos = data.items.map(item => {
+                    const vId = item.contentDetails.videoId;
+                    const meta = videoDetailsMap[vId] || { views: '0', duration: '0:00' };
+                    return {
+                        id: vId,
+                        title: item.snippet.title,
+                        duration: meta.duration,
+                        views: meta.views,
+                        publishedAt: item.snippet.publishedAt,
+                        thumbnail: item.snippet.thumbnails?.medium?.url || item.snippet.thumbnails?.high?.url || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=500',
+                        desc: item.snippet.description
+                    };
+                });
+
+                if (isNewQuery) {
+                    state.videos = fetchedVideos;
+                } else {
+                    state.videos = [...state.videos, ...fetchedVideos];
+                }
+
+                state.filteredVideos = [...state.videos];
+                
+                document.getElementById('videoLoader').classList.add('hidden');
+                renderVideos();
+
+                const btnLoadMore = document.getElementById('loadMoreContainer');
+                if (state.nextPageToken) {
+                    btnLoadMore.classList.remove('hidden');
+                } else {
+                    btnLoadMore.classList.add('hidden');
+                }
+
+            } catch (err) {
+                console.error(err);
+                document.getElementById('videoLoader').classList.add('hidden');
+                showToast('Gagal Memuat Video', 'Tidak dapat menarik rincian video playlist.', 'error');
+            }
+        }
+
+        // Muat halaman selanjutnya
+        async function loadMoreVideos() {
+            if (state.isDemoMode) {
+                showToast('Informasi', 'Mode Demo terbatas pada daftar video bawaan.', 'info');
+                return;
+            }
+            const apiKey = state.apiKey;
+            const searchInput = document.getElementById('searchInput').value.trim();
+            const type = document.getElementById('inputType').value;
+
+            let channelId = '';
+            if (type === 'handle') {
+                const query = searchInput.startsWith('@') ? searchInput : '@' + searchInput;
+                const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&q=${encodeURIComponent(query)}&key=${apiKey}`;
+                const res = await makeApiCallWithRetry(searchUrl);
+                const data = await res.json();
+                channelId = data.items[0].id.channelId;
+            } else {
+                channelId = searchInput;
+            }
+
+            const channelUrl = `https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${channelId}&key=${apiKey}`;
+            const chanRes = await makeApiCallWithRetry(channelUrl);
+            const chanData = await chanRes.json();
+            const uploadsPlaylistId = chanData.items[0].contentDetails.relatedPlaylists.uploads;
+
+            document.getElementById('btnLoadMore').innerHTML = '<span class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>';
+            await fetchPlaylistVideos(uploadsPlaylistId, false);
+            document.getElementById('btnLoadMore').innerHTML = '<span>Muat Lebih Banyak</span><i class="fa-solid fa-chevron-down"></i>';
+        }
+
+        // Retry dengan Exponential Backoff
+        async function makeApiCallWithRetry(url, retries = 5, delay = 1000) {
+            for (let i = 0; i < retries; i++) {
+                try {
+                    const response = await fetch(url);
+                    if (response.ok) return response;
+                    
+                    if (response.status === 403 || response.status === 400) {
+                        const errDetails = await response.json();
+                        throw new Error(errDetails.error?.message || 'Akses YouTube API ditolak/tidak valid.');
+                    }
+                } catch (err) {
+                    if (i === retries - 1) throw err;
+                }
+                await new Promise(res => setTimeout(res, delay));
+                delay *= 2;
+            }
+            throw new Error('Koneksi internet bermasalah. Silakan coba kembali.');
+        }
+
+        // Utilitas Formatter angka
+        function formatCount(num) {
+            const count = parseInt(num, 10);
+            if (isNaN(count)) return '0';
+            if (count >= 1000000000) return (count / 1000000000).toFixed(1).replace('.0', '') + 'B';
+            if (count >= 1000000) return (count / 1000000).toFixed(1).replace('.0', '') + 'M';
+            if (count >= 1000) return (count / 1000).toFixed(1).replace('.0', '') + 'K';
+            return count.toLocaleString('id-ID');
+        }
+
+        // Utilitas Formatter Durasi ISO 8601
+        function formatDuration(duration) {
+            const match = duration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+            if (!match) return '0:00';
+            
+            const hours = parseInt(match[1] || 0, 10);
+            const minutes = parseInt(match[2] || 0, 10);
+            const seconds = parseInt(match[3] || 0, 10);
+
+            let result = '';
+            if (hours > 0) {
+                result += hours + ':';
+                result += (minutes < 10 ? '0' : '') + minutes + ':';
+            } else {
+                result += minutes + ':';
+            }
+            result += (seconds < 10 ? '0' : '') + seconds;
+            return result;
+        }
+    </script>
+</body>
+</html>
