@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Pelafalan Bahasa Arab - Suara Pria Tegas</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        emerald: {
+                            800: '#065f46',
+                            900: '#064e3b',
+                            950: '#022c22',
+                        },
+                        amber: {
+                            500: '#f59e0b',
+                            600: '#d97706',
+                        }
+                    },
+                    fontFamily: {
+                        arabic: ['Amiri', 'Traditional Arabic', 'serif'],
+                        sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts: Amiri for Arabic calligraphy, Plus Jakarta Sans for UI -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        .arabic-text {
+            font-family: 'Amiri', serif;
+            line-height: 2.2;
+            direction: rtl;
+        }
+        
+        /* Custom Equalizer Animation */
+        .eq-bar {
+            animation: eqPulse 0.8s ease-in-out infinite alternate;
+        }
+        .eq-bar:nth-child(2) { animation-delay: 0.2s; }
+        .eq-bar:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes eqPulse {
+            0% { height: 4px; }
+            100% { height: 20px; }
+        }
+
+        .word-chip {
+            transition: all 0.2s ease;
+        }
+        .word-chip:hover {
+            transform: translateY(-2px);
+            background-color: rgba(16, 185, 129, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans flex flex-col antialiased selection:bg-emerald-500 selection:text-white">
+
+    <header class="bg-slate-900/80 backdrop-blur-md border-b border-emerald-900/50 sticky top-0 z-40">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-700 flex items-center justify-center text-slate-950 shadow-lg shadow-emerald-950/50">
+                    <i class="fa-solid fa-volume-high text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold bg-gradient-to-r from-emerald-400 to-teal-200 bg-clip-text text-transparent">
+                        Pelafalan Bahasa Arab
+                    </h1>
+                    <p class="text-xs text-slate-400">Kalimat Mudzakkar & Muannats • Suara Pria Tegas AI</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3 ml-auto">
+                <button id="playAllBtn" onclick="togglePlayAll()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-slate-950 font-semibold rounded-lg shadow-md transition flex items-center gap-2 text-sm">
+                    <i id="playAllIcon" class="fa-solid fa-play"></i>
+                    <span id="playAllText">Putar Semua</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 py-6 flex-1 w-full space-y-6">
+        
+        <!-- Controls & Options Panel -->
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Voice Selection -->
+            <div>
+                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
+                    <i class="fa-solid fa-user-tie text-emerald-400 mr-1"></i> Karakter Suara Pria
+                </label>
+                <select id="voiceSelect" onchange="onVoiceChange()" class="w-full bg-slate-950 border border-slate-700 text-slate-200 text-sm rounded-xl px-3 py-2.5 focus:outline-none focus:border-emerald-500 transition">
+                    <option value="Orus" selected>Orus (Pria Tegas & Mantap)</option>
+                    <option value="Alnilam">Alnilam (Pria Berwibawa & Dalam)</option>
+                    <option value="Gacrux">Gacrux (Pria Dewasa & Jelas)</option>
+                    <option value="Charon">Charon (Pria Informatif & Formal)</option>
+                    <option value="BROWSER">Suara Browser (Fallback Offline)</option>
+                </select>
+            </div>
+
+            <!-- Playback Speed -->
+            <div>
+                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
+                    <i class="fa-solid fa-[#fa-gauge-high] fa-gauge-high text-emerald-400 mr-1"></i> Kecepatan Pelafalan
+                </label>
+                <div class="flex items-center bg-slate-950 border border-slate-700 rounded-xl p-1">
+                    <button onclick="setSpeed(0.6)" id="speed-0.6" class="speed-btn flex-1 py-1.5 text-xs font-medium rounded-lg text-slate-400 hover:text-white transition">0.6x (Lambat)</button>
+                    <button onclick="setSpeed(0.85)" id="speed-0.85" class="speed-btn flex-1 py-1.5 text-xs font-medium rounded-lg text-slate-400 hover:text-white transition">0.85x (Sedang)</button>
+                    <button onclick="setSpeed(1.0)" id="speed-1.0" class="speed-btn flex-1 py-1.5 text-xs font-medium rounded-lg text-emerald-400 bg-slate-800 font-bold transition">1.0x (Normal)</button>
+                </div>
+            </div>
+
+            <!-- Toggles -->
+            <div>
+                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
+                    <i class="fa-solid fa-sliders text-emerald-400 mr-1"></i> Pengaturan Tampilan
+                </label>
+                <div class="flex items-center gap-3 py-1">
+                    <label class="inline-flex items-center cursor-pointer text-sm text-slate-300">
+                        <input type="checkbox" id="toggleTrans" checked onchange="toggleTranslations()" class="sr-only peer">
+                        <div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600 relative"></div>
+                        <span class="ml-2 text-xs font-medium">Terjemahan ID</span>
+                    </label>
+                    <label class="inline-flex items-center cursor-pointer text-sm text-slate-300 ml-auto">
+                        <input type="checkbox" id="toggleWords" checked onchange="renderCards()" class="sr-only peer">
+                        <div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600 relative"></div>
+                        <span class="ml-2 text-xs font-medium">Pengucapan Per-Kata</span>
+                    </label>
+                </div>
+            </div>
+        </section>
+
+        <div class="flex items-center border-b border-slate-800 gap-2">
+            <button id="tab-all" onclick="switchTab('all')" class="tab-btn px-5 py-3 font-semibold text-sm border-b-2 border-emerald-500 text-emerald-400 flex items-center gap-2 transition">
+                <i class="fa-solid fa-layer-group"></i> Semua Kalimat (<span id="count-all">14</span>)
+            </button>
+            <button id="tab-mudzakkar" onclick="switchTab('mudzakkar')" class="tab-btn px-5 py-3 font-semibold text-sm border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 transition">
+                <span class="px-2 py-0.5 text-xs bg-emerald-950 text-emerald-400 border border-emerald-800 rounded-md">مُذَكَّر</span>
+                Mudzakkar (<span id="count-mudzakkar">7</span>)
+            </button>
+            <button id="tab-muannats" onclick="switchTab('muannats')" class="tab-btn px-5 py-3 font-semibold text-sm border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 transition">
+                <span class="px-2 py-0.5 text-xs bg-teal-950 text-teal-400 border border-teal-800 rounded-md">مُؤَنَّث</span>
+                Muannats (<span id="count-muannats">7</span>)
+            </button>
+        </div>
+
+        <div id="cardsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Dynamic Content populated by JavaScript -->
+        </div>
+
+    </main>
+
+    <div id="floatingPlayer" class="fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-lg border-t border-emerald-800/60 p-3 transform translate-y-full transition-transform duration-300 z-50">
+        <div class="max-w-4xl mx-auto flex items-center justify-between gap-4">
+            <div class="flex items-center gap-3 overflow-hidden">
+                <div class="w-10 h-10 rounded-full bg-emerald-600/20 text-emerald-400 flex items-center justify-center shrink-0">
+                    <!-- Audio Wave Animation -->
+                    <div class="flex items-end gap-1 h-5">
+                        <span class="w-1 bg-emerald-400 eq-bar"></span>
+                        <span class="w-1 bg-emerald-400 eq-bar"></span>
+                        <span class="w-1 bg-emerald-400 eq-bar"></span>
+                    </div>
+                </div>
+                <div class="truncate">
+                    <p id="playerTextArabic" class="arabic-text text-xl font-bold text-emerald-300 truncate leading-none"></p>
+                    <p id="playerTextInfo" class="text-xs text-slate-400 truncate mt-1"></p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2 shrink-0">
+                <button onclick="stopAudio()" class="p-2.5 bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 rounded-full transition" title="Hentikan">
+                    <i class="fa-solid fa-stop text-sm"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const items = [
+            // Mudzakkar items
+            {
+                id: 1,
+                type: 'mudzakkar',
+                arabic: 'مَا هٰذَا؟ هٰذَا قَلَمٌ.',
+                meaning: 'Apakah ini? Ini pena.',
+                words: [
+                    { ar: 'مَا', meaning: 'Apakah' },
+                    { ar: 'هٰذَا؟', meaning: 'ini?' },
+                    { ar: 'هٰذَا', meaning: 'Ini' },
+                    { ar: 'قَلَمٌ.', meaning: 'pena.' }
+                ],
+                objectName: 'Pena / Pulpen'
+            },
+            {
+                id: 2,
+                type: 'mudzakkar',
+                arabic: 'مَا هٰذَا؟ هٰذَا كِتَابٌ.',
+                meaning: 'Apakah ini? Ini buku.',
+                words: [
+                    { ar: 'مَا', meaning: 'Apakah' },
+                    { ar: 'هٰذَا؟', meaning: 'ini?' },
+                    { ar: 'هٰذَا', meaning: 'Ini' },
+                    { ar: 'كِتَابٌ.', meaning: 'buku.' }
+                ],
+                objectName: 'Buku'
+            },
+            {
+                id: 3,
+                type: 'mudzakkar',
+                arabic: 'مَا هٰذَا؟ هٰذَا ظَرْفٌ.',
+                meaning: 'Apakah ini? Ini amplop.',
+                words: [
+                    { ar: 'مَا', meaning: 'Apakah' },
+                    { ar: 'هٰذَا؟', meaning: 'ini?' },
+                    { ar: 'هٰذَا', meaning: 'Ini' },
+                    { ar: 'ظَرْفٌ.', meaning: 'amplop.' }
+                ],
+                objectName: 'Amplop'
+            },
+            {
+                id: 4,
+                type: 'mudzakkar',
+                arabic: 'مَا هٰذَا؟ هٰذَا مِقَصٌّ.',
+                meaning: 'Apakah ini? Ini gunting.',
+                words: [
+                    { ar: 'مَا', meaning: 'Apakah' },
+                    { ar: 'هٰذَا؟', meaning: 'ini?' },
+                    { ar: 'هٰذَا', meaning: 'Ini' },
+                    { ar: 'مِقَصٌّ.', meaning: 'gunting.' }
+                ],
+                objectName: 'Gunting'
+            },
+            {
+                id: 5,
+                type: 'mudzakkar',
+                arabic: 'مَا هٰذَا؟ هٰذَا وَرَقٌ.',
+                meaning: 'Apakah ini? Ini kertas.',
+                words: [
+                    { ar: 'مَا', meaning: 'Apakah' },
+                    { ar: 'هٰذَا؟', meaning: 'ini?' },
+                    { ar: 'هٰذَا', meaning: 'Ini' },
+                    { ar: 'وَرَقٌ.', meaning: 'kertas.' }
+                ],
+                objectName: 'Kertas'
+            },
+            {
+                id: 6,
+                type: 'mudzakkar',
+                arabic: 'مَا هٰذَا؟ هٰذَا مَكْتَبٌ.',
+                meaning: 'Apakah ini? Ini meja.',
+                words: [
+                    { ar: 'مَا', meaning: 'Apakah' },
+                    { ar: 'هٰذَا؟', meaning: 'ini?' },
+                    { ar: 'هٰذَا', meaning: 'Ini' },
+                    { ar: 'مَكْتَبٌ.', meaning: 'meja.' }
+                ],
+                objectName: 'Meja'
+            },
+            {
+                id: 7,
+                type: 'mudzakkar',
+                arabic: 'مَا هٰذَا؟ هٰذَا مُصْحَفٌ.',
+                meaning: "Apakah ini? Ini mushaf (Al-Qur'an).",
+                words: [
+                    { ar: 'مَا', meaning: 'Apakah' },
+                    { ar: 'هٰذَا؟', meaning: 'ini?' },
+                    { ar: 'هٰذَا', meaning: 'Ini' },
+                    { ar: 'مُصْحَفٌ.', meaning: 'mushaf.' }
+                ],
+                objectName: 'Mushaf'
+            },
+
+            // Muannats items
+            {
+                id: 8,
+                type: 'muannats',
+                arabic: 'مَا هٰذِهِ؟ هٰذِهِ سَبُّورَةٌ.',
+                meaning: 'Apakah ini? Ini papan tulis.',
+                words: [
+                    { ar: 'مَا', meaning: 'Apakah' },
+                    { ar: 'هٰذِهِ؟', meaning: 'ini?' },
+                    { ar: 'هٰذِهِ', meaning: 'Ini' },
+                    { ar: 'سَبُّورَةٌ.', meaning: 'papan tulis.' }
+                ],
+                objectName: 'Papan Tulis'
+            },
+            {
+                id: 9,
+                type: 'muannats',
+                arabic: 'مَا هٰذِهِ؟ هٰذِهِ مِمْحَاةٌ.',
+                meaning: 'Apakah ini? Ini penghapus karet.',
+                words: [
+                    { ar: 'مَا', meaning: 'Apakah' },
+                    { ar: 'هٰذِهِ؟', meaning: 'ini?' },
+                    { ar: 'هٰذِهِ', meaning: 'Ini' },
+                    { ar: 'مِمْحَاةٌ.', meaning: 'penghapus.' }
+                ],
+                objectName: 'Penghapus'
+            },
+            {
+                id: 10,
+                type: 'muannats',
+                arabic: 'مَا هٰذِهِ؟ هٰذِهِ حَقِيبَةٌ.',
+                meaning: 'Apakah ini? Ini tas.',
+                words: [
+                    { ar: 'مَا', meaning: 'Apakah' },
+                    { ar: 'هٰذِهِ؟', meaning: 'ini?' },
+                    { ar: 'هٰذِهِ', meaning: 'Ini' },
+                    { ar: 'حَقِيبَةٌ.', meaning: 'tas.' }
+                ],
+                objectName: 'Tas'
+            },
+            {
+                id: 11,
+                type: 'muannats',
+                arabic: 'مَا هٰذِهِ؟ هٰذِهِ مِبْرَاةٌ.',
+                meaning: 'Apakah ini? Ini rautan pensil.',
+                words: [
+                    { ar: 'مَا', meaning: 'Apakah' },
+                    { ar: 'هٰذِهِ؟', meaning: 'ini?' },
+                    { ar: 'هٰذِهِ', meaning: 'Ini' },
+                    { ar: 'مِبْرَاةٌ.', meaning: 'rautan.' }
+                ],
+                objectName: 'Rautan'
+            },
+            {
+                id: 12,
+                type: 'muannats',
+                arabic: 'مَا هٰذِهِ؟ هٰذِهِ كُرَّاسَةٌ.',
+                meaning: 'Apakah ini? Ini buku tulis.',
+                words: [
+                    { ar: 'مَا', meaning: 'Apakah' },
+                    { ar: 'هٰذِهِ؟', meaning: 'ini?' },
+                    { ar: 'هٰذِهِ', meaning: 'Ini' },
+                    { ar: 'كُرَّاسَةٌ.', meaning: 'buku tulis.' }
+                ],
+                objectName: 'Buku Tulis'
+            },
+            {
+                id: 13,
+                type: 'muannats',
+                arabic: 'مَا هٰذِهِ؟ هٰذِهِ مِسْطَرَةٌ.',
+                meaning: 'Apakah ini? Ini penggaris.',
+                words: [
+                    { ar: 'مَا', meaning: 'Apakah' },
+                    { ar: 'هٰذِهِ؟', meaning: 'ini?' },
+                    { ar: 'هٰذِهِ', meaning: 'Ini' },
+                    { ar: 'مِسْطَرَةٌ.', meaning: 'penggaris.' }
+                ],
+                objectName: 'Penggaris'
+            },
+            {
+                id: 14,
+                type: 'muannats',
+                arabic: 'مَا هٰذِهِ؟ هٰذِهِ مِمْسَحَةٌ.',
+                meaning: 'Apakah ini? Ini penghapus papan tulis.',
+                words: [
+                    { ar: 'مَا', meaning: 'Apakah' },
+                    { ar: 'هٰذِهِ؟', meaning: 'ini?' },
+                    { ar: 'هٰذِهِ', meaning: 'Ini' },
+                    { ar: 'مِمْسَحَةٌ.', meaning: 'penghapus papan.' }
+                ],
+                objectName: 'Penghapus Papan'
+            }
+        ];
+
+        let activeTab = 'all';
+        let currentAudio = null;
+        let playbackSpeed = 1.0;
+        let selectedVoice = 'Orus';
+        let isPlayAll = false;
+        let playAllIndex = 0;
+        let currentPlayingId = null;
+        const audioCache = new Map();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderCards();
+        });
+
+        function switchTab(tab) {
+            activeTab = tab;
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('border-emerald-500', 'text-emerald-400');
+                btn.classList.add('border-transparent', 'text-slate-400');
+            });
+            
+            const activeBtn = document.getElementById(`tab-${tab}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('border-transparent', 'text-slate-400');
+                activeBtn.classList.add('border-emerald-500', 'text-emerald-400');
+            }
+            renderCards();
+        }
+
+        function setSpeed(speed) {
+            playbackSpeed = speed;
+            document.querySelectorAll('.speed-btn').forEach(btn => {
+                btn.classList.remove('text-emerald-400', 'bg-slate-800', 'font-bold');
+                btn.classList.add('text-slate-400');
+            });
+            const selectedBtn = document.getElementById(`speed-${speed}`);
+            if (selectedBtn) {
+                selectedBtn.classList.remove('text-slate-400');
+                selectedBtn.classList.add('text-emerald-400', 'bg-slate-800', 'font-bold');
+            }
+
+            if (currentAudio) {
+                currentAudio.playbackRate = playbackSpeed;
+            }
+        }
+
+        function onVoiceChange() {
+            selectedVoice = document.getElementById('voiceSelect').value;
+        }
+
+        function toggleTranslations() {
+            const show = document.getElementById('toggleTrans').checked;
+            document.querySelectorAll('.meaning-text').forEach(el => {
+                if (show) el.classList.remove('hidden');
+                else el.classList.add('hidden');
+            });
+        }
+
+        function renderCards() {
+            const container = document.getElementById('cardsContainer');
+            const showWords = document.getElementById('toggleWords').checked;
+            const showTrans = document.getElementById('toggleTrans').checked;
+
+            const filteredItems = items.filter(item => {
+                if (activeTab === 'all') return true;
+                return item.type === activeTab;
+            });
+
+            container.innerHTML = filteredItems.map((item, idx) => {
+                const isMudzakkar = item.type === 'mudzakkar';
+                const badgeColor = isMudzakkar ? 'bg-emerald-950 text-emerald-400 border-emerald-800' : 'bg-teal-950 text-teal-400 border-teal-800';
+                const badgeText = isMudzakkar ? 'Mudzakkar' : 'Muannats';
+                const isCurrentlyPlaying = currentPlayingId === item.id;
+
+                let wordsHtml = '';
+                if (showWords) {
+                    wordsHtml = `
+                        <div class="flex flex-wrap justify-end gap-1.5 mt-3 pt-3 border-t border-slate-800/80">
+                            ${item.words.map(w => `
+                                <button onclick="playText('${escapeQuotes(w.ar)}', 'Kata: ${escapeQuotes(w.meaning)}') " 
+                                        class="word-chip px-2.5 py-1 bg-slate-950 border border-slate-800 hover:border-emerald-500/50 rounded-lg text-emerald-300 text-lg arabic-text font-semibold flex items-center gap-1.5"
+                                        title="Klik untuk mendengar perkata (${w.meaning})">
+                                    <span>${w.ar}</span>
+                                    <span class="text-[10px] font-sans text-slate-500 normal-case font-normal">(${w.meaning})</span>
+                                </button>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+
+                return `
+                    <div id="card-${item.id}" class="bg-slate-900 border ${isCurrentlyPlaying ? 'border-emerald-500 ring-2 ring-emerald-500/20' : 'border-slate-800'} rounded-2xl p-5 shadow-lg transition duration-200 relative flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-7 h-7 rounded-full bg-slate-800 text-slate-300 text-xs font-bold flex items-center justify-center border border-slate-700">
+                                        ${idx + 1}
+                                    </span>
+                                    <span class="text-xs px-2.5 py-1 rounded-md border font-medium ${badgeColor}">
+                                        ${badgeText}
+                                    </span>
+                                </div>
+                                <span class="text-xs text-slate-400 font-medium">
+                                    <i class="fa-solid fa-cube text-slate-500 mr-1"></i>${item.objectName}
+                                </span>
+                            </div>
+
+                            <!-- Main Arabic Text -->
+                            <div class="text-right my-2">
+                                <h2 class="arabic-text text-3xl font-bold text-slate-100 hover:text-emerald-300 transition cursor-pointer leading-relaxed" onclick="playItem(${item.id})">
+                                    ${item.arabic}
+                                </h2>
+                            </div>
+
+                            <!-- Translation -->
+                            <p class="meaning-text text-sm text-slate-400 mt-1 ${showTrans ? '' : 'hidden'}">
+                                ${item.meaning}
+                            </p>
+
+                            ${wordsHtml}
+                        </div>
+
+                        <!-- Card Action Footer -->
+                        <div class="mt-4 pt-3 flex items-center justify-between border-t border-slate-800/60">
+                            <button onclick="copyText('${escapeQuotes(item.arabic)}')" class="text-xs text-slate-500 hover:text-slate-300 transition flex items-center gap-1">
+                                <i class="fa-regular fa-copy"></i> Salin
+                            </button>
+
+                            <button id="btn-play-${item.id}" onclick="playItem(${item.id})" class="px-4 py-2 bg-emerald-900/60 hover:bg-emerald-600 text-emerald-300 hover:text-slate-950 font-semibold rounded-xl border border-emerald-700/50 transition flex items-center gap-2 text-sm shadow">
+                                <i class="fa-solid ${isCurrentlyPlaying ? 'fa-spinner fa-spin' : 'fa-volume-high'}"></i>
+                                <span>${isCurrentlyPlaying ? 'Memutar...' : 'Putar Suara'}</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function escapeQuotes(str) {
+            return str.replace(/'/g, "\\'");
+        }
+
+        async function playItem(itemId) {
+            const item = items.find(i => i.id === itemId);
+            if (!item) return;
+
+            currentPlayingId = itemId;
+            renderCards();
+
+            await playText(item.arabic, `Kalimat ${item.type === 'mudzakkar' ? 'Mudzakkar' : 'Muannats'} #${item.id}`);
+
+            currentPlayingId = null;
+            renderCards();
+
+            if (isPlayAll) {
+                playAllIndex++;
+                const filteredItems = items.filter(i => activeTab === 'all' || i.type === activeTab);
+                if (playAllIndex < filteredItems.length) {
+                    setTimeout(() => {
+                        if (isPlayAll) playItem(filteredItems[playAllIndex].id);
+                    }, 500);
+                } else {
+                    stopPlayAll();
+                }
+            }
+        }
+
+        async function playText(text, info) {
+            stopAudio();
+
+            showFloatingPlayer(text, info);
+
+            try {
+                if (selectedVoice === 'BROWSER') {
+                    await playBrowserTTS(text);
+                } else {
+                    await playGeminiTTS(text, selectedVoice);
+                }
+            } catch (err) {
+                console.warn('AI TTS error, fallbacking to browser TTS:', err);
+                await playBrowserTTS(text);
+            } finally {
+                hideFloatingPlayer();
+            }
+        }
+
+        async function playGeminiTTS(arabicText, voiceName) {
+            const cacheKey = `${voiceName}:${arabicText}`;
+
+            let audioBlob;
+            if (audioCache.has(cacheKey)) {
+                audioBlob = audioCache.get(cacheKey);
+            } else {
+                // Prompt instruction to ensure a firm, authoritative, clear male Arabic voice accent
+                const promptText = `Speak in a clear, firm, authoritative male Arabic pronunciation with perfect Tajweed and harakat: ${arabicText}`;
+
+                const payload = {
+                    contents: [{
+                        parts: [{ text: promptText }]
+                    }],
+                    generationConfig: {
+                        responseModalities: ["AUDIO"],
+                        speechConfig: {
+                            voiceConfig: {
+                                prebuiltVoiceConfig: { voiceName: voiceName }
+                            }
+                        }
+                    }
+                };
+
+                const apiKey = ""; // Left empty for automatic Canvas execution
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
+
+                const res = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!res.ok) {
+                    throw new Error(`API responded with status ${res.status}`);
+                }
+
+                const result = await res.json();
+                const part = result?.candidates?.[0]?.content?.parts?.[0];
+                const audioData = part?.inlineData?.data;
+                const mimeType = part?.inlineData?.mimeType || "audio/L16;rate=24000";
+
+                if (!audioData) {
+                    throw new Error("No audio data received from Gemini TTS");
+                }
+
+                // Extract sample rate from mimeType if available
+                let sampleRate = 24000;
+                const rateMatch = mimeType.match(/rate=(\d+)/);
+                if (rateMatch && rateMatch[1]) {
+                    sampleRate = parseInt(rateMatch[1], 10);
+                }
+
+                const pcmBuffer = base64ToArrayBuffer(audioData);
+                const pcm16 = new Int16Array(pcmBuffer);
+                audioBlob = pcmToWav(pcm16, sampleRate);
+                
+                audioCache.set(cacheKey, audioBlob);
+            }
+
+            const audioUrl = URL.createObjectURL(audioBlob);
+            return new Promise((resolve) => {
+                currentAudio = new Audio(audioUrl);
+                currentAudio.playbackRate = playbackSpeed;
+                currentAudio.onended = resolve;
+                currentAudio.onerror = resolve;
+                currentAudio.play().catch(resolve);
+            });
+        }
+
+        function playBrowserTTS(text) {
+            return new Promise((resolve) => {
+                if (!('speechSynthesis' in window)) {
+                    alert('Browser Anda tidak mendukung Speech Synthesis.');
+                    resolve();
+                    return;
+                }
+
+                window.speechSynthesis.cancel();
+                const utter = new SpeechSynthesisUtterance(text);
+                utter.lang = 'ar-SA';
+                utter.rate = playbackSpeed;
+                
+                // Try to find a male arabic voice if available in browser
+                const voices = window.speechSynthesis.getVoices();
+                const arVoice = voices.find(v => v.lang.startsWith('ar') && (v.name.toLowerCase().includes('male') || v.name.toLowerCase().includes('tarik') || v.name.toLowerCase().includes('maged')));
+                if (arVoice) utter.voice = arVoice;
+
+                utter.onend = resolve;
+                utter.onerror = resolve;
+
+                window.speechSynthesis.speak(utter);
+            });
+        }
+
+        function base64ToArrayBuffer(base64) {
+            const binaryString = window.atob(base64);
+            const len = binaryString.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
+
+        function pcmToWav(pcm16Data, sampleRate) {
+            const numChannels = 1;
+            const byteRate = sampleRate * numChannels * 2;
+            const blockAlign = numChannels * 2;
+            const buffer = new ArrayBuffer(44 + pcm16Data.length * 2);
+            const view = new DataView(buffer);
+
+            // RIFF header
+            writeString(view, 0, 'RIFF');
+            view.setUint32(4, 36 + pcm16Data.length * 2, true);
+            writeString(view, 8, 'WAVE');
+            
+            // Format chunk
+            writeString(view, 12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true); // PCM format
+            view.setUint16(22, numChannels, true);
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, byteRate, true);
+            view.setUint16(32, blockAlign, true);
+            view.setUint16(34, 16, true); // bits per sample
+
+            // Data chunk
+            writeString(view, 36, 'data');
+            view.setUint32(40, pcm16Data.length * 2, true);
+
+            let index = 44;
+            for (let i = 0; i < pcm16Data.length; i++) {
+                view.setInt16(index, pcm16Data[i], true);
+                index += 2;
+            }
+
+            return new Blob([buffer], { type: 'audio/wav' });
+        }
+
+        function writeString(view, offset, string) {
+            for (let i = 0; i < string.length; i++) {
+                view.setUint8(offset + i, string.charCodeAt(i));
+            }
+        }
+
+        function stopAudio() {
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio = null;
+            }
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
+            hideFloatingPlayer();
+        }
+
+        function togglePlayAll() {
+            if (isPlayAll) {
+                stopPlayAll();
+            } else {
+                isPlayAll = true;
+                playAllIndex = 0;
+                document.getElementById('playAllIcon').className = 'fa-solid fa-square';
+                document.getElementById('playAllText').innerText = 'Hentikan';
+                
+                const filteredItems = items.filter(i => activeTab === 'all' || i.type === activeTab);
+                if (filteredItems.length > 0) {
+                    playItem(filteredItems[0].id);
+                }
+            }
+        }
+
+        function stopPlayAll() {
+            isPlayAll = false;
+            document.getElementById('playAllIcon').className = 'fa-solid fa-play';
+            document.getElementById('playAllText').innerText = 'Putar Semua';
+            stopAudio();
+            currentPlayingId = null;
+            renderCards();
+        }
+
+        function showFloatingPlayer(arabicText, info) {
+            document.getElementById('playerTextArabic').innerText = arabicText;
+            document.getElementById('playerTextInfo').innerText = info;
+            document.getElementById('floatingPlayer').classList.remove('translate-y-full');
+        }
+
+        function hideFloatingPlayer() {
+            document.getElementById('floatingPlayer').classList.add('translate-y-full');
+        }
+
+        function copyText(text) {
+            const tempInput = document.createElement('textarea');
+            tempInput.value = text;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+
+            // Simple toast alert
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-20 left-1/2 -translate-x-1/2 bg-emerald-600 text-slate-950 px-4 py-2 rounded-xl text-xs font-bold shadow-xl z-50 transition duration-300';
+            toast.innerText = 'Teks Arab berhasil disalin!';
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2000);
+        }
+    </script>
+</body>
+</html>
