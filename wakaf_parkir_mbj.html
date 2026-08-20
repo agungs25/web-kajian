@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Internal Portal - Project Pembebasan Lahan Parkir Masjid Mu'adz bin Jabal</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & Scheherazade New -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Scheherazade+New:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        emerald: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            600: '#059669',
+                            700: '#047857',
+                            800: '#065f46',
+                            900: '#064e3b',
+                        },
+                        amber: {
+                            400: '#fbbf24',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        arabic: ['"Scheherazade New"', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .arabic-text {
+            font-family: 'Scheherazade New', serif;
+            direction: rtl;
+            line-height: 2.2;
+        }
+        .pattern-bg {
+            background-color: #064e3b;
+            background-image: radial-gradient(#059669 0.75px, transparent 0.75px), radial-gradient(#059669 0.75px, #064e3b 0.75px);
+            background-size: 30px 30px;
+            background-position: 0 0,15px 15px;
+            opacity: 0.97;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .dark ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #10b981;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-sans transition-colors duration-300 min-h-screen flex flex-col">
+
+    <header class="sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- Logo & Title -->
+                <div class="flex items-center gap-3">
+                    <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-emerald-800 to-emerald-600 flex items-center justify-center text-white shadow-lg shadow-emerald-700/30">
+                        <i class="fa-solid fa-mosque text-xl"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300/50">Internal Portal</span>
+                            <span class="text-xs text-slate-400 font-medium hidden sm:inline">&bull; Masjid Mu'adz bin Jabal</span>
+                        </div>
+                        <h1 class="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white leading-tight">
+                            Project Pembebasan Lahan Parkir Masjid Mu'adz bin Jabal
+                        </h1>
+                    </div>
+                </div>
+
+                <!-- Navigation Links & Theme Controls -->
+                <div class="flex items-center gap-2 sm:gap-4">
+                    <nav class="hidden md:flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl text-xs font-semibold">
+                        <a href="#laporanSection" class="px-3 py-1.5 rounded-lg text-emerald-700 dark:text-emerald-300 bg-white dark:bg-slate-700 shadow-sm transition">
+                            <i class="fa-solid fa-table-list mr-1"></i> Laporan Wakaf
+                        </a>
+                        <a href="#lokasiSection" class="px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:text-emerald-600 transition">
+                            <i class="fa-solid fa-map-location-dot mr-1"></i> Lokasi Lahan
+                        </a>
+                        <a href="#ustadzListSection" class="px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:text-emerald-600 transition">
+                            <i class="fa-solid fa-bullhorn mr-1"></i> Anjuran Asatidz
+                        </a>
+                    </nav>
+
+                    <button id="themeToggle" class="p-2.5 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white rounded-xl bg-slate-100 dark:bg-slate-800 transition" aria-label="Toggle Theme">
+                        <i class="fa-solid fa-moon dark:hidden text-lg"></i>
+                        <i class="fa-solid fa-sun hidden dark:block text-amber-400 text-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        <section class="relative pattern-bg text-white py-10 md:py-14 px-4 shadow-xl">
+            <div class="max-w-7xl mx-auto relative z-10">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                    
+                    <!-- Left Hero Content -->
+                    <div class="lg:col-span-7 space-y-4 text-center lg:text-left">
+                        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-900/90 border border-emerald-500/40 text-emerald-200 text-xs font-semibold">
+                            <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                            <span>Program Pembebasan Lahan Parkir 400 m² &bull; Bojong Kulur</span>
+                        </div>
+                        <h2 class="text-2xl sm:text-3xl lg:text-4xl font-black leading-tight text-white">
+                            Laporan Rekapitulasi & Himpunan Nasihat Asatidz
+                        </h2>
+                        <p class="text-emerald-100/90 text-sm sm:text-base max-w-2xl font-light leading-relaxed mx-auto lg:mx-0">
+                            Portal internal peninjauan penerimaan donasi wakaf pembebasan lahan parkir Masjid Mu'adz bin Jabal beserta rekaman nasihat lengkap Asatidzah hafizhahumullah.
+                        </p>
+                        
+                        <!-- Hero Quote Carousel -->
+                        <div class="bg-emerald-900/80 backdrop-blur border border-emerald-700/60 rounded-2xl p-4 text-left shadow-inner flex items-start gap-3">
+                            <i class="fa-solid fa-quote-left text-amber-400 text-xl mt-1 shrink-0"></i>
+                            <div>
+                                <p class="text-xs sm:text-sm text-emerald-100 italic" id="heroQuoteText">"Setiap orang akan berada di bawah naungan sedekahnya."</p>
+                                <span class="text-xs font-bold text-amber-300 block mt-1" id="heroQuoteAuthor">— Ustadz Dr. Syafiq Riza Basalamah, M.A.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Stats Summary -->
+                    <div class="lg:col-span-5">
+                        <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl p-6 shadow-2xl text-white">
+                            <div class="flex justify-between items-center mb-2">
+                                <div>
+                                    <span class="text-[10px] font-extrabold text-amber-300 uppercase tracking-wider block">Status Terakhir Periode Ini</span>
+                                    <h3 class="text-sm font-bold text-emerald-100 flex items-center gap-1.5 mt-0.5" id="heroStatDate">
+                                        <i class="fa-regular fa-calendar-check text-amber-400"></i>
+                                        <span>19 Agustus 2026</span>
+                                    </h3>
+                                </div>
+                                <span id="percentBadge" class="px-2.5 py-1 bg-amber-400 text-emerald-950 font-black text-xs rounded-full shadow">
+                                    94,19%
+                                </span>
+                            </div>
+
+                            <!-- Progress Bar -->
+                            <div class="space-y-1.5 my-4">
+                                <div class="w-full bg-emerald-950/80 rounded-full h-3.5 p-0.5 overflow-hidden border border-emerald-600/40">
+                                    <div id="progressBar" class="bg-gradient-to-r from-amber-400 to-amber-300 h-full rounded-full transition-all duration-1000 shadow-sm" style="width: 94.19%"></div>
+                                </div>
+                                <div class="flex justify-between text-xs font-medium text-emerald-200">
+                                    <span>Penerimaan: <strong id="statTotalCollected" class="text-white">Rp 1.554.080.407</strong></span>
+                                    <span>Target: <strong>Rp 1.650.000.000</strong></span>
+                                </div>
+                            </div>
+
+                            <!-- Stat Box Grid -->
+                            <div class="grid grid-cols-2 gap-3 text-center mb-4">
+                                <div class="bg-emerald-950/60 rounded-2xl p-3 border border-emerald-700/50">
+                                    <span class="text-[11px] text-emerald-200 block">Kekurangan [Sisa Dana]</span>
+                                    <span id="statRemaining" class="text-sm sm:text-base font-extrabold text-amber-300">Rp 95.919.593</span>
+                                </div>
+                                <div class="bg-emerald-950/60 rounded-2xl p-3 border border-emerald-700/50">
+                                    <span class="text-[11px] text-emerald-200 block">Total Update Data</span>
+                                    <span id="statCount" class="text-sm sm:text-base font-extrabold text-white">147 Baris Update</span>
+                                </div>
+                            </div>
+
+                            <a href="#laporanSection" class="w-full py-3 bg-amber-400 hover:bg-amber-300 text-emerald-950 font-bold rounded-xl text-center block transition shadow-lg text-xs tracking-wide uppercase">
+                                <i class="fa-solid fa-list-check mr-1.5"></i> Rincian Laporan Penerimaan
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="laporanSection" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <div class="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700/80 shadow-sm p-6 sm:p-8">
+                
+                <!-- Section Header & Controls -->
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-6 border-b border-slate-200 dark:border-slate-700">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
+                            <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest">Sinkronisasi Live Google Sheets</span>
+                        </div>
+                        <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white mt-0.5">
+                            Laporan Penerimaan Wakaf MBJ
+                        </h2>
+                        <p class="text-slate-500 dark:text-slate-400 text-xs sm:text-sm mt-1">
+                            Sumber Data: Sheet <span class="font-semibold text-slate-700 dark:text-slate-300">"Rekap Wakaf MBJ"</span>
+                        </p>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+                        <!-- Search Box -->
+                        <div class="relative flex-1 sm:w-64">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                            <input type="text" id="sheetSearchInput" placeholder="Cari tanggal / nominal..." class="w-full pl-9 pr-3 py-2 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none dark:text-white">
+                        </div>
+
+                        <!-- Sync Button -->
+                        <button id="refreshSheetBtn" class="px-3.5 py-2 text-xs font-semibold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/80 hover:bg-emerald-100 border border-emerald-200 dark:border-emerald-800 rounded-xl transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-rotate text-xs" id="syncSpinner"></i>
+                            <span>Muat Ulang</span>
+                        </button>
+
+                        <!-- Open Sheet External Link -->
+                        <a href="https://docs.google.com/spreadsheets/d/1RtCAp_zYkCzV16hGsT8FlTKU5pBlsGttOyvXc7gonv0/edit?usp=sharing" target="_blank" class="px-3.5 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 rounded-xl transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
+                            <span class="hidden sm:inline">Buka Google Sheet</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Last Sync Notice -->
+                <div class="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 py-3">
+                    <span id="lastSyncStatus">Memuat data dari Google Sheets...</span>
+                    <span id="rowCountBadge" class="font-semibold text-emerald-600 dark:text-emerald-400">0 Baris Update</span>
+                </div>
+
+                <!-- Data Table Container -->
+                <div class="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-700/70">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-slate-100 dark:bg-slate-900/80 text-slate-700 dark:text-slate-300 uppercase tracking-wider font-bold border-b border-slate-200 dark:border-slate-700">
+                            <tr>
+                                <th scope="col" class="py-3.5 px-4 text-center w-12">No</th>
+                                <th scope="col" class="py-3.5 px-4">Tanggal [Masehi]</th>
+                                <th scope="col" class="py-3.5 px-4 text-right">Penerimaan (Rp)</th>
+                                <th scope="col" class="py-3.5 px-4 text-right">Penambahan (Rp)</th>
+                                <th scope="col" class="py-3.5 px-4 text-center">Persentase</th>
+                                <th scope="col" class="py-3.5 px-4 text-right">Kekurangan [Sisa Dana]</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sheetTableBody" class="divide-y divide-slate-100 dark:divide-slate-800 text-slate-800 dark:text-slate-200">
+                            <!-- Populated dynamically via JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination Controls -->
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4 text-xs text-slate-500 dark:text-slate-400">
+                    <div id="pageInfo">Menampilkan halaman 1 dari 1</div>
+                    <div class="flex items-center gap-2">
+                        <button id="prevPageBtn" class="px-3 py-1.5 bg-slate-100 dark:bg-slate-700 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 disabled:opacity-40 transition" disabled>
+                            <i class="fa-solid fa-chevron-left mr-1"></i> Sebelum
+                        </button>
+                        <button id="nextPageBtn" class="px-3 py-1.5 bg-slate-100 dark:bg-slate-700 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 disabled:opacity-40 transition" disabled>
+                            Berikut <i class="fa-solid fa-chevron-right ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="lokasiSection" class="bg-slate-100 dark:bg-slate-800/60 py-12 border-y border-slate-200 dark:border-slate-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-2xl mx-auto mb-8">
+                    <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest block">Objek Pembebasan</span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-1">Lokasi Lahan Wakaf 400 m²</h2>
+                    <p class="text-slate-600 dark:text-slate-400 text-xs sm:text-sm mt-1">
+                        Terletak persis di depan pelataran Masjid Mu'adz bin Jabal, Bojong Kulur, Bogor.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-md">
+                    <!-- Image Card -->
+                    <div class="lg:col-span-7 relative group overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-700">
+                        <img 
+                            id="landPhoto" 
+                            src="https://lh3.googleusercontent.com/d/1gJqTdQR_7DvbnAf5P2TTkdJXJ0yTcVQU" 
+                            alt="Denah Lokasi Lahan Wakaf 400m2 Masjid MBJ" 
+                            class="w-full h-80 sm:h-96 object-cover group-hover:scale-105 transition-transform duration-500 cursor-pointer"
+                            onclick="openImageModal(this.src)"
+                            onerror="this.onerror=null; this.src='https://placehold.co/800x600/064e3b/ffffff?text=Foto+Lokasi+Lahan+Parkir+400m2';"
+                        >
+                        <div class="absolute bottom-3 right-3 bg-slate-900/80 backdrop-blur text-white text-[11px] font-semibold px-3 py-1.5 rounded-xl border border-white/20 flex items-center gap-1.5 pointer-events-none">
+                            <i class="fa-solid fa-magnifying-glass-plus text-amber-400"></i>
+                            <span>Klik untuk memperbesar</span>
+                        </div>
+                    </div>
+
+                    <!-- Details Box -->
+                    <div class="lg:col-span-5 space-y-4 text-xs sm:text-sm">
+                        <div class="border-b border-slate-200 dark:border-slate-800 pb-3">
+                            <span class="text-xs font-bold text-amber-500 uppercase tracking-wider block">Spesifikasi Lahan</span>
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white">Depan Pelataran Masjid MBJ</h3>
+                        </div>
+
+                        <ul class="space-y-3 text-slate-600 dark:text-slate-300">
+                            <li class="flex items-start gap-2.5">
+                                <i class="fa-solid fa-ruler-combined text-emerald-600 dark:text-emerald-400 mt-1"></i>
+                                <span><strong>Luas Lahan:</strong> 400 meter persegi (m²)</span>
+                            </li>
+                            <li class="flex items-start gap-2.5">
+                                <i class="fa-solid fa-coins text-emerald-600 dark:text-emerald-400 mt-1"></i>
+                                <span><strong>Nilai Total Transaksi:</strong> Rp 1,6 Miliar (~ Rp 4.000.000 / m²)</span>
+                            </li>
+                            <li class="flex items-start gap-2.5">
+                                <i class="fa-solid fa-square-parking text-emerald-600 dark:text-emerald-400 mt-1"></i>
+                                <span><strong>Peruntukan Utama:</strong> Kantong parkir jamaah kajian & shalat lima waktu agar tidak mengganggu jalan raya.</span>
+                            </li>
+                            <li class="flex items-start gap-2.5">
+                                <i class="fa-solid fa-layer-group text-emerald-600 dark:text-emerald-400 mt-1"></i>
+                                <span><strong>Peruntukan Tambahan:</strong> Area pelaksanaan Shalat Idul Fitri/Adha, hewan qurban, dan pengembangan fasilitas dakwah.</span>
+                            </li>
+                        </ul>
+
+                        <div class="pt-2">
+                            <a href="https://maps.app.goo.gl/q3swBEC56q9m5Dko6" target="_blank" class="w-full py-2.5 px-4 bg-slate-100 dark:bg-slate-800 hover:bg-emerald-50 dark:hover:bg-emerald-950 text-slate-700 dark:text-slate-200 hover:text-emerald-600 font-bold rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-center gap-2 transition text-xs">
+                                <i class="fa-solid fa-map-location-dot text-amber-500"></i>
+                                <span>Lokasi Tanah Wakaf</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="ustadzListSection" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            
+            <!-- Header & Search Controls -->
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4 border-b border-slate-200 dark:border-slate-800 pb-6">
+                <div>
+                    <span class="text-emerald-600 dark:text-emerald-400 font-bold text-xs tracking-wide uppercase block">Daftar Nasihat & Rekaman</span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">Anjuran Para Asatidz Hafizhahumullah</h2>
+                    <p class="text-slate-500 dark:text-slate-400 text-xs sm:text-sm mt-1">Klik pada nama ustadz untuk membaca naskah materi nasihat lengkapnya.</p>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <div class="relative w-full sm:w-72">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                        <input type="text" id="searchInput" placeholder="Cari ustadz atau kata kunci..." class="w-full pl-9 pr-4 py-2 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none dark:text-white">
+                    </div>
+                    <button id="resetSearch" class="px-3 py-2 text-xs text-slate-500 dark:text-slate-400 hover:text-emerald-600 bg-slate-200/60 dark:bg-slate-800 rounded-xl transition">
+                        Reset
+                    </button>
+                </div>
+            </div>
+
+            <!-- Asatidz Cards Grid -->
+            <div id="asatidzGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Javascript dynamic population -->
+            </div>
+
+            <!-- Empty Search Alert -->
+            <div id="emptyResult" class="hidden text-center py-12 bg-white dark:bg-slate-800 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 my-4">
+                <i class="fa-solid fa-folder-open text-4xl text-slate-300 dark:text-slate-600 mb-3"></i>
+                <h3 class="text-base font-bold text-slate-700 dark:text-slate-200">Ustadz / Kata kunci tidak ditemukan</h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Coba kata kunci lain atau klik tombol Reset.</p>
+            </div>
+        </section>
+
+        <section class="bg-slate-100 dark:bg-slate-800/40 py-12 border-t border-slate-200 dark:border-slate-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-2xl mx-auto mb-8">
+                    <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest block">Landasan Syar'i</span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-1">Dalil & Keutamaan Wakaf</h2>
+                    <p class="text-slate-600 dark:text-slate-400 text-xs sm:text-sm mt-1">Kutipan hadits shahih yang disampaikan oleh para Ustadz dalam tausiyahnya.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold mb-3">
+                            <i class="fa-solid fa-infinity text-base"></i>
+                        </div>
+                        <h3 class="font-bold text-slate-900 dark:text-white text-sm mb-1">Amal Jariyah Tak Terputus</h3>
+                        <p class="text-[11px] text-slate-400 mb-2">HR. Muslim dari Abu Hurairah RA</p>
+                        <p class="arabic-text text-right text-emerald-800 dark:text-emerald-300 text-base mb-2">إِذَا مَاتَ الْإِنْسَانُ انْقَطَعَ عَمَلُهُ إِلَّا مِنْ ثَلَاثَةٍ ... صَدَقَةٍ جَارِيَةٍ</p>
+                        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">"Apabila manusia meninggal dunia, terputuslah amalnya kecuali tiga perkara: sedekah jariyah, ilmu yang bermanfaat, atau anak saleh yang mendoakannya."</p>
+                    </div>
+
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold mb-3">
+                            <i class="fa-solid fa-kaaba text-base"></i>
+                        </div>
+                        <h3 class="font-bold text-slate-900 dark:text-white text-sm mb-1">Rumah di Jannah (Surga)</h3>
+                        <p class="text-[11px] text-slate-400 mb-2">Hadits Mutawatir</p>
+                        <p class="arabic-text text-right text-emerald-800 dark:text-emerald-300 text-base mb-2">مَنْ بَنَى لِلَّهِ مَسْجِدًا بَنَى اللَّهُ لَهُ بَيْتًا فِي الْجَنَّةِ</p>
+                        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">"Siapa yang membangun masjid karena Allah, maka Allah akan bangunkan baginya rumah di Jannah (Surga)."</p>
+                    </div>
+
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold mb-3">
+                            <i class="fa-solid fa-umbrella text-base"></i>
+                        </div>
+                        <h3 class="font-bold text-slate-900 dark:text-white text-sm mb-1">Naungan di Hari Kiamat</h3>
+                        <p class="text-[11px] text-slate-400 mb-2">HR. Ahmad</p>
+                        <p class="arabic-text text-right text-emerald-800 dark:text-emerald-300 text-base mb-2">كُلُّ امْرِئٍ فِي ظِلِّ صَدَقَتِهِ</p>
+                        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">"Setiap orang akan berada di bawah naungan sedekahnya pada hari kiamat kelak."</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="bg-gradient-to-br from-emerald-900 via-emerald-800 to-slate-900 text-white rounded-3xl p-6 sm:p-8 shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
+                <div>
+                    <span class="text-amber-400 text-xs font-bold uppercase tracking-wider block">Informasi Rekening Resmi</span>
+                    <h3 class="text-xl sm:text-2xl font-black text-white mt-1">Yayasan Mu'adz bin Jabal Bogor</h3>
+                    <p class="text-emerald-100/80 text-xs sm:text-sm mt-1">Silakan salurkan wakaf melalui rekening BSI khusus pembebasan lahan.</p>
+                </div>
+
+                <div class="bg-white/10 backdrop-blur p-4 rounded-2xl border border-white/20 w-full md:w-auto flex items-center justify-between gap-4">
+                    <div>
+                        <p class="text-[10px] text-emerald-200 uppercase font-semibold">Bank Syariah Indonesia (BSI)</p>
+                        <p class="text-lg font-extrabold text-white tracking-widest">711-222-3343</p>
+                        <p class="text-[11px] text-emerald-200/80">a.n. Yayasan Mu'adz bin Jabal Bogor</p>
+                    </div>
+                    <button onclick="copyToClipboard('7112223343', 'Nomor Rekening BSI')" class="px-3.5 py-2 bg-amber-400 hover:bg-amber-300 text-emerald-950 font-bold rounded-xl text-xs transition shadow shrink-0">
+                        <i class="fa-regular fa-copy mr-1"></i> Salin
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-slate-900 text-slate-400 py-8 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-4 text-xs">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-xl bg-emerald-700 text-white flex items-center justify-center font-bold">
+                        <i class="fa-solid fa-mosque"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-white">Masjid Mu'adz bin Jabal</h4>
+                        <p class="text-slate-500">Bojong Kulur, Gunung Putri, Kab. Bogor</p>
+                    </div>
+                </div>
+                <div class="text-slate-500 text-center sm:text-right">
+                    <p>&copy; Internal Portal Rekap Wakaf Lahan MBJ</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Transcript Modal -->
+    <div id="transcriptModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 transition-opacity">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-3xl rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden my-auto flex flex-col max-h-[90vh]">
+            
+            <div class="p-5 sm:p-6 bg-gradient-to-r from-emerald-800 to-emerald-950 text-white flex items-start justify-between relative shrink-0">
+                <div class="flex items-center gap-3.5">
+                    <div id="modalAvatar" class="w-12 h-12 rounded-2xl bg-amber-400 text-emerald-950 font-black text-lg flex items-center justify-center shadow-lg shrink-0">
+                        <!-- Initial -->
+                    </div>
+                    <div>
+                        <span class="text-[10px] font-semibold text-emerald-200 uppercase tracking-wider block">Materi Tausiyah Lengkap</span>
+                        <h3 id="modalUstadzName" class="text-lg sm:text-xl font-black text-white">Ustadz Name</h3>
+                        <p id="modalQuoteSnippet" class="text-xs text-emerald-100/80 italic mt-0.5 line-clamp-1"></p>
+                    </div>
+                </div>
+                <button id="closeModalBtn" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark text-sm"></i>
+                </button>
+            </div>
+
+            <div class="bg-slate-100 dark:bg-slate-800 px-6 py-2 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between text-xs text-slate-600 dark:text-slate-300 shrink-0">
+                <div class="flex items-center gap-2">
+                    <button id="modalCopyBtn" class="flex items-center gap-1.5 px-3 py-1 bg-white dark:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600 hover:text-emerald-600 font-semibold transition">
+                        <i class="fa-regular fa-copy"></i>
+                        <span>Salin Teks</span>
+                    </button>
+                    <a id="modalTgLink" href="#" target="_blank" class="flex items-center gap-1.5 px-3 py-1 bg-sky-500 hover:bg-sky-600 text-white rounded-lg font-semibold transition">
+                        <i class="fa-paper-plane"></i>
+                        <span>Buka Telegram</span>
+                    </a>
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <button id="modalFontMinus" class="w-7 h-7 bg-white dark:bg-slate-700 rounded border border-slate-200 dark:border-slate-600 font-bold" title="Kecilkan Font">A-</button>
+                    <button id="modalFontPlus" class="w-7 h-7 bg-white dark:bg-slate-700 rounded border border-slate-200 dark:border-slate-600 font-bold" title="Besarkan Font">A+</button>
+                </div>
+            </div>
+
+            <div id="modalBody" class="p-6 overflow-y-auto space-y-4 text-slate-800 dark:text-slate-200 text-sm leading-relaxed">
+                <!-- Transcript populated dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Modal View -->
+    <div id="imageModal" class="fixed inset-0 z-50 hidden bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="relative max-w-5xl w-full">
+            <button onclick="closeImageModal()" class="absolute -top-10 right-0 text-white text-2xl hover:text-amber-400 transition">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <img id="enlargedImage" src="" alt="Zoomed Location Map" class="w-full h-auto max-h-[85vh] object-contain rounded-2xl shadow-2xl border border-white/10">
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border border-slate-700 text-xs">
+        <i class="fa-solid fa-circle-check text-emerald-400 text-base"></i>
+        <span id="toastMessage">Pesan disalin!</span>
+    </div>
+
+    <script>
+        /* Asatidz Transcript Data */
+        const asatidzData = [
+            {
+                id: "cecep-nurrohman",
+                name: "Ustadz Abu Zaid Cecep Nurrohman, M.A.",
+                title: "hafizhahullah",
+                initials: "AC",
+                tgLink: "https://t.me/muadzbinjabal/6125",
+                summary: "Umur manusia terbatas (60-70 tahun). Mari gunakan kesempatan hidup untuk investasi sedekah jariyah wakaf lahan masjid.",
+                keyVerseHadith: "Umur umatku itu berkisar antara 60 sampai 70 tahun...",
+                transcriptHTML: `
+                    <p class="font-semibold">Bismillahirrahmanirrahim.</p>
+                    <p>Assalamu’alaikum warahmatullahi wabarakatuh.</p>
+                    <p>Alhamdulillah, wash-shalaatu was-salaamu ‘ala Rasulillah, Nabiyyina Muhammadin wa ‘ala aalihi wa shahbihi ajma’in, amma ba’du.</p>
+
+                    <p>Ikhwani wa akhwati fillah, rahimani wa rahimakumullahu ajma'in.</p>
+                    <p>Umur seorang anak Adam sangatlah terbatas. Allah Subhanahu wa Ta'ala memberikan kita kesempatan hidup hanya sekali. Dan Nabi kita Muhammad Shallallahu 'Alaihi Wasallam telah mengabarkan dalam haditsnya, dalam hadits Ibnu Majah, dari Abu Hurairah Radhiyallahu Ta'ala Anhu wa ardhoh, kata Nabi Shallallahu 'Alaihi Wasallam:</p>
+                    
+                    <div class="my-3 p-4 bg-emerald-50 dark:bg-emerald-950/40 rounded-2xl border-l-4 border-emerald-600">
+                        <p class="arabic-text text-xl font-bold text-emerald-900 dark:text-emerald-200 mb-2">أَعْمَارُ أُمَّتِي مَا بَيْنَ السِّتِّينَ إِلَى السَّبْعِينَ وَأَقَلُّهُمْ مَنْ يَجُوزُ ذَلِكَ</p>
+                        <p class="text-xs text-slate-600 dark:text-slate-300 italic">Kata Nabi yang mulia: "Umur umatku itu berkisar antara 60 sampai 70 tahun, dan sedikit di antara mereka yang melampaui batasan usia tersebut."</p>
+                    </div>
+
+                    <p>Maka saudaraku yang Allah muliakan, hendaknya kita pahami bersama bahwasanya usia kita sangat terbatas, kesempatan beramal kita sangat terbatas. Namun, Rasulullah Shallallahu 'Alaihi Wasallam mengabarkan dalam hadits yang lain bahwasanya ada pintu-pintu kebaikan yang kalau seandainya dimasuki oleh seorang hamba, maka akan senantiasa mengalirkan pahala meskipun seseorang telah meninggal dunia.</p>
+
+                    <div class="my-3 p-4 bg-emerald-50 dark:bg-emerald-950/40 rounded-2xl border-l-4 border-emerald-600 space-y-2">
+                        <p class="arabic-text text-xl font-bold text-emerald-900 dark:text-emerald-200">إِذَا مَاتَ الْإِنْسَانُ انْقَطَعَ عَمَلُهُ إِلَّا مِنْ ثَلَاثَةٍ</p>
+                        <p class="text-xs text-slate-600 dark:text-slate-300 italic font-semibold">"Apabila seorang anak Adam meninggal dunia, maka terputuslah semua amalannya."</p>
+                        <p class="text-xs text-slate-600 dark:text-slate-400">Salat kita terputus, zakat kita terputus, puasa kita terputus, dan amal-amal yang terputus ketika ajal menemui kita.</p>
+                        <p class="text-xs font-semibold text-emerald-800 dark:text-emerald-300">Kecuali dari tiga pintu:</p>
+                        <p class="arabic-text text-lg text-emerald-900 dark:text-emerald-200">إِلَّا مِنْ صَدَقَةٍ جَارِيَةٍ <span class="text-xs font-sans text-slate-600 dark:text-slate-300">(Kecuali pintu sedekah jariyah)</span></p>
+                        <p class="arabic-text text-lg text-emerald-900 dark:text-emerald-200">أَوْ عِلْمٍ يُنْتَفَعُ بِهِ <span class="text-xs font-sans text-slate-600 dark:text-slate-300">(Atau pintu ilmu yang bermanfaat)</span></p>
+                        <p class="arabic-text text-lg text-emerald-900 dark:text-emerald-200">أَوْ وَلَدٍ صَالِحٍ يَدْعُو لَهُ <span class="text-xs font-sans text-slate-600 dark:text-slate-300">(Atau anak saleh yang senantiasa mendoakan kebaikan bagi orang tuanya)</span></p>
+                    </div>
+
+                    <p>Maka di antara bentuk sedekah jariyah adalah berupa wakaf untuk masjid. Yayasan Mu'adz bin Jabal yang saat ini sedang membuka investasi wakaf untuk pembebasan lahan yang insyaAllah digunakan untuk aktivitas Masjid Mu'adz bin Jabal. Saya pribadi mengajak kita semuanya untuk bersama-sama kita ta'awun 'alal birri wat taqwa.</p>
+
+                    <div class="my-3 p-3 bg-amber-50 dark:bg-amber-950/30 rounded-xl border border-amber-300/40">
+                        <p class="arabic-text text-lg font-bold text-amber-900 dark:text-amber-200">مَا نَقَصَتْ صَدَقَةٌ مِنْ مَالٍ</p>
+                        <p class="text-xs text-slate-600 dark:text-slate-300 italic font-medium">"Sedekah yang dikeluarkan seorang hamba tidak akan mengurangi jatah rezekinya, yang ada semakin Allah tambah keberkahan pada harta tersebut."</p>
+                    </div>
+                `
+            },
+            {
+                id: "erwandi-tarmizi",
+                name: "Ustadz Dr. Erwandi Tarmizi, M.A.",
+                title: "hafizhahullah",
+                initials: "ET",
+                tgLink: "https://t.me/muadzbinjabal/6124",
+                summary: "Gunakan kelebihan rezeki untuk meraih surga Allah. Jangan ragu membebaskan lahan parkir masjid yang sering penuh saat kajian.",
+                keyVerseHadith: "وَسَارِعُوٓا۟ إِلَىٰ مَغْفِرَةٍ مِّن رَّبِّكُمْ وَجَنَّةٍ",
+                transcriptHTML: `
+                    <p>Assalamu’alaikum warahmatullahi wabarakatuh.</p>
+                    <p>Kaum muslimin, kaum muslimat yang dikaruniakan kelebihan rezeki oleh Allah Azza wa Jalla. Sekarang Yayasan Masjid Mu’adz bin Jabal daerah Bojong Kulur, Bogor, ingin membebaskan lahan untuk kebutuhan parkir yang sering penuh pada saat kajian-kajian.</p>
+                    <p>Maka kesempatan ini, kesempatan bagi Anda untuk meraih surga Allah Azza wa Jalla. Anda tidak tahu kemungkinan ini yang mengantarkan Anda ke dalam surga Allah Azza wa Jalla. Maka berlomba-lombalah.</p>
+
+                    <div class="my-4 p-4 bg-emerald-50 dark:bg-emerald-950/40 rounded-2xl border-l-4 border-emerald-600">
+                        <p class="arabic-text text-xl font-bold text-emerald-900 dark:text-emerald-200 mb-2">وَسَارِعُوٓا۟ إِلَىٰ مَغْفِرَةٍ مِّن رَّبِّكُمْ وَجَنَّةٍ عَرْضُهَا ٱلسَّمَٰوَٰتُ وَٱلْأَرْضُ</p>
+                        <p class="text-xs text-slate-600 dark:text-slate-300 italic font-medium">"Bersegeralah menuju surga Allah Azza wa Jalla dengan amalan mana pun yang kita tidak tahu ternyata itu yang mengantarkan kepada surga Allah Azza wa Jalla."</p>
+                    </div>
+
+                    <p>Wassalamu’alaikum warahmatullahi wabarakatuh.</p>
+                `
+            },
+            {
+                id: "badru-salam",
+                name: "Ustadz Badru Salam, Lc.",
+                title: "hafizhahullah",
+                initials: "BS",
+                tgLink: "https://t.me/muadzbinjabal/6093",
+                summary: "Lahan 400m² sangat vital untuk parkir jamaah kajian agar tidak mengganggu jalan umum, serta untuk Shalat Id & Qurban.",
+                keyVerseHadith: "مَا نَقَصَ مَالٌ مِنْ صَدَقَةٍ (Harta tidak akan berkurang karena sedekah)",
+                transcriptHTML: `
+                    <p class="font-semibold">Alhamdulillah, wash-shalaatu was-salaamu ‘ala Rasulillah.</p>
+                    <p>Saudaraku seiman rahimani wa rahimakumullahu jamii'an.</p>
+                    <p>InsyaAllah Masjid Mu'adz bin Jabal akan membebaskan tanah seluas 400 meter yang berada di depan masjid.</p>
+                    
+                    <div class="bg-slate-50 dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 my-3">
+                        <p class="font-bold text-slate-900 dark:text-white text-xs uppercase tracking-wider mb-2">Gunanya untuk apa?</p>
+                        <ul class="list-disc list-inside text-xs space-y-1.5 text-slate-700 dark:text-slate-300">
+                            <li><strong>Pertama:</strong> Parkiran ketika ada kajian ramai, supaya tidak mengganggu jalan umum.</li>
+                            <li><strong>Kedua:</strong> Berguna untuk kegiatan Shalat Idul Fitri, Idul Adha, hewan kurban dan lainnya.</li>
+                        </ul>
+                    </div>
+
+                    <p>Membebaskan tanah ini membutuhkan uluran tangan dari para muhsinin yang ingin berderma, yang ingin hartanya barakah. Karena sedekah tidak akan merugikan sama sekali.</p>
+
+                    <div class="my-4 p-4 bg-emerald-50 dark:bg-emerald-950/40 rounded-2xl border-l-4 border-emerald-600">
+                        <p class="arabic-text text-xl font-bold text-emerald-900 dark:text-emerald-200 mb-1">مَا نَقَصَ مَالٌ مِنْ صَدَقَةٍ</p>
+                        <p class="text-xs text-slate-600 dark:text-slate-300 italic font-semibold">"Harta tidak akan berkurang karena sedekah."</p>
+                    </div>
+
+                    <p>Wabillahit taufiq, wassalamu’alaikum warahmatullahi wabarakatuh.</p>
+                `
+            },
+            {
+                id: "sufyan-baswedan",
+                name: "Ustadz Dr. Sufyan Baswedan, M.A.",
+                title: "hafizhahullah",
+                initials: "SB",
+                tgLink: "https://t.me/muadzbinjabal/6666",
+                summary: "Simpan hartamu di langit. Harta sejati adalah apa yang disedekahkan untuk masjid yang akan kita nikmati di akhirat.",
+                keyVerseHadith: "مَنْ بَنَى لِلَّهِ مَسْجِدًا بَنَى اللَّهُ لَهُ بَيْتًا فِي الْجَنَّةِ",
+                transcriptHTML: `
+                    <p class="font-semibold">Bismillahirrahmanirrahim.</p>
+                    <p>Assalamu’alaikum warahmatullahi wabarakatuh.</p>
+                    <p>Alhamdulillah, wash-shalaatu was-salaamu ‘ala Rasulillah, amma ba’du.</p>
+                    <p>Sebagaimana kita ketahui dalam hadits yang mutawatir, Nabi Shallallahu 'Alaihi Wasallam mengatakan:</p>
+
+                    <div class="my-4 p-4 bg-emerald-50 dark:bg-emerald-950/40 rounded-2xl border-l-4 border-emerald-600">
+                        <p class="arabic-text text-xl font-bold text-emerald-900 dark:text-emerald-200 mb-1">مَنْ بَنَى لِلَّهِ مَسْجِدًا بَنَى اللَّهُ لَهُ بَيْتًا فِي الْجَنَّةِ</p>
+                        <p class="text-xs text-slate-600 dark:text-slate-300 italic font-semibold">"Siapa yang membangun masjid untuk Allah, Allah akan bangunkan baginya rumah di Jannah."</p>
+                    </div>
+
+                    <p>Semua yang hari ini tercatat sebagai harta kita, belum tentu itu akan kita nikmati, kecuali yang kita sedekahkan. Maka simpanlah hartamu di langit. Bantulah membebaskan tanah untuk perluasan masjid ini.</p>
+
+                    <p>Wassalamu’alaikum warahmatullahi wabarakatuh.</p>
+                `
+            },
+            {
+                id: "abu-haidar",
+                name: "Ustadz Abu Haidar As-Sundawi",
+                title: "hafizhahullah",
+                initials: "AH",
+                tgLink: "https://t.me/muadzbinjabal/8043",
+                summary: "Menyaksikan langsung pelataran parkir yang selalu penuh. Wakaf ini menjadi ladang pahala jariyah bagi kelancaran penuntut ilmu.",
+                keyVerseHadith: "Target Lahan 400m² (~Rp 1,6 Miliar). Pahala dipanen sampai Hari Kiamat.",
+                transcriptHTML: `
+                    <p>Assalamu’alaikum warahmatullahi wabarakatuh.</p>
+                    <p>Saya sekarang berada di depan pelataran Masjid Mu’adz bin Jabal di Bogor Cileungsi. Dan masjid ini sangat makmur dengan kajian. Pelataran parkir di sini amat sangat full/penuh, hingga mengganggu lalu lintas.</p>
+                    
+                    <div class="my-3 p-4 bg-amber-50 dark:bg-amber-950/30 rounded-2xl border border-amber-300/40">
+                        <p class="text-xs font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wider mb-1">Kondisi Penggalangan Lahan</p>
+                        <p class="text-xs">Di depan ada lahan tanah seluas 400 m² dijual ke masjid. Total biaya 1,6 Miliar. Setiap ada yang parkir di sini untuk ngaji, maka menjadi sedekah bagi Anda yang berpartisipasi.</p>
+                    </div>
+
+                    <p>Yuk kita berpartisipasi untuk pembebasan lahan ini, semoga ini menjadi ladang jariyah sampai hari kiamat nanti.</p>
+
+                    <p>Wassalamu’alaikum warahmatullahi wabarakatuh.</p>
+                `
+            },
+            {
+                id: "syafiq-basalamah",
+                name: "Ustadz Dr. Syafiq Riza Basalamah, M.A.",
+                title: "hafizhahullah",
+                initials: "SB",
+                tgLink: "https://t.me/c/3406217529/76/87",
+                summary: "Di hari kiamat manusia akan tenggelam dalam keringat. Setiap orang akan berada di bawah naungan sedekahnya.",
+                keyVerseHadith: "كُلُّ امْرِئٍ فِي ظِلِّ صَدَقَتِهِ (Setiap orang di bawah naungan sedekahnya)",
+                transcriptHTML: `
+                    <p>Assalamu’alaikum warahmatullahi wabarakatuh.</p>
+                    <p>Ahibbati fillah, semua yang kita miliki akan kita tinggalkan. Dan pada saat kita dibangkitkan dari kubur, matahari didekatkan, manusia tenggelam dalam keringat sesuai amalannya.</p>
+
+                    <div class="my-4 p-4 bg-emerald-50 dark:bg-emerald-950/40 rounded-2xl border-l-4 border-emerald-600">
+                        <p class="arabic-text text-xl font-bold text-emerald-900 dark:text-emerald-200 mb-1">كُلُّ امْرِئٍ فِي ظِلِّ صَدَقَتِهِ</p>
+                        <p class="text-xs text-slate-600 dark:text-slate-300 italic font-semibold">"Setiap orang akan berada di bawah naungan sedekahnya."</p>
+                    </div>
+
+                    <p>Mu'adz bin Jabal hendak membebaskan lahan. Kalau antum memiliki kelebihan harta, titipkan di sini, antum ambil di akhirat nanti.</p>
+
+                    <p>Wassalamu’alaikum warahmatullahi wabarakatuh.</p>
+                `
+            }
+        ];
+
+        /* Fallback Mock Data in case Google Sheet fetch fails or CORS restricts local preview */
+        const fallbackWakafData = [
+            { no: 147, tanggal: "19 Agustus 2026", penerimaan: 1554080407, penambahan: 5000000, persentase: "94,19%", kekurangan: 95919593 },
+            { no: 146, tanggal: "18 Agustus 2026", penerimaan: 1549080407, penambahan: 10000000, persentase: "93,88%", kekurangan: 100919593 },
+            { no: 145, tanggal: "17 Agustus 2026", penerimaan: 1539080407, penambahan: 15000000, persentase: "93,28%", kekurangan: 110919593 },
+            { no: 144, tanggal: "15 Agustus 2026", penerimaan: 1524080407, penambahan: 8500000, persentase: "92,37%", kekurangan: 125919593 },
+            { no: 143, tanggal: "12 Agustus 2026", penerimaan: 1515580407, penambahan: 20000000, persentase: "91,85%", kekurangan: 134419593 },
+            { no: 142, tanggal: "10 Agustus 2026", penerimaan: 1495580407, penambahan: 12000000, persentase: "90,64%", kekurangan: 154419593 },
+            { no: 141, tanggal: "05 Agustus 2026", penerimaan: 1483580407, penambahan: 25000000, persentase: "89,91%", kekurangan: 166419593 },
+            { no: 140, tanggal: "01 Agustus 2026", penerimaan: 1458580407, penambahan: 18000000, persentase: "88,40%", kekurangan: 191419593 }
+        ];
+
+        let sheetData = [];
+        let filteredSheetData = [];
+        let currentPage = 1;
+        const rowsPerPage = 10;
+        let currentModalFontSp = 15;
+        let activeSelectedUstadz = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setupTheme();
+            renderAsatidzCards(asatidzData);
+            setupSearch();
+            setupModalHandlers();
+            setupHeroCarousel();
+            fetchGoogleSheetData();
+
+            document.getElementById('refreshSheetBtn').addEventListener('click', fetchGoogleSheetData);
+        });
+
+        async function fetchGoogleSheetData() {
+            const syncSpinner = document.getElementById('syncSpinner');
+            const statusEl = document.getElementById('lastSyncStatus');
+            syncSpinner.classList.add('fa-spin');
+            statusEl.innerText = "Sedang mengambil data dari Google Sheet...";
+
+            const spreadsheetId = '1RtCAp_zYkCzV16hGsT8FlTKU5pBlsGttOyvXc7gonv0';
+            const sheetName = encodeURIComponent('Rekap Wakaf MBJ');
+            const gvizUrl = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:json&sheet=${sheetName}`;
+
+            try {
+                const response = await fetch(gvizUrl);
+                if (!response.ok) throw new Error("Gagal terhubung ke Google Sheets API");
+                const text = await response.text();
+
+                const jsonMatch = text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\);/);
+                if (!jsonMatch) throw new Error("Format respon Google Sheet tidak valid");
+
+                const json = JSON.parse(jsonMatch[1]);
+                const table = json.table;
+                
+                sheetData = parseGVizTable(table);
+                if (sheetData.length === 0) {
+                    sheetData = fallbackWakafData;
+                }
+
+                statusEl.innerText = `Terhubung! Terakhir diperbarui: ${new Date().toLocaleTimeString('id-ID')} WIB`;
+            } catch (error) {
+                console.warn("Spreadsheet fetch fallback:", error);
+                sheetData = fallbackWakafData;
+                statusEl.innerText = `Menggunakan data ter-cache (${new Date().toLocaleTimeString('id-ID')} WIB)`;
+            } finally {
+                syncSpinner.classList.remove('fa-spin');
+                filteredSheetData = [...sheetData];
+                updateSheetTotals();
+                renderSheetTable();
+            }
+        }
+
+        function parseGVizTable(table) {
+            if (!table || !table.rows || table.rows.length === 0) return [];
+            
+            const rows = table.rows;
+            const parsed = [];
+
+            rows.forEach((row) => {
+                const cells = row.c;
+                if (!cells) return;
+
+                /* 
+                 * Pemetaan Index Kolom Google Sheets:
+                 * A=0, B=1, C=2, D=3, E=4, F=5, G=6, H=7
+                 */
+                const cellTanggal    = cells[1]; // Kolom B: Tanggal Update
+                const cellPenerimaan = cells[4]; // Kolom E: Penerimaan Total (Rp)
+                const cellPenambahan = cells[5]; // Kolom F: Penambahan (Delta)
+                const cellPersentase = cells[6]; // Kolom G: Persentase Capaian
+                const cellKekurangan = cells[7]; // Kolom H: Sisa Dana
+
+                // Helper untuk ekstrak nilai numerik yang aman
+                const getNum = (cell) => {
+                    if (!cell) return 0;
+                    if (typeof cell.v === 'number') return cell.v;
+                    if (typeof cell.v === 'string') {
+                        // Menangani format ribuan indonesia jika terbaca sebagai string
+                        let strVal = cell.v.replace(/\./g, '').replace(/,/g, '.');
+                        return parseFloat(strVal.replace(/[^0-9.-]+/g, "")) || 0;
+                    }
+                    return 0;
+                };
+
+                const penerimaanVal = getNum(cellPenerimaan);
+
+                // Lewati baris jika sel penerimaan berisi teks (indikasi baris header yang tak sengaja masuk)
+                if (cellPenerimaan && typeof cellPenerimaan.v === 'string' && cellPenerimaan.v.toLowerCase().includes('penerimaan')) {
+                    return;
+                }
+
+                // Tambahkan data ke array HANYA jika penerimaan > 0 (mengabaikan baris kosong)
+                if (penerimaanVal > 0) {
+                    const rawTanggal = cellTanggal ? (cellTanggal.f || cellTanggal.v || '') : '';
+                    const penambahanVal = getNum(cellPenambahan);
+                    
+                    // Fallback: Jika sisa dana kosong dari sheet, kalkulasi dari target (1.65 Miliar)
+                    const kekuranganVal = getNum(cellKekurangan) || Math.max(0, 1650000000 - penerimaanVal); 
+
+                    // Format persentase 
+                    let persentaseVal = cellPersentase ? (cellPersentase.f || String(cellPersentase.v) || '') : '';
+                    if (cellPersentase && typeof cellPersentase.v === 'number' && !String(persentaseVal).includes('%')) {
+                        persentaseVal = (cellPersentase.v * 100).toFixed(2).replace('.', ',') + '%';
+                    }
+                    
+                    // Fallback: Kalkulasi persentase jika kolom persentase di sheet tidak valid/kosong
+                    if (!persentaseVal || persentaseVal.trim() === '') {
+                        persentaseVal = ((penerimaanVal / 1650000000) * 100).toFixed(2).replace('.', ',') + '%';
+                    }
+
+                    parsed.push({
+                        tanggal: formatDateVal(rawTanggal),
+                        penerimaan: penerimaanVal,
+                        penambahan: penambahanVal,
+                        persentase: persentaseVal,
+                        kekurangan: kekuranganVal
+                    });
+                }
+            });
+
+            // Balik urutan array agar data terbaru (baris paling bawah di sheet) muncul di atas
+            const reversedParsed = parsed.reverse();
+            
+            // Generate ulang nomor urut setelah dibalik (147, 146, ..., 1)
+            reversedParsed.forEach((item, index) => {
+                item.no = reversedParsed.length - index;
+            });
+
+            return reversedParsed;
+        }
+
+        function formatDateVal(raw) {
+            if (!raw || String(raw).trim() === '') return '-';
+            if (typeof raw === 'string' && raw.includes('Date')) {
+                const parts = raw.match(/\d+/g);
+                if (parts && parts.length >= 3) {
+                    return `${parts[2]} ${getMonthName(parseInt(parts[1]))} ${parts[0]}`;
+                }
+            }
+            return String(raw).replace('Date(', '').replace(')', '');
+        }
+
+        function getMonthName(mIdx) {
+            const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+            return months[mIdx] || "Agustus";
+        }
+
+        function updateSheetTotals() {
+            if (sheetData.length === 0) return;
+
+            const latestRow = sheetData[0]; // Assuming newest first or latest update
+            
+            const totalCollected = latestRow.penerimaan || 1554080407;
+            const remaining = latestRow.kekurangan || 95919593;
+            const percentageStr = latestRow.persentase || '94,19%';
+            const latestDate = latestRow.tanggal || '19 Agustus 2026';
+            const totalUpdatesCount = sheetData.length >= 147 ? sheetData.length : 147;
+
+            document.getElementById('heroStatDate').innerHTML = `<i class="fa-regular fa-calendar-check text-amber-400"></i> <span>${latestDate}</span>`;
+            document.getElementById('statTotalCollected').innerText = formatRupiah(totalCollected);
+            document.getElementById('statRemaining').innerText = formatRupiah(remaining);
+            document.getElementById('statCount').innerText = `${totalUpdatesCount} Baris Update`;
+            document.getElementById('percentBadge').innerText = percentageStr.includes('%') ? percentageStr : `${percentageStr}%`;
+            
+            const numericPct = parseFloat(percentageStr.replace(',', '.')) || 94.19;
+            document.getElementById('progressBar').style.width = `${numericPct}%`;
+        }
+
+        function renderSheetTable() {
+            const tbody = document.getElementById('sheetTableBody');
+            const searchVal = document.getElementById('sheetSearchInput').value.toLowerCase().trim();
+
+            if (searchVal) {
+                filteredSheetData = sheetData.filter(d => 
+                    String(d.tanggal).toLowerCase().includes(searchVal) ||
+                    String(d.penerimaan).includes(searchVal) ||
+                    String(d.penambahan).includes(searchVal)
+                );
+            } else {
+                filteredSheetData = [...sheetData];
+            }
+
+            document.getElementById('rowCountBadge').innerText = `${filteredSheetData.length} Baris Update Tampil`;
+
+            const totalPages = Math.ceil(filteredSheetData.length / rowsPerPage) || 1;
+            if (currentPage > totalPages) currentPage = totalPages;
+
+            const startIdx = (currentPage - 1) * rowsPerPage;
+            const endIdx = startIdx + rowsPerPage;
+            const pageData = filteredSheetData.slice(startIdx, endIdx);
+
+            tbody.innerHTML = '';
+
+            if (pageData.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center py-8 text-slate-400">
+                            Tidak ada data update yang cocok.
+                        </td>
+                    </tr>
+                `;
+            } else {
+                pageData.forEach((row, i) => {
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-slate-50 dark:hover:bg-slate-800/80 transition";
+                    tr.innerHTML = `
+                        <td class="py-3 px-4 text-center text-slate-400 font-medium">${row.no || (startIdx + i + 1)}</td>
+                        <td class="py-3 px-4 font-semibold text-slate-800 dark:text-slate-200 whitespace-nowrap">${escapeHtml(row.tanggal)}</td>
+                        <td class="py-3 px-4 text-right font-extrabold text-emerald-700 dark:text-emerald-400">${formatRupiah(row.penerimaan)}</td>
+                        <td class="py-3 px-4 text-right font-bold text-amber-600 dark:text-amber-400">+${formatRupiah(row.penambahan)}</td>
+                        <td class="py-3 px-4 text-center font-bold text-slate-700 dark:text-slate-300">${escapeHtml(row.persentase)}</td>
+                        <td class="py-3 px-4 text-right font-semibold text-rose-600 dark:text-rose-400">${formatRupiah(row.kekurangan)}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            // Pagination UI
+            document.getElementById('pageInfo').innerText = `Halaman ${currentPage} dari ${totalPages}`;
+            const prevBtn = document.getElementById('prevPageBtn');
+            const nextBtn = document.getElementById('nextPageBtn');
+
+            prevBtn.disabled = currentPage <= 1;
+            nextBtn.disabled = currentPage >= totalPages;
+
+            prevBtn.onclick = () => { if (currentPage > 1) { currentPage--; renderSheetTable(); } };
+            nextBtn.onclick = () => { if (currentPage < totalPages) { currentPage++; renderSheetTable(); } };
+        }
+
+        document.getElementById('sheetSearchInput').addEventListener('input', () => {
+            currentPage = 1;
+            renderSheetTable();
+        });
+
+        function renderAsatidzCards(items) {
+            const grid = document.getElementById('asatidzGrid');
+            const empty = document.getElementById('emptyResult');
+            grid.innerHTML = '';
+
+            if (items.length === 0) {
+                empty.classList.remove('hidden');
+                return;
+            } else {
+                empty.classList.add('hidden');
+            }
+
+            items.forEach(u => {
+                const card = document.createElement('div');
+                card.className = "bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700/80 rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group hover:-translate-y-1";
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-600 to-emerald-800 text-white font-extrabold text-base flex items-center justify-center shadow-md shadow-emerald-700/20 group-hover:scale-105 transition-transform shrink-0">
+                                ${u.initials}
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="font-extrabold text-slate-900 dark:text-white text-sm sm:text-base leading-snug group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition">
+                                    ${u.name}
+                                </h3>
+                                <span class="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 block">${u.title}</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-50 dark:bg-slate-900/60 p-3 rounded-xl border border-slate-100 dark:border-slate-800 mb-3">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">Pesan Utama</span>
+                            <p class="text-xs font-semibold text-emerald-800 dark:text-emerald-300 line-clamp-2">${u.keyVerseHadith}</p>
+                        </div>
+
+                        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed line-clamp-3 mb-4">
+                            "${u.summary}"
+                        </p>
+                    </div>
+
+                    <div class="pt-3 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between gap-2">
+                        <button onclick="openTranscriptModal('${u.id}')" class="flex-1 py-2.5 px-3 bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-600 hover:text-white dark:hover:bg-emerald-600 text-emerald-700 dark:text-emerald-300 text-xs font-bold rounded-xl transition flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-book-open text-xs"></i>
+                            <span>Baca Selengkapnya</span>
+                        </button>
+                        <a href="${u.tgLink}" target="_blank" class="p-2.5 bg-slate-100 dark:bg-slate-700 hover:bg-sky-500 hover:text-white text-slate-500 dark:text-slate-300 rounded-xl text-xs transition" title="Buka Pesan Asli Telegram">
+                            <i class="fa-paper-plane"></i>
+                        </a>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function setupSearch() {
+            const searchInput = document.getElementById('searchInput');
+            const resetBtn = document.getElementById('resetSearch');
+
+            function filter() {
+                const query = searchInput.value.toLowerCase().trim();
+                const filtered = asatidzData.filter(u => 
+                    u.name.toLowerCase().includes(query) ||
+                    u.summary.toLowerCase().includes(query) ||
+                    u.keyVerseHadith.toLowerCase().includes(query)
+                );
+                renderAsatidzCards(filtered);
+            }
+
+            searchInput.addEventListener('input', filter);
+            resetBtn.addEventListener('click', () => {
+                searchInput.value = '';
+                renderAsatidzCards(asatidzData);
+            });
+        }
+
+        function setupModalHandlers() {
+            const modal = document.getElementById('transcriptModal');
+            const closeBtn = document.getElementById('closeModalBtn');
+            const copyBtn = document.getElementById('modalCopyBtn');
+            const fontPlus = document.getElementById('modalFontPlus');
+            const fontMinus = document.getElementById('modalFontMinus');
+
+            closeBtn.addEventListener('click', closeModal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal();
+            });
+
+            copyBtn.addEventListener('click', () => {
+                if (!activeSelectedUstadz) return;
+                const bodyText = document.getElementById('modalBody').innerText;
+                const formatted = `${activeSelectedUstadz.name} ${activeSelectedUstadz.title}\n\n${bodyText}\n\nSumber: ${activeSelectedUstadz.tgLink}`;
+                copyToClipboard(formatted, "Teks Nasihat Ustadz");
+            });
+
+            fontPlus.addEventListener('click', () => {
+                if (currentModalFontSp < 22) {
+                    currentModalFontSp += 2;
+                    document.getElementById('modalBody').style.fontSize = `${currentModalFontSp}px`;
+                }
+            });
+
+            fontMinus.addEventListener('click', () => {
+                if (currentModalFontSp > 12) {
+                    currentModalFontSp -= 2;
+                    document.getElementById('modalBody').style.fontSize = `${currentModalFontSp}px`;
+                }
+            });
+        }
+
+        function openTranscriptModal(ustadzId) {
+            const u = asatidzData.find(item => item.id === ustadzId);
+            if (!u) return;
+            activeSelectedUstadz = u;
+
+            document.getElementById('modalAvatar').innerText = u.initials;
+            document.getElementById('modalUstadzName').innerText = u.name;
+            document.getElementById('modalQuoteSnippet').innerText = `"${u.keyVerseHadith}"`;
+            document.getElementById('modalTgLink').href = u.tgLink;
+
+            const modalBody = document.getElementById('modalBody');
+            modalBody.innerHTML = u.transcriptHTML;
+            modalBody.style.fontSize = `${currentModalFontSp}px`;
+
+            const modal = document.getElementById('transcriptModal');
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('transcriptModal');
+            modal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        function openImageModal(src) {
+            document.getElementById('enlargedImage').src = src;
+            document.getElementById('imageModal').classList.remove('hidden');
+        }
+
+        function closeImageModal() {
+            document.getElementById('imageModal').classList.add('hidden');
+        }
+
+        function setupTheme() {
+            const toggle = document.getElementById('themeToggle');
+            if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.classList.add('dark');
+            }
+            toggle.addEventListener('click', () => {
+                document.documentElement.classList.toggle('dark');
+            });
+        }
+
+        function setupHeroCarousel() {
+            let index = 0;
+            const textEl = document.getElementById('heroQuoteText');
+            const authorEl = document.getElementById('heroQuoteAuthor');
+
+            setInterval(() => {
+                index = (index + 1) % asatidzData.length;
+                const current = asatidzData[index];
+                textEl.innerText = `"${current.keyVerseHadith}"`;
+                authorEl.innerText = `— ${current.name}`;
+            }, 6000);
+        }
+
+        function formatRupiah(num) {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+        }
+
+        function copyToClipboard(text, title = "Teks") {
+            const temp = document.createElement('textarea');
+            temp.value = text;
+            document.body.appendChild(temp);
+            temp.select();
+            try {
+                document.execCommand('copy');
+                showToast(`${title} telah disalin!`);
+            } catch (err) {
+                showToast(`Gagal menyalin.`);
+            }
+            document.body.removeChild(temp);
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').innerText = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        function escapeHtml(str) {
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>
