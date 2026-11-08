@@ -1,0 +1,569 @@
+```html
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitoring Wakaf Pendidikan Muadz bin Jabal</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+    </style>
+</head>
+<body class="text-gray-800 antialiased">
+
+    <!-- Header -->
+    <header class="bg-teal-700 text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col md:flex-row justify-between items-center">
+            <div class="flex items-center gap-3">
+                <i class="fa-solid fa-mosque text-2xl"></i>
+                <h1 class="text-xl md:text-2xl font-bold">Wakaf Pendidikan Muadz bin Jabal</h1>
+            </div>
+            <div class="mt-2 md:mt-0 text-sm opacity-80">
+                Update Terakhir: <span id="last-update-date" class="font-semibold"></span>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+        
+        <!-- Summary Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Dana Terkumpul -->
+            <div class="glass-card rounded-xl p-6 shadow-sm border border-gray-100 border-l-4 border-l-teal-500">
+                <p class="text-sm text-gray-500 font-medium mb-1">Total Dana Terkumpul</p>
+                <h3 class="text-2xl font-bold text-gray-800" id="card-terkumpul">Rp 0</h3>
+                <div class="mt-2 text-sm text-teal-600 font-medium bg-teal-50 inline-block px-2 py-1 rounded">
+                    <span id="card-percent-total">0</span>% dari Target Total
+                </div>
+            </div>
+
+            <!-- Paket Terkonversi -->
+            <div class="glass-card rounded-xl p-6 shadow-sm border border-gray-100 border-l-4 border-l-emerald-500">
+                <p class="text-sm text-gray-500 font-medium mb-1">Paket Terkonversi</p>
+                <h3 class="text-2xl font-bold text-gray-800" id="card-paket">0 <span class="text-lg font-normal text-gray-500">Paket</span></h3>
+                <div class="mt-2 text-sm text-emerald-600 font-medium bg-emerald-50 inline-block px-2 py-1 rounded">
+                    <span id="card-percent-lahan">0</span>% dari Target Lahan
+                </div>
+            </div>
+
+            <!-- Sisa Kebutuhan Lahan -->
+            <div class="glass-card rounded-xl p-6 shadow-sm border border-gray-100 border-l-4 border-l-orange-500">
+                <p class="text-sm text-gray-500 font-medium mb-1">Kekurangan Lahan (3,684 M)</p>
+                <h3 class="text-xl font-bold text-gray-800" id="card-sisa-lahan-rp">Rp 0</h3>
+                <div class="mt-2 text-sm text-orange-600 font-medium">
+                    Sisa: <span id="card-sisa-paket" class="font-bold">0</span> Paket
+                </div>
+            </div>
+
+            <!-- Sisa Kebutuhan Total -->
+            <div class="glass-card rounded-xl p-6 shadow-sm border border-gray-100 border-l-4 border-l-red-500">
+                <p class="text-sm text-gray-500 font-medium mb-1">Kekurangan Total (6,2 M)</p>
+                <h3 class="text-xl font-bold text-gray-800" id="card-sisa-total">Rp 0</h3>
+                <div class="mt-2 text-sm text-gray-500">
+                    Untuk Lahan & Pembangunan
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Left Column: Form & Predictor -->
+            <div class="lg:col-span-1 space-y-6">
+                <!-- Form Input -->
+                <div class="glass-card rounded-xl shadow-sm border border-gray-100 p-6 h-fit">
+                    <div class="flex items-center gap-2 mb-4">
+                        <i class="fa-solid fa-wand-magic-sparkles text-teal-600"></i>
+                        <h2 class="text-lg font-bold text-gray-800">Smart Update Input</h2>
+                    </div>
+                    <p class="text-xs text-gray-500 mb-4">Copas langsung text broadcast WhatsApp (harus mengandung Tanggal dan kata "Terkumpul: Rp...") ke kotak di bawah ini.</p>
+                    
+                    <form id="update-form" class="space-y-4">
+                        <div>
+                            <textarea id="input-wa" rows="5" placeholder="📅 Kamis, 5 November 2026&#10;🗳️ Total Paket   : 2.104 Paket&#10;✅ Terkumpul    : Rp  337.309.019,- (9,16%)" class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all resize-none"></textarea>
+                        </div>
+                        <div id="form-error" class="hidden bg-red-50 text-red-600 text-xs p-3 rounded border border-red-100 font-medium"></div>
+                        <div id="form-success" class="hidden bg-emerald-50 text-emerald-700 text-xs p-3 rounded border border-emerald-100 font-medium"></div>
+                        <button type="submit" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-semibold py-2.5 rounded-lg transition-colors shadow-sm flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-paste"></i> Ekstrak & Simpan
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Calculator -->
+                <div class="glass-card rounded-xl shadow-sm border border-gray-100 p-6 h-fit">
+                    <div class="flex items-center gap-2 mb-4">
+                        <i class="fa-solid fa-calculator text-teal-600"></i>
+                        <h2 class="text-lg font-bold text-gray-800">Kalkulator Prediksi</h2>
+                    </div>
+                    <div class="mb-4 bg-teal-50 text-teal-800 p-3 rounded-lg text-sm border border-teal-100 flex items-center gap-2">
+                        <i class="fa-solid fa-chart-pie text-lg opacity-80"></i>
+                        <div>
+                            <span class="block text-xs opacity-80 mb-0.5">Rata-rata Penerimaan</span>
+                            <strong id="stat-avg">Menghitung...</strong>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">Pilih Tanggal Prediksi (Kedepan)</label>
+                        <input type="date" id="calc-date" onchange="calculatePrediction()" class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all">
+                    </div>
+                    <div id="calc-result" class="mt-4">
+                        <p class="text-xs text-gray-500 text-center">Pilih tanggal di atas untuk melihat prediksi dana terkumpul.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart -->
+            <div class="lg:col-span-2 glass-card rounded-xl shadow-sm border border-gray-100 p-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-chart-line text-teal-600"></i>
+                        <h2 class="text-lg font-bold text-gray-800">Grafik Pertumbuhan</h2>
+                    </div>
+                    <div class="flex bg-gray-100 p-1 rounded-lg w-fit">
+                        <button id="btn-chart-lahan" onclick="setChartTarget('lahan')" class="px-3 py-1.5 text-xs sm:text-sm font-semibold rounded bg-white shadow-sm text-teal-700 transition-all">Target Lahan (3,684 M)</button>
+                        <button id="btn-chart-total" onclick="setChartTarget('total')" class="px-3 py-1.5 text-xs sm:text-sm font-semibold rounded text-gray-500 hover:text-teal-700 transition-all">Target Total (6,2 M)</button>
+                    </div>
+                </div>
+                <div class="relative h-[490px] w-full">
+                    <canvas id="waqfChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="glass-card rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-white">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-table-list text-teal-600"></i>
+                    <h2 class="text-lg font-bold text-gray-800">Tabel Riwayat Penerimaan & Kekurangan</h2>
+                </div>
+                <div class="text-sm text-gray-500">
+                    <span class="font-semibold text-gray-700">1 Paket</span> = Rp 1.750.000 (½ m²)
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left whitespace-nowrap">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3">Tanggal</th>
+                            <th scope="col" class="px-6 py-3">Dana Terkumpul</th>
+                            <th scope="col" class="px-6 py-3">Konversi Paket</th>
+                            <th scope="col" class="px-6 py-3">Kekurangan Paket</th>
+                            <th scope="col" class="px-6 py-3">% Lahan (3,684M)</th>
+                            <th scope="col" class="px-6 py-3">% Total (6,2M)</th>
+                            <th scope="col" class="px-6 py-3 text-right">Sisa Kebutuhan (Rp)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body" class="divide-y divide-gray-100">
+                        <!-- Data rows will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // Constants
+        const TARGET_TOTAL = 6200000000; // 6.2 Milyar
+        const TARGET_LAHAN = 3684000000; // 3.684 Milyar (Updated Lahan)
+        const HARGA_PAKET = 1750000;
+        const TOTAL_PAKET = 2104;
+
+        // Global State
+        let currentChartTarget = 'lahan';
+        let dailyAverage = 0;
+
+        // Initial Data based on prompt
+        let waqfData = [
+            { date: '2026-08-28', amount: 5155000 },
+            { date: '2026-08-30', amount: 15183598 },
+            { date: '2026-09-03', amount: 20945269 },
+            { date: '2026-09-07', amount: 29720267 },
+            { date: '2026-09-10', amount: 33272775 },
+            { date: '2026-09-14', amount: 40535775 },
+            { date: '2026-09-18', amount: 42531775 },
+            { date: '2026-09-27', amount: 60862275 },
+            { date: '2026-10-02', amount: 70277275 },
+            { date: '2026-10-06', amount: 73400289 },
+            { date: '2026-10-10', amount: 77727789 },
+            { date: '2026-10-13', amount: 80036789 },
+            { date: '2026-10-19', amount: 87046213 },
+            { date: '2026-10-22', amount: 292098819 },
+            { date: '2026-10-26', amount: 306682919 },
+            { date: '2026-10-28', amount: 316810119 },
+            { date: '2026-10-31', amount: 328316919 },
+            { date: '2026-11-02', amount: 333302019 },
+            { date: '2026-11-05', amount: 337309019 }
+        ];
+
+        let chartInstance = null;
+
+        // Formatters
+        const formatCurrency = (val) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(val);
+        const formatDate = (dateString) => {
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString('id-ID', options);
+        };
+        const formatShortDate = (dateString) => {
+            const options = { month: 'short', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString('id-ID', options);
+        };
+
+        // Render functions
+        function updateDashboard() {
+            // Sort data by date just in case
+            waqfData.sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            const latest = waqfData[waqfData.length - 1];
+            
+            // Calculate metrics
+            const paketTerkonversi = Math.floor(latest.amount / HARGA_PAKET);
+            const sisaTotal = TARGET_TOTAL - latest.amount;
+            const sisaLahan = Math.max(0, TARGET_LAHAN - latest.amount);
+            const sisaPaket = TOTAL_PAKET - paketTerkonversi;
+            
+            const pctTotal = ((latest.amount / TARGET_TOTAL) * 100).toFixed(2);
+            const pctLahan = ((latest.amount / TARGET_LAHAN) * 100).toFixed(2);
+
+            // Update DOM Elements
+            document.getElementById('last-update-date').innerText = formatDate(latest.date);
+            document.getElementById('card-terkumpul').innerText = formatCurrency(latest.amount);
+            document.getElementById('card-paket').innerHTML = `${paketTerkonversi} <span class="text-lg font-normal text-gray-500">Paket</span>`;
+            document.getElementById('card-percent-total').innerText = pctTotal;
+            document.getElementById('card-percent-lahan').innerText = pctLahan;
+            
+            document.getElementById('card-sisa-lahan-rp').innerText = formatCurrency(sisaLahan);
+            document.getElementById('card-sisa-paket').innerText = formatNumberID(sisaPaket);
+            
+            document.getElementById('card-sisa-total').innerText = formatCurrency(sisaTotal);
+
+            calcStats();
+            renderTable();
+            renderChart();
+        }
+
+        function formatNumberID(val) {
+            return new Intl.NumberFormat('id-ID').format(val);
+        }
+
+        function setChartTarget(target) {
+            currentChartTarget = target;
+            const btnLahan = document.getElementById('btn-chart-lahan');
+            const btnTotal = document.getElementById('btn-chart-total');
+            
+            if (target === 'lahan') {
+                btnLahan.className = "px-3 py-1.5 text-xs sm:text-sm font-semibold rounded bg-white shadow-sm text-teal-700 transition-all";
+                btnTotal.className = "px-3 py-1.5 text-xs sm:text-sm font-semibold rounded text-gray-500 hover:text-teal-700 transition-all";
+            } else {
+                btnTotal.className = "px-3 py-1.5 text-xs sm:text-sm font-semibold rounded bg-white shadow-sm text-teal-700 transition-all";
+                btnLahan.className = "px-3 py-1.5 text-xs sm:text-sm font-semibold rounded text-gray-500 hover:text-teal-700 transition-all";
+            }
+            renderChart();
+        }
+
+        function calcStats() {
+            if (waqfData.length < 2) return;
+            
+            const firstDate = new Date(waqfData[0].date);
+            const latestDate = new Date(waqfData[waqfData.length - 1].date);
+            const diffTime = latestDate - firstDate;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) || 1;
+            
+            // Rata-rata dari total terkumpul di hari terakhir dibagi durasi hari kampanye
+            dailyAverage = waqfData[waqfData.length - 1].amount / diffDays;
+            document.getElementById('stat-avg').innerHTML = formatCurrency(dailyAverage) + ' <span class="text-[11px] font-normal opacity-80">/ Hari</span>';
+            
+            calculatePrediction(); // re-calc if date is already selected
+        }
+
+        function calculatePrediction() {
+            const dateInput = document.getElementById('calc-date').value;
+            const resContainer = document.getElementById('calc-result');
+            
+            if (!dateInput) return;
+            
+            const futureDate = new Date(dateInput);
+            const latestData = waqfData[waqfData.length - 1];
+            const latestDate = new Date(latestData.date);
+            
+            const diffTime = futureDate - latestDate;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays <= 0) {
+                resContainer.innerHTML = '<p class="text-xs text-red-500 text-center font-medium bg-red-50 p-2 rounded">Silakan pilih tanggal setelah ' + formatDate(latestData.date) + '</p>';
+                return;
+            }
+            
+            const estimatedAmount = latestData.amount + (diffDays * dailyAverage);
+            const estPaket = Math.floor(estimatedAmount / HARGA_PAKET);
+            const estSisaUang = estimatedAmount % HARGA_PAKET;
+            const estKurangPaket = Math.max(0, TOTAL_PAKET - estPaket);
+            const estPctLahan = ((estimatedAmount / TARGET_LAHAN) * 100).toFixed(2);
+            
+            let konversiText = `${formatNumberID(estPaket)} Paket`;
+            if (estSisaUang > 0) konversiText += `<br><span class="text-xs text-gray-500">+ ${formatCurrency(estSisaUang)}</span>`;
+            
+            resContainer.innerHTML = `
+                <div class="grid grid-cols-2 gap-3 mt-4">
+                    <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                        <p class="text-[10px] text-gray-500 uppercase font-bold mb-1">Estimasi Total</p>
+                        <p class="font-bold text-teal-700 text-sm">${formatCurrency(estimatedAmount)}</p>
+                    </div>
+                    <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                        <p class="text-[10px] text-gray-500 uppercase font-bold mb-1">Total Konversi</p>
+                        <p class="font-bold text-emerald-700 text-sm leading-tight">${konversiText}</p>
+                    </div>
+                    <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                        <p class="text-[10px] text-gray-500 uppercase font-bold mb-1">Sisa Kekurangan</p>
+                        <p class="font-bold text-orange-600 text-sm">${formatNumberID(estKurangPaket)} Paket</p>
+                    </div>
+                    <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                        <p class="text-[10px] text-gray-500 uppercase font-bold mb-1">Progress Lahan</p>
+                        <p class="font-bold text-blue-600 text-sm">${estPctLahan}%</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = '';
+
+            // Render reversed (latest on top)
+            const reversedData = [...waqfData].reverse();
+
+            reversedData.forEach(row => {
+                const paket = Math.floor(row.amount / HARGA_PAKET);
+                const sisaUang = row.amount % HARGA_PAKET;
+                const sisaPaket = TOTAL_PAKET - paket;
+                const pctLahan = ((row.amount / TARGET_LAHAN) * 100).toFixed(2);
+                const pctTotal = ((row.amount / TARGET_TOTAL) * 100).toFixed(2);
+                const sisaKebutuhan = TARGET_TOTAL - row.amount;
+                
+                let konversiText = `${paket} Paket`;
+                if(sisaUang > 0) konversiText += ` + ${formatCurrency(sisaUang)}`;
+
+                const tr = document.createElement('tr');
+                tr.className = "bg-white border-b hover:bg-gray-50 transition-colors";
+                tr.innerHTML = `
+                    <td class="px-6 py-4 font-medium text-gray-900">${formatDate(row.date)}</td>
+                    <td class="px-6 py-4 font-semibold text-teal-700">${formatCurrency(row.amount)}</td>
+                    <td class="px-6 py-4">
+                        <span class="bg-emerald-100 text-emerald-800 text-xs font-medium px-2.5 py-0.5 rounded border border-emerald-300">
+                            ${konversiText}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-orange-600 font-medium">${formatNumberID(sisaPaket)} Paket</td>
+                    <td class="px-6 py-4">${pctLahan}%</td>
+                    <td class="px-6 py-4">${pctTotal}%</td>
+                    <td class="px-6 py-4 text-right text-red-600 font-medium">${formatCurrency(sisaKebutuhan)}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderChart() {
+            const ctx = document.getElementById('waqfChart').getContext('2d');
+            
+            const labels = waqfData.map(d => formatShortDate(d.date));
+            const amounts = waqfData.map(d => d.amount);
+            
+            // Dynamic Target Settings
+            const targetVal = currentChartTarget === 'lahan' ? TARGET_LAHAN : TARGET_TOTAL;
+            const targetLabel = currentChartTarget === 'lahan' ? 'Target Lahan (3,684 M)' : 'Target Total (6,2 M)';
+            const maxScale = currentChartTarget === 'lahan' ? 4000000000 : 6500000000;
+            const targetColor = currentChartTarget === 'lahan' ? '#f97316' : '#ef4444'; // Orange untuk Lahan, Merah untuk Total
+
+            const targetData = waqfData.map(() => targetVal);
+
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Dana Terkumpul',
+                            data: amounts,
+                            borderColor: '#0d9488', // teal-600
+                            backgroundColor: 'rgba(13, 148, 136, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.3,
+                            pointBackgroundColor: '#0d9488',
+                            pointRadius: 4,
+                            pointHoverRadius: 6
+                        },
+                        {
+                            label: targetLabel,
+                            data: targetData,
+                            borderColor: targetColor,
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            pointRadius: 0,
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { usePointStyle: true, boxWidth: 8 }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) label += ': ';
+                                    if (context.parsed.y !== null) {
+                                        label += formatCurrency(context.parsed.y);
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: maxScale,
+                            ticks: {
+                                callback: function(value) {
+                                    if (value >= 1000000000) return (value / 1000000000).toFixed(2) + ' M';
+                                    if (value >= 1000000) return (value / 1000000).toFixed(0) + ' Jt';
+                                    return value;
+                                }
+                            },
+                            grid: { color: '#f3f4f6' }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Parse Smart WA Input
+        function parseWAInput(text) {
+            const lines = text.split('\n');
+            let amount = null;
+            let dateStr = null;
+
+            for (const line of lines) {
+                // Find Amount (mencari baris yang mengandung 'terkumpul' dan 'Rp')
+                if (line.toLowerCase().includes('terkumpul') && line.includes('Rp')) {
+                    const match = line.match(/Rp\s*([\d\.]+)/i);
+                    if (match) {
+                        amount = parseInt(match[1].replace(/\./g, ''));
+                    }
+                }
+                
+                // Find Date (mencari pola angka 1-2 digit, nama bulan, dan tahun 4 digit)
+                const dateMatch = line.match(/(\d{1,2})\s+([a-zA-Z]+)\s+(\d{4})/);
+                if (dateMatch && !dateStr) {
+                    const day = dateMatch[1].padStart(2, '0');
+                    const monthName = dateMatch[2].toLowerCase();
+                    const year = dateMatch[3];
+                    const monthMap = {
+                        'januari': '01', 'februari': '02', 'maret': '03', 'april': '04', 'mei': '05', 'juni': '06',
+                        'juli': '07', 'agustus': '08', 'september': '09', 'oktober': '10', 'november': '11', 'desember': '12'
+                    };
+                    const month = monthMap[monthName];
+                    if (month) {
+                        dateStr = `${year}-${month}-${day}`;
+                    }
+                }
+            }
+            
+            if (!dateStr) return { error: "Gagal mendeteksi tanggal. Pastikan ada format tanggal seperti '5 November 2026'." };
+            if (amount === null || isNaN(amount)) return { error: "Gagal mendeteksi nominal. Pastikan ada baris dengan kata 'Terkumpul' dan format 'Rp'." };
+            
+            return { date: dateStr, amount: amount };
+        }
+
+        // Handle Form Submission
+        document.getElementById('update-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const waText = document.getElementById('input-wa').value;
+            const errorDiv = document.getElementById('form-error');
+            const successDiv = document.getElementById('form-success');
+            const btn = e.target.querySelector('button');
+            
+            errorDiv.classList.add('hidden');
+            successDiv.classList.add('hidden');
+
+            if (!waText.trim()) {
+                errorDiv.innerText = "Teks masih kosong, silakan paste broadcast WA.";
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            const parsed = parseWAInput(waText);
+
+            if (parsed.error) {
+                errorDiv.innerText = parsed.error;
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            const dateStr = parsed.date;
+            const amountVal = parsed.amount;
+
+            // Check if date already exists, if so update it, else push
+            const existingIndex = waqfData.findIndex(d => d.date === dateStr);
+            
+            if (existingIndex >= 0) {
+                waqfData[existingIndex].amount = amountVal;
+            } else {
+                waqfData.push({ date: dateStr, amount: amountVal });
+            }
+            
+            // Show Success feedback
+            const originalText = btn.innerHTML;
+            btn.innerHTML = `<i class="fa-solid fa-check"></i> Disimpan!`;
+            btn.classList.add('bg-emerald-600');
+            
+            successDiv.innerHTML = `<strong>Terdeteksi:</strong> ${formatDate(dateStr)} <br> <strong>Dana:</strong> ${formatCurrency(amountVal)}`;
+            successDiv.classList.remove('hidden');
+            
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.classList.remove('bg-emerald-600');
+                document.getElementById('input-wa').value = '';
+                successDiv.classList.add('hidden');
+            }, 3500);
+
+            updateDashboard();
+        });
+
+        // Initialize App
+        window.onload = function() {
+            updateDashboard();
+        };
+    </script>
+</body>
+</html>
+```
